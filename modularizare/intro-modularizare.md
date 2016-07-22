@@ -4,6 +4,7 @@
 
 - module.exports este obiectul returnat ca rezultat al unui apel require în Node
 - când faci cererea cu require folosește notație „./” pentru ca Node să știe că este vorba despre un modul local
+- funcția exportată cu module.exports va fi intra în cache. Abia execuția variabilei referință ( care se încarcă cu evaluarea lui require ), va invoca codul din modul.
 
 ```js
 // șabloane de export

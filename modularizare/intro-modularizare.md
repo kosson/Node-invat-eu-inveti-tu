@@ -7,6 +7,7 @@
 - funcția exportată cu module.exports va fi intra în cache. Abia execuția variabilei referință ( care se încarcă cu evaluarea lui require ), va invoca codul din modul.
 - fiecare modul este încărcat și evaluat prima dată când se face require. Orice apel a lui require cu numele modului, va returna versiunea din cache.
 - Dincolo de a fi un sistem de încărcare a dependințelor, este și un instrument pentru construirea API-urilor prin posibilitățile de export și expunere selectivă a funcționalităților.
+- Devine o bună practică folosirea lui const atunci când ceri module în Node.js pentru ca variabila care identifică modulul să nu fie accidental reasignată
 
 ```js
 // șabloane de export

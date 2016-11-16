@@ -10,6 +10,11 @@ module.exports = function(demo){
   console.log('Demo-ul conține: ' + demo);
 };
 
+// functionalitate.js varianta EcmaScript 2015
+module.exports = (demo) => {
+  console.log(`despre ${demo}`);
+};
+
 // main.js
 var activitate = require('./functionalitate');
 
@@ -30,3 +35,5 @@ var activitate = require('./functionalitate');
 activitate.tester('text de test pentru namespace');
 // Demo-ul conține: ceva pentru testul namespace
 ```
+
+Recomandarea este de a exporta funcționalitatea unui modul ca o singură funcție. Pentru a expune orice funcționalitate suplimentară, se va exporta funcția ca namespace.

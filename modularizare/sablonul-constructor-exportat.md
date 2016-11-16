@@ -1,6 +1,8 @@
 # Șablonul constructor
 
+Un modul care exportă un contructor, de fapt exportă o funcție.
 Ceea ce este permis utilizatorului este ca acesta să creeze noi instanțe și să extindă prototipul.
+Exportarea unui constructor sau a unei clase (ECMAScript 2015) oferă tot un punct de intrare unic pentru modul. Comparativ cu șablonul substack, acest modul expune mai mult mecanismele interne, ceea ce în schimb poate fi receptat ca un mecanism puternic de extindere a funcționalității.
 
 ```js
 // modul.js
@@ -26,14 +28,53 @@ urla.raspunde('Un ecou...');
  */
 ```
 
+EcmaScript 2015 introduce sintaxa clasei, fiind, de fapt un ambalaj sintactic pentru constructori.
+
+```js
+class Tester{
+  constructor(ceva){
+    this.ceva = ceva;
+  }
+  raspunde(mesaj){
+    console.log(`Te îngân: ${mesaj}`);
+  }
+};
+
+module.exports = Tester;
+
+// main.js
+var Tester = require('./modul');
+
+var urla = new Tester('Se aude?');
+console.log(urla.ceva);
+urla.raspunde('Un ecou...');
+/*
+ Se aude?
+ Te îngân: Un ecou...
+ */
+```
+
 Este un șablon foarte puternic pentru că permite utilizatorului să extindă modulul importat prin lanțul prototipal oferit.
 
-Un mic truc oferă posibilitatea transformării într-un `factory`:
+Un mic truc oferă posibilitatea transformării într-un `factory` iar acest lucru previne folosirea modului fără `new`:
 
 ```js
 // modul.js
 function Tester(ceva){
   if(!(this instanceOf Tester)){
+    return new Tester(ceva);
+  }
+  this.ceva = ceva;
+};
+module.exports = Tester;
+```
+
+ES2015 introduce o proprietate nouă `new.target` care este disponibilă tuturor funcțiilor și care rezolvă la `true` dacă funcția a fost invocată cu `new`.
+
+```js
+// modul.js
+function Tester(ceva){
+  if(!new.target){
     return new Tester(ceva);
   }
   this.ceva = ceva;

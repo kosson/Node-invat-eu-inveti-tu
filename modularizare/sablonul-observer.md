@@ -123,7 +123,7 @@ function CautaInFisier(regex){
 
 util.inherits(cautaInFisier, EventEmitter);
 // cautaInFisier extinde EventEmitter prin folosirea lui util.inherits()
-// în acest mod se va crea un obiect Onserver.
+// în acest mod se va crea un obiect Observer.
 
 cautaInFisier.prototype.adaugaFisier = function(fisier){
   this.fisiere.push(fisier);
@@ -151,16 +151,58 @@ cautaInFisier.prototype.cauta = function(){
 
 // cazul de utilizarea a noului obiect Observer
 var obiectInCareFaciCautare = new CautaInFisier(/salut \w+/);
-obiectInCareFaciCautare.adaugaFisier('salutari.txt')
-                       .adaugaFisier('ceva.csv')
-                       .cauta()
-                       .on('found', function(fisier, identificare){
-                         console.log('Am găsit "' + identificare + '" în fișierul ' + file);
-                       })
-                       .on('error', function(err){
-                         console.log('Eroarea emisă: ' + err.message);
-                       });
-
+obiectInCareFaciCautare
+  .adaugaFisier('salutari.txt')
+  .adaugaFisier('ceva.csv')
+  .cauta()
+  .on('found', function(fisier, identificare){
+    console.log('Am găsit "' + identificare + '" în fișierul ' + fisier);
+  })
+  .on('error', function(err){
+    console.log('Eroarea emisă: ' + err.message);
+  });
 ```
 
 Acest șablon de lucru este larg întâlnit în practica Node.js. Cel mai interesant context de aplicare este cel oferit de streamuri.
+
+```js
+// varianta ECMAScript 2015
+var EventEmitter = require('events').EventEmitter,
+    fs = require('fs');
+
+class CautaInFisier extends EventEmitter {
+  constructor (regex){
+    super();
+    this.regex = regex;
+    this.fisiere = [];
+  }
+  adaugaFisier(fisier){
+    this.fisiere.push(fisier);
+    return this;
+  }
+  cauta {
+    this.files.forEach( fisier => {
+      fs.readFile(fisier, 'utf8', (err, continut) => {
+        if(err){
+          return this.emit('error', err);        // emite error
+        };
+        this.emit('fileread', file);                // emite fileread
+        let identificare = null;
+        if(identificare = continut.match(this.regex)){
+          match.forEach( element => {
+            this.emit('found', file, element);      // emite found
+          });
+        };
+      });
+    });
+    return this;
+  }
+}
+var obiectInCareFaciCautare = new CautaInFisier(/salut \w+/);
+obiectInCareFaciCautare
+  .adaugaFisier('salutari.txt')
+  .adaugaFisier('ceva.csv')
+  .cauta()
+  .on('found', fisier, identificare => { console.log(`Am găsit ${identificare} în fișierul ${fisier}`);  })
+  .on('error', err => { console.log(`Eroarea emisă: ${err.message}`); });
+```

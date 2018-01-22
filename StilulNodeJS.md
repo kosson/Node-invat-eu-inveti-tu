@@ -42,4 +42,4 @@ function readJSON(filename, callback) {
 
 Exemplul a fost preluat din exemplele oferite de Mario Casciaro în lucrarea sa „Node.js Design Patterns”, o lectură obligatorie și care aduce multă claritate felului în care ar trebui scris cod pentru Node.js.
 
-Pentru a propaga erorile în callback este nevoie de blocul try-catch, altfel, acestea ar rămâne doar la nivelul readFile.
+Pentru a propaga erorile în callback este nevoie de blocul `try..catch`, altfel, acestea ar rămâne doar la nivelul `readFile`.

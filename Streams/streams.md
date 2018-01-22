@@ -22,12 +22,12 @@ Streams lucrează cu trei concepte:
 
 Orice stream în Node.js este implementarea a patru clase abstracte:
 
-- stream.Readable (este o sursă de date)
-- stream.Writable ()
-- stream.Duplex
-- stream.Transform
+- `stream.Readable` (este o sursă de date)
+- `stream.Writable`
+- `stream.Duplex`
+- `stream.Transform`
 
-## stream.Readable
+## `stream.Readable`
 
 Există două moduri de a primi date de la un stream Readable:
 - flowing și

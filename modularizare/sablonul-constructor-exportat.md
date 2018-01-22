@@ -1,6 +1,6 @@
 # Șablonul constructor
 
-Un modul care exportă un contructor, de fapt exportă o funcție.
+Un modul care exportă un constructor, de fapt exportă o funcție.
 Ceea ce este permis utilizatorului este ca acesta să creeze noi instanțe și să extindă prototipul.
 Exportarea unui constructor sau a unei clase (ECMAScript 2015) oferă tot un punct de intrare unic pentru modul. Comparativ cu șablonul substack, acest modul expune mai mult mecanismele interne, ceea ce în schimb poate fi receptat ca un mecanism puternic de extindere a funcționalității.
 

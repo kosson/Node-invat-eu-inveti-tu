@@ -5,7 +5,7 @@ Subiectul `stream`-urilor este legat intim de cel al funcționării sistemelor d
 Douglas McIlroy, unul dintre autorii UNIX-ului, a scris o notă în care surprinde cel mai exact rolul acestor „racorduri” (pipes):
 > Ar trebui să avem modalități de a conecta programele precum furtunele din grădină - înfiletezi alt segment atunci când este necesar să masezi datele în alt fel. Aceasta este și calea IO. (Douglas McIlroy, 1964)
 
-IO înseamnă In/Out - o pradigmă a intrărilor și ieșirilor. Întrările și ieșirile în Node.js au un comportament asyncron, ceea ce înseamnă că va trebui pasat un callback care va acționa asupra datelor.
+**IO** înseamnă In/Out - o pradigmă a intrărilor și ieșirilor. Întrările și ieșirile în Node.js au un comportament asyncron, ceea ce înseamnă că va trebui pasat un callback care va acționa asupra datelor.
 
 Exemple de stream-uri în Node.js:
 
@@ -41,4 +41,4 @@ Pentru citirea datelor se folosește metoda `readable`, care citește datele din
 
 ## Referințe
 
-https://www.safaribooksonline.com/blog/2013/08/29/the-unix-philosophy-streams-and-node-js/
+[The UNIX Philosophy, Streams and Node.js. Posted on August 29, 2013 by Safari Books Online & filed under Content - Highlights and Reviews, Programming & Development. ](https://www.safaribooksonline.com/blog/2013/08/29/the-unix-philosophy-streams-and-node-js/)

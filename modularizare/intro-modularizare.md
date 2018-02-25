@@ -2,9 +2,9 @@
 
 ## Mantre
 
-- module.exports este obiectul returnat ca rezultat al unui apel require în Node
-- când faci cererea cu require folosește notație „./” pentru ca Node să știe că este vorba despre un modul local
-- funcția exportată cu module.exports va fi intra în cache. Abia execuția variabilei referință ( care se încarcă cu evaluarea lui require ), va invoca codul din modul.
+- **module.exports** este obiectul returnat ca rezultat al unui apel `require()` în Node
+- când faci cererea cu require folosește notația „./” pentru ca Node să știe că este vorba despre un modul local
+- funcția exportată cu **module.exports** va fi intra în cache. Abia execuția variabilei referință ( care se încarcă cu evaluarea lui require ), va invoca codul din modul.
 - fiecare modul este încărcat și evaluat prima dată când se face require. Orice apel a lui require cu numele modului, va returna versiunea din cache.
 - Dincolo de a fi un sistem de încărcare a dependințelor, este și un instrument pentru construirea API-urilor prin posibilitățile de export și expunere selectivă a funcționalităților.
 - Devine o bună practică folosirea lui const atunci când ceri module în Node.js pentru ca variabila care identifică modulul să nu fie accidental reasignată
@@ -22,7 +22,7 @@ exports.obj = {};
 
 ## Lămuriri cu privire la folosirea lui exports și module.exports în Node
 
-[Node spune](http://nodejs.org/docs/v0.4.2/api/globals.html#module) că **module** este o referință către modulul curent. În particular, **module.exports** este același obiect precum **exports**. **exports** poate fi considerat un alias a lui module.exports.
+[Node spune](http://nodejs.org/docs/v0.4.2/api/globals.html#module) că **module** este o referință către modulul curent. În particular, **module.exports** este același obiect precum **exports**. Astfel, **exports** poate fi considerat un alias a lui **module.exports**.
 
 Un simplu exemplu:
 

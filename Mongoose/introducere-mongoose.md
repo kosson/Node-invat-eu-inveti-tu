@@ -1,15 +1,13 @@
-# Totul in Mongoose porneste de la o schema.
+# Totul in Mongoose pornește de la o schema.
 
 Fiecare schema se mapează pe o colecție MongoDB.
-Vezi exemplul dat [la capitolul dedicat acestora](http://mongoosejs.com/docs/guide.html).
+
+Vezi exemplul dat [la capitolul dedicat acestora](http://mongoosejs.com/docs/guide.html) din documentația oficială.
 Schema indică numele câmpurilor și tipurile datelor.
-
-![Structura de date din Mongo](mongooseSchema.svg)
-
 
 ## Creează un model
 
-```js
+```javascript
 // creezi fișierul în app/models/bear.js
 
 var mongoose = require('mongoose');

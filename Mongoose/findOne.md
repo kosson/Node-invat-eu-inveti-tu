@@ -1,4 +1,4 @@
-```js
+```javascript
 // TODO: verifica dacă utilizatorul este în baza de date
 var User = require('./app/models/users'),
     user = new User();
@@ -47,7 +47,7 @@ User.findOne({email: data.email})
 
 În codul de mai sus `query` este de tip `Query`, ceea ce permite construirea interogării și trimiterea către sistemul de interogări al MongoDB folosind chainingul.
 
-```js
+```javascript
 // With a JSON doc
 Person.
   find({

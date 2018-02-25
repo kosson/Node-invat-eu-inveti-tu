@@ -11,9 +11,9 @@ Se comportă ca o miniaplicație. Poți apela o instanță a acesteia și apoi s
 var adminRouter = express.Router();
 
 //adauga o ruta pe administrator
-adminRouter.get('/', function(req, res){
+adminRouter.get('/', function (req, res) {
   res.send('sunt locul in care trebuia sa fii');
-  });
+});
 
 //adauga o ruta pe administrator/utilizatori
 adminRouter.get('/users', function(req, res){
@@ -29,7 +29,7 @@ adminRouter.get('/posts', function(req, res){
 app.add('/administrator', adminRouter);
 ```
 
-Trebuie reținut faptul că putem avea oricâte rutere avem nevoie. Pentru fiecare zonă a aplicației putem avea un ruter diferit.
+Trebuie reținut faptul că putem avea oricâte rutere avem nevoie. Pentru fiecare zonă a aplicației putem avea un router diferit.
 Toate acete rutere pot fi adaugate aplicației.
 
 Ordinea în care pui middleware-ul este foarte importantă. Totul se va ăntâmpla în ordinea în care va apărea. Acest lucru înseamnă că de vei pune middleware-ul după o rută, atunci rutarea se va face înainte de middleware iar cererea se va termina acolo nemaiajungând la middleware. Un middleare poare fi folosit pentru a vedea dacă un utilizator este logat sau nu într-o sesiune de lucru.

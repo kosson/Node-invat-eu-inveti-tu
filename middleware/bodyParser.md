@@ -73,27 +73,3 @@ app.use(function (req, res) {
   res.end(JSON.stringify(req.body, null, 2))
 })
 ```
-
-# Inițializare aplicație prin inițializare de middleware
-
-```javascript
-var express = require('express'),
-    app = express(),
-    bodyParser = require('body-parser'),
-    morgan = require('morgan'),
-    mongoose = require('mongoose'),
-    port = process.env.PORT || 8080
-;
-```
-
-Nu uita că inițializarea serverului se face la final prin
-
-```js
-app.listen(port);
-```
-
-Trimite și la consolă un mesaj privind portul
-
-```js
-console.log('Magic happens on port ' + port);
-```

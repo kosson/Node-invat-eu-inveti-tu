@@ -1,8 +1,8 @@
-# Ce este .use()
+# Ce este `use()`
 
 > app.use([path], [function...], function)
 
-app.use() are ca efect montarea funcțiilor middleware-ului la calea specificată. Dacă nu este specificată calea, este considerat automat că este folosit „/”. Aceste funcții vor fi executate ori de câte ori va fi făcută o cerere pe acea cale. De vreme ce calea va fi default „/” dacă nu este specificată, middleware-ul va fi executat pentru fiecare cerere la app. De exemplu:
+Acest middleware are ca efect montarea funcțiilor sale la calea specificată. Dacă nu este specificată calea, este considerat automat că este folosit „/”. Aceste funcții vor fi executate ori de câte ori va fi făcută o cerere pe acea cale. De vreme ce calea va fi default „/” dacă nu este specificată, middleware-ul va fi executat pentru fiecare cerere la app. De exemplu:
 
 ```js
 // this middleware will be executed for every request to the app

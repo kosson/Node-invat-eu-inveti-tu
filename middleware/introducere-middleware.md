@@ -1,13 +1,36 @@
 # Ce-i middleware?
 
-Un middleware este o funcție care are un callback `next`.
+Un middleware este o funcție care are un callback `next`. Un schelet care ar lămuri lucrurile este următoarea construcție.
 
 ```javascript
-function (args, next) {
-  // rulează cod
+app.use(
+  function(request, response, next){
+    // cod
+    next();
+  },
+  function(request, response, next){
+    // cod
+    next();
+  },
+  function(request, response, next){
+    // cod
+    next();
+  }
+);
+```
+
+De fapt, un middleware este un șablon de lucru care permite reutilizarea codului, fiind pretabil și la distribuirea în pachete npm.
+
+```javascript
+let nume_middleware = function (request, response, next) {
+  // cod pentru relucrarea req și res
   next(rezultat);
 }
 ```
+
+ATENȚIE! Ordinea în care menționezi middleware-ul are o deosebită importanță pentru că este și ordinea în care vor fi executate la rulare. Din aceleași rațiuni vom declara middleware-ul înaintea tratării rutelor.
+
+Argumentele `request` și `response` care sunt utilizate în mod curent în Express, sunt două obiecte, care vor fi utilizate în toate celelalte middleware-uri folosite ulterior. Acest lucru înseamnă că permit adăugarea de proprietăți care ar putea fi accesate mai târziu - `res.ceva = 'mesaj'`.
 
 Middleware-urile sunt implementare de diferitele biblioteci de cod din Node.js. În cazul lui Express, de exemplu, middleware-urile vor fi folosite cu `use()`.
 

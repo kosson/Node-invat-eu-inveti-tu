@@ -1,4 +1,13 @@
-# bodyParser - parsarea corpului cererii
+# Modulul body-parser - parsarea corpului cererii
+
+Un server primește solicitări și trimite răspunsuri ca răspuns. Modulul `body-parser` este cel mai important pentru Express și Node ca acestea, împreună să se poată comporta ca un server adevărat. Modulul poate fi găsit pe npm la https://www.npmjs.org/package/body-parser.
+
+În esență ceea ce face este să servească corpul unei cereri ca obiecte ce pot fi procesate în node. În ce formate poți transfoma conținutul primit prin cerere (*payload*):
+
+- JSON folosind metoda `bodyParser.json()` pentru a procesa date de forma `{"nume": "valoare"}`,
+- `bodyParser.urlencoded()` cu ajutorul căreia procesăm date venite din URL de forma `nume1=val1&nume2=val2`,
+- `bodyParser.raw()` - este returnat corpul ca buffer (tampon de date),
+- `bodyParser.text()`, returnează corpul ca text.
 
 Atunci când folosești Express, de cele mai multe ori trebuie înlănțuite middleware-urile de parsare `json()` și `urlencoded()`. Aceste middleware-uri au rolul de a converti datele din formă brută așa cum vin din formular în obiecte JSON.
 

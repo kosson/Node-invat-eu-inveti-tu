@@ -1,11 +1,15 @@
-# Totul in Mongoose pornește de la o schema.
+# Mongoose
+
+Mongoose este un ODM - 
+
+## Totul in Mongoose pornește de la o schema.
 
 Fiecare schema se mapează pe o colecție MongoDB.
 
 Vezi exemplul dat [la capitolul dedicat acestora](http://mongoosejs.com/docs/guide.html) din documentația oficială.
 Schema indică numele câmpurilor și tipurile datelor.
 
-## Creează un model
+## Creează un model de date
 
 ```javascript
 // creezi fișierul în app/models/bear.js
@@ -19,7 +23,7 @@ var BearSchema = new Schema({
 
 module.exports = mongoose.model('Bear', BearSchema);
 ```
-**ATENȚIE!** module.exports este obiectul returnat ca rezultat al unui apel require în Node. Se folosește module.exports pentru cazul în care dorești să accesezi o funcție care să fie utilă și nu doar un simplu obiect cu proprietăți. Este și cazul nostru.
+**ATENȚIE!** `module.exports` este obiectul returnat ca rezultat al unui apel require în Node. Se folosește `module.exports` pentru cazul în care dorești să accesezi o funcție care să fie utilă și nu doar un simplu obiect cu proprietăți. Este și cazul nostru.
 
 ## Cere modelul bazei de date în scriptul de server:
 

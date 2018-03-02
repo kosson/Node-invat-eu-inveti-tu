@@ -21,3 +21,24 @@ app.get('/test/:nume', function (req, res) {
   res.send('<html lang="ro"><head><title>Bau!</title></head><body>' + req.params.nume + '</body></html>');
 });
 ```
+
+## Rutarea folosind express.Router()
+
+Middleware-ul la nivelul rutării lucrează în același fel precum cel folosit în aplicație, dar toate solicitările vor fi directate către o instanță `Router`.
+
+```javascript
+var router = express.Router();
+```
+
+În acest moment, tot middleware-ul va fi utilizat trecându-l în instanța router.
+
+```javascript
+router.use(function (req, res, next) {
+  console.log('Acest middleware va executa acest log pentru oricare cerere');
+  next();
+});
+```
+
+## Referințe
+
+- [Express. Using middleware](https://expressjs.com/en/guide/using-middleware.html)

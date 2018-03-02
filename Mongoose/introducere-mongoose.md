@@ -1,6 +1,6 @@
 # Mongoose
 
-Mongoose este un ODM - 
+Mongoose este un ORM - Object Relational Mapper. Acest lucru implică faptul că datele sunt definite ca obiecte, mai bine spus ca **modele de date** (ODM - Object Data Model). Ceea ce face efectiv un ORM este să transpună aceste modele în documentele pe care le agregă bazele de date.
 
 ## Totul in Mongoose pornește de la o schema.
 

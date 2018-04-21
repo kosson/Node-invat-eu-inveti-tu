@@ -1,6 +1,6 @@
 # Node-invat-eu-inveti-tu
 
-Această colecție de materiale va dezvolta practica dobândită în lucrul cu Node.js. Npde.js este un mod de lucru cu datele și cu șabloanele de prezentare a acestora, care prezintă o ușurință mai greu de atins doar cu JavaScript curat.
+Această colecție de materiale va dezvolta practica dobândită în lucrul cu Node.js. Node.js este un mod de lucru cu datele și cu șabloanele de prezentare pentru acestea, care prezintă o ușurință mai greu de atins doar cu JavaScript curat.
 
 Aceste texte nu sunt definitive modificându-se ca formă și conținut într-o continuă îmbunătățire pe măsură ce timpul o va permite.
 

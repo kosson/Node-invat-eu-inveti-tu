@@ -8,10 +8,14 @@ Douglas McIlroy, unul dintre autorii UNIX-ului, a scris o notă în care surprin
 
 **IO** înseamnă In/Out - o pradigmă a intrărilor și a ieșirilor. Întrările și ieșirile în Node.js au un comportament asincron, ceea ce înseamnă că va trebui pasat un callback care va acționa asupra datelor.
 
-Exemple de stream-uri în Node.js:
+## Interfața Stream
+
+În Node, interfața Stream este implementată de modulul `stream`. Acest modul oferă un API care poate fi implementat de mai multe obiecte în Node care doresc să implementeze interfața streams. Exemple de stream-uri în Node.js:
 
 -   un apel HTTP,
 -   o proprietate `process.stdout`.
+
+Streamurile pof fi folosite pentru a citi, pentru a scrie sau ambele operațiuni în același timp.
 
 Toate streamurile sunt instanțe ale clasei `EventEmitter` și pot fi accesate direct instanțiind modulul `stream`. Toate obiectele care sunt stream-uri expun o metodă `eventEmitter.on()`. Această metodă permite unei funcții sau mai multora să se atașeze pe evenimente emise de obiect. Funcțiile atașate evenimentelor vor fi executate sincron.
 
@@ -29,7 +33,7 @@ streamR.pipe(process.stdout);
 // execută cu node numeFisier.js
  ```
 
-În practică, se va folosi rar acest modul pentru că deja există aplicații care implementează deja o vastă tipologie. Majoritatea aplicațiilor Node folosesc stream-urile într-un mod sau altul. De exemplu, serverele http folosesc stream-urile.
+În practică, se va folosi rar acest modul pentru că deja există implementări. Majoritatea aplicațiilor Node folosesc stream-urile într-un fel sau altul. De exemplu, serverele http folosesc stream-urile.
 
 ```javascript
 const http = require('http');
@@ -72,9 +76,9 @@ Streamul Writable `res` este un obiect, care expune metode precum `write()` și 
 
 Streams lucrează cu trei concepte:
 
--   *source* - este obiectul de unde vin datele tale;
--   *pipeline* - este locul pe unde trec datele, fiind permis aici filtrarea și orice modificări;
--   *sink* - este locul unde ajung datele (în limba engleză sink înseamnă chiuvetă).
+-   *source* (*sursă*), fiind obiectul de unde vin datele tale;
+-   *pipeline* (*conductă*), fiind locul pe unde trec datele, fiind permise aici filtrarea și orice modificări ale datelor;
+-   *sink* (*destinație*), fiind locul unde ajung datele.
 
 Orice stream în Node.js este implementarea a patru clase abstracte:
 
@@ -119,7 +123,6 @@ Dacă este necesar, streamul `Readable` poate fi pus în modul pauză folosind u
 
 - apelarea metodei `pause()` dacă nu există pipe-uri,
 - dacă există pipe-uri și sunt eliminate toate acestea prin folosirea metodei `unpipe()`.
-
 
 
 ## Streamuri Writable

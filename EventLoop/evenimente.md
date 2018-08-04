@@ -1,6 +1,6 @@
 # Evenimente în Node
 
-Node.js pune la dispoziție obiecte numite `emitters` a căror sarcină este să genereze evenimente la anumite intervale. Evenimentele emise vor declanșa executarea unor funcții care au rol de receptoare (handlers). Toate obiectele care emit evenimente implementează clasa `EventEmitter`. Aceste obiecte oferă o metodă `eventEmiter.on()` care permite atașarea unor funcții la evenimentele emise. Aceste funcții vor fi executate sincron la momentul apelării lor. Metoda `eventEmiter.emit()` este folosită pentru a declanșa executarea funcțiilor receptor.
+Node.js pune la dispoziție obiecte numite `emitters` a căror sarcină este să genereze evenimente la anumite intervale. Evenimentele emise vor declanșa executarea unor funcții care au rol de receptoare (*handlers*). Toate obiectele care emit evenimente implementează clasa `EventEmitter`. Aceste obiecte oferă o metodă `eventEmiter.on()` care permite atașarea unor funcții la evenimentele emise. Aceste funcții vor fi executate sincron la momentul apelării lor. Metoda `eventEmiter.emit()` este folosită pentru a declanșa executarea funcțiilor receptor.
 
 Modelul de emitere a unui eveniment
 
@@ -15,7 +15,7 @@ myEmitter.on('event', () => {
 myEmitter.emit('event');
 ```
 
-## Tratarea this și arguments
+## this și arguments
 
 De cele mai multe ori este nevoie să lucrezi cu obiectul this pe care îl formează callback-ul. La invocarea callback-ului, `this` va indica obiectul generat de invocarea metodei `eventEmitter.emit()`. Dacă nu vei folosi callback-uri declarate cu `function` nu vei avea acces la `this`. Metoda permite și pasarea mai multor argumente funcțiilor cu rol de callback.
 

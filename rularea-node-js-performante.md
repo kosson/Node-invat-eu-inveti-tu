@@ -2,7 +2,7 @@
 
 ## Clustering
 
-Atunci când un program Node.js rulează pe un pocesor multicore, poți folosi mai multe de un nucleu pentru a crește scalabilitatea.
+Atunci când un program Node.js rulează pe un procesor multicore, poți folosi mai multe de un nucleu pentru a crește scalabilitatea.
 
 Este recomandabil ca Node.js să fie rulat în modul `cluster` atunci când sunt așteptate sarcini mai grele din partea sa.
 
@@ -37,7 +37,7 @@ if (cluster.isMaster) {
 			facCeva(5000); // se va înregistra o întârziere de 5 secunde.
 			res.send('Salve');
     });
-    
+
     app.get('/alta', (req, res) => {
         res.send('S-a încărcat folosind un copil');
     });
@@ -46,7 +46,7 @@ if (cluster.isMaster) {
 };
 ```
 
-Ceea ce se petrece la momentul în care `index.js` este parcurs de Node.js este că se va instanția un manager al clusterului - `console.log(cluster.isMaster); // true`. 
+Ceea ce se petrece la momentul în care `index.js` este parcurs de Node.js este că se va instanția un manager al clusterului - `console.log(cluster.isMaster); // true`.
 
 Dacă `index.js` va fi executat în modul master, se va apela `cluster.fork()`. Abia acest proces, va executa din nou `index.js` de data aceasta în modul *slave* sau *child* setând `cluster.isMaster` la `false`, ceea ce permite executarea ramurii `else` care instanțiază copiii. Fii foarte atent că fiecare child va avea la dispoziție câte un pool cu patru thread-uri.
 

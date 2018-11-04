@@ -24,7 +24,7 @@ app.get('/test/:nume', function (req, res) {
 
 ## Rutarea folosind express.Router()
 
-Middleware-ul la nivelul rutării lucrează în același fel precum cel folosit în aplicație, dar toate solicitările vor fi directate către o instanță `Router`.
+Middleware-ul la nivelul rutării lucrează în același fel precum cel folosit în aplicație, dar toate solicitările vor fi direcționate către o instanță `Router`.
 
 ```javascript
 var router = express.Router();

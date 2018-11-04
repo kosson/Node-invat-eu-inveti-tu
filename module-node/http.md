@@ -1,4 +1,4 @@
-# http
+# Modulul http
 
 Oricare aplicație care construiește un server web va genera un obiect server prin invocarea metodei `http.createServer()`.
 
@@ -40,7 +40,7 @@ request.on('data', (fragment) => {
 Un `fragment` emis în fiecare eveniment `data` este un `Buffer`. Un `Buffer` este un mecanism al Node pentru citirea și manipularea streamurilor de date binare. În acest moment standardul ECMAScript a introdus un mecanism echivalent: `TypedArray`. Clasa `Buffer` permite interacțiunea cu streamuri de octeți în contextul streamurilor TCP sau operațiunile în care lucrezi cu sistemul de fișiere al unei mașini. Reține faptul că atunci când lucrezi cu șiruri într-un `Buffer`, trebuie să precizezi care este codarea caracterelor.
 
 Dacă știi că datele primite prin TCP sunt șiruri de caractere, atunci cea mai bună tactică este să le acumulezi într-un array și apoi în cazul unui nou eveniment `end` să le concatenezi cu `Buffer.concat` pentru a le accesa într-un format accesibil.
-Acest algoritm este abstractizat în module npm dedicate, iar în cazul utilizării `Express` ai la dispoziție `body-parser` și `multer`. 
+Acest algoritm este abstractizat în module npm dedicate, iar în cazul utilizării `Express` ai la dispoziție `body-parser` și `multer`.
 
 Erorile sunt și ele evenimente ale stream-ului `request`. Este necesar să ai o funcție receptor și pentru erori pentru că altfel, vor fi *emise* excepții și programul se va încheia.
 
@@ -132,7 +132,7 @@ response.write('<h1>Hello, World!</h1>');
 response.write('</body>');
 response.write('</html>');
 response.end();
-// sau 
+// sau
 response.end('<html><body><h1>Hello, World!</h1></body></html>');
 ```
 

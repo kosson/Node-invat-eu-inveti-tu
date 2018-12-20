@@ -1,12 +1,12 @@
 # Stream-uri
 
-Subiectul `stream`-urilor este legat intim de cel al funcționării sistemelor de operare UNIX. Una din cele mai apreciate facilități ale acestui sistem de operare este capacitatea de a folosi programe mai mici pentru a dezvolta programe mai elaborate. Dar așa cum rândurile de cărămizi sunt legate unele de celelalte prin mortar, așa există și în UNIX un liant foarte puternit numit `pipes`. În română ar fi tradus ca `racorduri`. În folosirea de zi cu zi în aceste racorduri sunt identificabile prin utilizarea caracterului „pipe” <code>&#124;</code>. Pentru a face utiliza racordurile în Nodejs, vom folosi `.pipe()`.
+Subiectul `stream`-urilor este legat intim de cel al funcționării sistemelor de operare UNIX. Una din cele mai apreciate facilități ale acestui sistem de operare este capacitatea de a folosi programe mai mici pentru a dezvolta programe mai elaborate. Dar așa cum rândurile de cărămizi sunt legate unele de celelalte prin mortar, așa există și în UNIX un liant foarte puternit numit `pipes`. În română ar fi tradus ca `racorduri`. În folosirea de zi cu zi în aceste racorduri sunt identificabile prin utilizarea caracterului *pipe* <code>&#124;</code>. Pentru a face utiliza racordurile în Nodejs, vom folosi `.pipe()`.
 
 Douglas McIlroy, unul dintre autorii UNIX-ului, a scris o notă în care surprinde cel mai exact rolul acestor „racorduri” (pipes):
 
 > Ar trebui să avem modalități de a conecta programele precum furtunele din grădină - înfiletezi alt segment atunci când este necesar să masezi datele în alt fel. Aceasta este și calea IO. (Douglas McIlroy, 1964)
 
-**IO** înseamnă In/Out - o pradigmă a intrărilor și a ieșirilor. Întrările și ieșirile în Node.js au un comportament asincron, ceea ce înseamnă că va trebui pasat un callback care va acționa asupra datelor.
+**IO** înseamnă In/Out - o paradigmă a intrărilor și a ieșirilor. Întrările și ieșirile în Node.js au un comportament asincron, ceea ce înseamnă că va trebui pasat un callback care va acționa asupra datelor.
 
 ## Interfața Stream
 
@@ -70,7 +70,7 @@ const server = http.createServer((req, res) => {
 server.listen(8888);
 ```
 
-Streamul Writable `res` este un obiect, care expune metode precum `write()` și `end()`. Aceste metode sunt folosite pentru a scrie date în stream. Streamurile Readable folosesc clasa `EventEmitter` pentru a *anunța* aplicația cu privire la momentul în care datele sunt disponibile pentru a fi citite din stream.
+Streamul Writable `res` este un obiect, care expune metode precum `write()` și `end()`. Aceste metode sunt folosite pentru a scrie date în stream. Stream-urile Readable folosesc clasa `EventEmitter` pentru a *anunța* aplicația cu privire la momentul în care datele sunt disponibile pentru a fi citite din stream.
 
 ## Concepte și clase
 
@@ -135,5 +135,6 @@ Sunt acele streamuri în care se poate scrie și citi deopotrivă.
 
 ## Referințe
 
--   [The UNIX Philosophy, Streams and Node.js. Posted on August 29, 2013 by Safari Books Online & filed under Content - Highlights and Reviews, Programming & Development.](https://www.safaribooksonline.com/blog/2013/08/29/the-unix-philosophy-streams-and-node-js/)
--   [stream-handbook](https://github.com/substack/stream-handbook)
+- [The UNIX Philosophy, Streams and Node.js. Posted on August 29, 2013 by Safari Books Online & filed under Content - Highlights and Reviews, Programming & Development.](https://www.safaribooksonline.com/blog/2013/08/29/the-unix-philosophy-streams-and-node-js/)
+- [stream-handbook](https://github.com/substack/stream-handbook)
+- [Stream Adventure](https://www.npmjs.com/package/stream-adventure)

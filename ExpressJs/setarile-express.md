@@ -83,7 +83,7 @@ app.set('view engine', 'ejs');
 
 Această setare indică rădăcina căii în care pot fi găsite șabloanele. Valoarea implicită, dacă nu menționezi calea este directorul `views` din rădăcina proiectului.
 
-Pentru a schimba calea, ai nevoie de utilitarul `path` cu care vei face un `join()` pe variabila de sistem care referențiază calea absolută din care rulează proiectul `_dirname`. Să presupunem că șabloanele noastre se află într-un director diferit de views. Să spunem că se află într-un subdirector numit fragmente. Ca să faci redirectarea folosești din nou `app.set()`, iar la callback faci apelezi join.
+Pentru a schimba calea, ai nevoie de utilitarul `path` cu care vei face un `join()` pe variabila de sistem care indică calea absolută din care rulează proiectul `__dirname`. Să presupunem că șabloanele noastre se află într-un director diferit de `views`. Să spunem că se află într-un subdirector numit fragmente. Ca să faci redirectarea folosești din nou `app.set()`, iar la callback faci apelezi `join`.
 
 ```javascript
 app.set('views', path.join(__dirname, 'fragmente'));

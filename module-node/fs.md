@@ -15,17 +15,17 @@ fs.unlink('/cale/director', (err) => {
 });
 ```
 
-Pentru a ține evidența fișierelor de lucru, kernelul sistemelor POSIX ține evidența fișierelor și resurselor deschise. Fiecărui fișier deschis îi este asignat un identificator numit `file descriptor`. 
+Pentru a ține evidența fișierelor de lucru, kernelul sistemelor POSIX ține evidența fișierelor și resurselor deschise. Fiecărui fișier deschis îi este asignat un identificator numit `file descriptor`.
 
-Modulul `fs` pune la dispoziție și metodele necesare lucrului cu streamuri. Pentru a dezvolta acest aspect foarte important, vezi materialele dedicate stream-urilor.
+Modulul `fs` pune la dispoziție și metodele necesare lucrului cu stream-uri. Pentru a dezvolta acest aspect foarte important, vezi materialele dedicate stream-urilor.
 
 ## Lucrul pe căile sistemului
 
-Căile sistemului de operare sunt necesare pentru a accesa resursele. Acestea sunt oferite metodelor modulului `fs` drept parametru și pot fi un șir de caractere (secvențe de caractere codate UTF8), un obiect Buffer sau un obiect URL care folosește protocolul `file:`. 
+Căile sistemului de operare sunt necesare pentru a accesa resursele. Acestea sunt oferite metodelor modulului `fs` drept parametru și pot fi un șir de caractere (secvențe de caractere codate UTF8), un obiect Buffer sau un obiect URL care folosește protocolul `file:`.
 
 ## Căi relative
 
-Căile pe care le pasezi lui `fs` pot fi relative. Pentru simplificarea activităților, de cele mai multe ori vei întâlni situațiile în care se folosește în paralel modulul path.
+Căile pe care le pasezi lui `fs` pot fi relative. Pentru simplificarea activităților, de cele mai multe ori vei întâlni situațiile în care se folosește în paralel modulul `path`.
 
 ```javascript
 const fs = require(`fs`);

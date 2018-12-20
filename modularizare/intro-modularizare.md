@@ -4,11 +4,9 @@
 
 Pur și simplu este un fișier JavaScript sau chiar o întreagă bibliotecă de cod. Acesta poate fi importat în alt cod folosindu-se funcția `require()` din Node. Însuși efortul de standardizare al JavaScript a pornit pe calea modularizării de ceva timp.
 
-Cel mai folosit modul în acest moment este Express.
-
 ## Cum funcționează modularizarea?
 
-După cum spuneam, într-un fișier principal, care este numit server.js sau index.js sau app.js sau main.js (istoric vorbind, multe variante au fost și sunt în circulație), este invocată funcția `require()` cu un parametru care este numele modulului. Rezultatul este indentificat cu o variabilă, care experiența practică ne sfătuiește să fie un `const`.
+După cum spuneam, într-un fișier principal, care este numit `server.js` sau `index.js` sau `app.js` sau `main.js` (istoric vorbind, multe variante au fost și sunt în circulație), este invocată funcția `require()` cu un parametru care este numele modulului. Rezultatul este identificat cu o variabilă, care experiența practică ne sfătuiește să fie un `const`.
 
 ```javascript
 const express = require('express');
@@ -16,6 +14,35 @@ const express = require('express');
 
 Invocarea funcției, returnează un obiect.
 Putem să ne închipuim modulele precum niște fragmente de care depinde funcționarea întregii aplicații. În unele lucrări sunt numite de-a dreptul **dependințe**. În cazul Express este nevoie și de o instanțiere prin `express()`.
+
+### Exportul obiectelor
+
+```javascript
+const obiect = {a: 1};
+exports.obiect = obiect;
+```
+
+### Importul obiectelor
+
+```javascript
+const routes = require('./module/rute.js');
+```
+
+Pentru modulele care fac parte din nucleul ecosistemului de pachete Nodejs, nu este nevoie specificarea căii și nici pentru pachetele descărcate cu `npm`. În cazul încărcării de scripturi din locațiile directorului aplicației, vor fi scrise începând cu punctul, care semnifică punctul de plecare locația fișierului din care se cheamă. Este un amănunt foarte important pentru care se poate rata instalarea.
+
+```javascript
+const express = require('express');
+```
+
+Pentru a ne asigura că resursele sunt găsite indiferent de sistemul de operare utilizat, se poate folosi modulul `path`.
+
+```javascript
+const path = require('path');
+const rute = require(path.join(__dirname, 'module', 'rute.js'));
+```
+
+Calea absolută este oferită de `__dirname`.
+În cazul în care `require()` indică către un director, fără a specifica numele fișierului, înseamnă că este căutat `index.js`.
 
 ## Mantre
 

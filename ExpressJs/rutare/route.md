@@ -23,7 +23,7 @@ app
 ---
 
 Un exemplu privind cum funcționează middleware-ul și prioritizarea operațiunilor.
-Cererile care vin pe rădăcina lovesc prima si prima data acest Middleware mesajul de consola este afișat in terminal.
+Cererile care vin pe rădăcina lovesc prima și prima data acest middleware mesajul de consola este afișat in terminal.
 
 ```js
 // test route to make sure everything is working (accessed at GET http://localhost:8080/api)

@@ -30,9 +30,9 @@ app.add('/administrator', adminRouter);
 ```
 
 Trebuie reținut faptul că putem avea oricâte rutere avem nevoie. Pentru fiecare zonă a aplicației putem avea un router diferit.
-Toate acete rutere pot fi adaugate aplicației.
+Toate aceste rutere pot fi adăugate aplicației.
 
-Ordinea în care pui middleware-ul este foarte importantă. Totul se va ăntâmpla în ordinea în care va apărea. Acest lucru înseamnă că de vei pune middleware-ul după o rută, atunci rutarea se va face înainte de middleware iar cererea se va termina acolo nemaiajungând la middleware. Un middleare poare fi folosit pentru a vedea dacă un utilizator este logat sau nu într-o sesiune de lucru.
+Ordinea în care pui middleware-ul este foarte importantă. Totul se va întâmpla în ordinea în care va apărea. Acest lucru înseamnă că de vei pune middleware-ul după o rută, atunci rutarea se va face înainte de middleware iar cererea se va termina acolo ne mai ajungând la middleware. Un middleware poare fi folosit pentru a vedea dacă un utilizator este logat sau nu într-o sesiune de lucru.
 
 Rutarea este foarte utilă pentru compartimentarea aplicațiilor complexe.
 
@@ -61,7 +61,7 @@ apiRouter.get('/', function(req, res) {
 });
 ```
 
-După ce ai scris toate rutele aici trebuie să folosești routerul sau routerele, dacă sunt mai multe cu middlewareul Express
+După ce ai scris toate rutele aici trebuie să folosești routerul sau routerele, dacă sunt mai multe cu middleware-ul Express.
 
 ```js
 app.use('/api', apiRouter);

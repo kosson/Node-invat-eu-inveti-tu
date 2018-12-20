@@ -7,11 +7,12 @@ Câteva exemple ar fi setarea care să specifice ceea ce ar trebui să aștepte 
 ```javascript
 const express = require('express'),
       app = express();
-app.set('view engine', 'jade');
 app.set('port', process.env.PORT || 3000);
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
 ```
 
-Poți interoga valoarea proprietăților setate dacă dorești să testezi ce face set.
+Poți interoga valoarea proprietăților setate dacă dorești să testezi ce face `set`.
 
 ```javascript
 console.log('serverul Express ascultă pe portul ' + app.get('port'));
@@ -31,7 +32,7 @@ Tot cu ajutorul lui set poți introduce proprietăți care sunt utile șabloanel
 app.set('numeApp', 'AplicatiaVietii');
 ```
 
-Într-un șablon Jade poți prelua proprietatea.
+Într-un șablon Pug poți prelua proprietatea.
 
 ```jade
 doctype 5

@@ -1,6 +1,7 @@
 # Modulul http
 
-Oricare aplicație care construiește un server web va genera un obiect server prin invocarea metodei `http.createServer()`.
+Acest modul poate fi folosit pentru construirea de servere http.
+Orice aplicație care construiește un server web va genera un obiect server prin invocarea metodei `http.createServer()`.
 
 ```javascript
 const http = require('http');
@@ -53,7 +54,7 @@ request.on('error', (err) => {
 
 ### Metode, URL și headere
 
-Atunci când serverul primește o cerere, sunt câteva informații foarte importante pentru a decide cum vom gestiona această cerere. Acestea sunt de regulă metoda prin care s-a făcut cererea, URL-ul pe care se face solicitarea și headerele, care posibil conțin informații prețioase care vizează autentificarea sau altele.
+Atunci când serverul primește o cerere, sunt câteva informații foarte importante pentru a decide cum vom gestiona această cerere. Acestea sunt de regulă metoda prin care s-a făcut cererea, URL-ul pe care se face solicitarea și header-ele, care posibil conțin informații prețioase care vizează autentificarea sau altele.
 
 Pentru a gestiona foarte ușor această etapă, obiectul `request` pune la dispoziție câteva proprietăți la îndemână.
 

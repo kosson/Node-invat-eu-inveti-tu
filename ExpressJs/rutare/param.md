@@ -21,6 +21,6 @@ adminRouter.get('/hello/:name', function(req, res){
   });
 ```
 
-Middleware-ul folosit pentru paramentri poate fi utilizat pentru a valida datele care vin spre aplicație. Dacă ai contruit un API RESTful și dorești să validezi un token folosești .param()
+Middleware-ul folosit pentru parametri poate fi utilizat pentru a valida datele care vin spre aplicație. Dacă ai construit un API RESTfull și dorești să validezi un token folosești `.param()`.
 
-Pentru a defini mai multe rute deodată folosești app.route();
+Pentru a defini mai multe rute deodată folosești `app.route();`.

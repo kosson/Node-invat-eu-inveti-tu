@@ -52,7 +52,7 @@ Metoda `read()` preia datele dintr-un buffer și le returnează. Datele pe care 
 
 ## Piping
 
-Pipingul este un mecanism prin care citești date dintr-o sursă și le scriem în altă parte.
+Piping-ul este un mecanism prin care citești date dintr-o sursă și le scriem în altă parte.
 
 ```javascript
 var fs = require('fs');
@@ -88,7 +88,7 @@ fs.createReadStream('original.txt.gz').pipe(zlib.createGunzip()).pipe(fs.createW
 
 ### Trimite fișier de la server
 
-Pentru a reduce încărcarea serverului și pentru a eficientiza trimiterea datagramelor pe rețea, se pot folosi din nou stream-urile în lucrul cu serverele web. Trebuie să ne amintim de faptul că streamurile implementează clasa `EventEmitter`, ceea ce le face pretabile lucrului în paradigma evenimentelor.
+Pentru a reduce încărcarea serverului și pentru a eficientiza trimiterea datagramelor pe rețea, se pot folosi din nou stream-urile în lucrul cu serverele web. Trebuie să ne amintim de faptul că stream-urile implementează clasa `EventEmitter`, ceea ce le face pretabile lucrului în paradigma evenimentelor.
 
 ```javascript
 var http = require('http'),

@@ -45,7 +45,7 @@ myEmitter.on('event', (a, b) => {
 myEmitter.emit('event', 'a', 'b');
 ```
 
-Se poate emite un eveniment care să execute o singură dată funcția sau funcțiile receptor (handlerele). Acest lucru se poate realiza cu ajutorul metodei `eventEmitter.once()`.
+Se poate emite un eveniment care să execute o singură dată funcția sau funcțiile receptor (handler-ele). Acest lucru se poate realiza cu ajutorul metodei `eventEmitter.once()`.
 
 
 ```javascript

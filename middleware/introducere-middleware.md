@@ -35,7 +35,7 @@ Middleware-ul este secvența de cod invocată care se interpune între cererea c
 
 Middleware-ul funcționează precum un șir. Cererile lovesc primul middleware definit și apoi următorul și următorul pentru fiecare rută definită. Un exemplu simplu este:
 
-```js
+```javascript
 var express = require('express');
 var app = express();
 var router = express.Router();

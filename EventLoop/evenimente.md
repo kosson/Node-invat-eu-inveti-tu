@@ -1,6 +1,6 @@
 # Evenimente în Node
 
-Node.js pune la dispoziție obiecte numite `emitters` a căror sarcină este să genereze evenimente la anumite intervale. Evenimentele emise vor declanșa executarea unor funcții care au rol de receptoare (*handlers*). Toate obiectele care emit evenimente implementează clasa `EventEmitter`. Aceste obiecte oferă o metodă `eventEmiter.on()` care permite atașarea unor funcții la evenimentele emise. Aceste funcții vor fi executate sincron la momentul apelării lor. Metoda `eventEmiter.emit()` este folosită pentru a declanșa executarea funcțiilor receptor.
+NodeJS pune la dispoziție obiecte numite `emitters` a căror sarcină este să genereze evenimente la anumite intervale. Evenimentele emise vor declanșa executarea unor funcții care au rol de receptoare (*handlers*). Toate obiectele care emit evenimente implementează clasa `EventEmitter`. Aceste obiecte oferă o metodă `eventEmiter.on()` care permite atașarea unor funcții la evenimentele emise. Aceste funcții vor fi executate sincron la momentul apelării lor. Metoda `eventEmiter.emit()` este folosită pentru a declanșa executarea funcțiilor receptor.
 
 Modelul de emitere a unui eveniment:
 

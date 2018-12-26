@@ -1,9 +1,9 @@
 # Lucrul cu streamurile
 
-Modulul `fs` este modulul cu ajutorul căruia putem lucra cu streamurile în Nodejs. Streamurile în Nodejs se bazează pe lucrul cu evenimente pentru că streamurile implementează clasa `EventEmitter`. Pe cale de consecință, atunci când apar datele, poți atașa un listener, un callback care să facă ceva cu acele date. Pentru a exemplifica, cel mai bine ar fi să creăm un stream folosind metoda dedicată a modulului `fs` : `fs.createWriteStream`. Mai întâi de a porni este necesar să trecem prin descrierea metodei `fs.createWriteStream`. Această metodă primește următoarele argumente posibile:
+Modulul `fs` este modulul cu ajutorul căruia putem lucra cu stream-urile în NodeJS. Stream-urile în NodeJS se bazează pe lucrul cu evenimente pentru că stream-urile implementează clasa `EventEmitter`. Pe cale de consecință, atunci când apar datele, poți atașa un listener, un callback care să facă ceva cu acele date. Pentru a exemplifica, cel mai bine ar fi să creăm un stream folosind metoda dedicată a modulului `fs` : `fs.createWriteStream`. Mai întâi de a porni este necesar să trecem prin descrierea metodei `fs.createWriteStream`. Această metodă primește următoarele argumente posibile:
 
 - o **cale** care specifică resursa. Această cale poate fi un șir, un buffer sau un obiect url;
-- o opțiune din mai multe posibile sau un obiect în cazul în care dorești mai multe opțiuni să influiențeze crearea acestui stream.
+- o opțiune din mai multe posibile sau un obiect în cazul în care dorești mai multe opțiuni să influențeze crearea acestui stream.
 
 Opțiunile posibile pe care le poți invoca au valori de start, care trebuie menționate pentru a înțelege configurarea stream-ului așa cum este el oferit de Node:
 
@@ -29,7 +29,7 @@ streamDeCitire.on('end', function () {
 ```
 
 Întrebarea de bun început este următoarea: când încep datele să *curgă*? De îndată ce se atașează un eveniment `data` apar și datele în stream. După acest moment inițial,fragmente de date sunt pasate rând pe rând cu o frecvență decisă de API-ul care implementează stream-ul (de exemplu, poate fi HTTP-ul). Atunci când nu mai sunt fragmente de date, stream-ul emite un eveniment `end`.
-Folosind metoda `read()` pe streamul readable avem posibilitatea de a citi în calupuri datele stream-ului, dacă acest lucru este necesar.
+Folosind metoda `read()` pe stream-ul readable avem posibilitatea de a citi în calupuri datele stream-ului, dacă acest lucru este necesar.
 
 ```javascript
 var fs = require('fs');
@@ -49,6 +49,29 @@ streamDeCitire.on('end', function () {
 ```
 
 Metoda `read()` preia datele dintr-un buffer și le returnează. Datele pe care le citește un stream sunt cele dintr-un obiect `Buffer`. Atunci când nu mai este nimic în buffer, va returna `null`. Acesta este și motivul pentru care bucla din exemplu va testa după `null`. Mai trebuie adăugat că evenimentul `readable` va fi emis atunci când un fragment de date este citit din stream. În cazul în care datele sunt text, pentru a le putea folosi la fel, trebuie specificat standardul de codare.
+
+## Transformarea stream-urilor
+
+```javascript
+var fs = require('fs');
+var path = require('path');
+var stream = require('stream');
+
+var inFile = path.join(__dirname, 'dateprimare.txt'),
+    outFile = path.join(__dirname, 'dateprelucrate.txt');
+
+var transformare = new stream.Transform({
+  transform: function (fragment) {
+    this.push(fragment.toString().toUpperCase());
+  }
+});
+
+var inStream = fs.createReadStream(inFile),
+    outStream = fs.createWriteStream(outFile);
+// inStream -> transformare -> outStream
+inStream.pipe(transformare);
+transformare.pipe(outStream);
+```
 
 ## Piping
 

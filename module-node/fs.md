@@ -1,8 +1,8 @@
 # Modulul fs
 
-Acest modul oferă un adevărat API prin care se realizează interacțiunea cu sistemul de fișiere al mașinii gazdă. Operațiunile de lucru cu sistemul de fișiere pot avea un aspect sincron și unul asincron, privind la modul în care se pot desfășura operațiunile. Ceea ce face Nodejs este un ambalaj al funcțiilor POSIX.
+Acest modul oferă un adevărat API prin care se realizează interacțiunea cu sistemul de fișiere al mașinii gazdă. Operațiunile de lucru cu sistemul de fișiere pot avea un aspect sincron și unul asincron, privind la modul în care se pot desfășura operațiunile. Ceea ce face NodeJS este un ambalaj al funcțiilor POSIX.
 
-Pentru a folosi acest modul, trebuie să-l ceri cu `require('fs')`. Pentru a nu bloca `event loop`, este recomandată folosirea variantei asincrone întotdeauna. În cazul utilizării asincrone, va trebui introdus un callback, care să acompanieze acțiunea. Ca exemplu, avem o acțiune de ștergere a unui director.
+Pentru a folosi acest modul, trebuie să-l ceri cu `require('fs')`. Pentru a nu bloca *event loop*, este recomandată folosirea variantei asincrone întotdeauna. În cazul utilizării asincrone, va trebui introdus un callback, care să acompanieze acțiunea. Ca exemplu, avem o acțiune de ștergere a unui director.
 
 ```javascript
 const fs = require('fs');
@@ -21,7 +21,7 @@ Modulul `fs` pune la dispoziție și metodele necesare lucrului cu stream-uri. P
 
 ## Lucrul pe căile sistemului
 
-Căile sistemului de operare sunt necesare pentru a accesa resursele. Acestea sunt oferite metodelor modulului `fs` drept parametru și pot fi un șir de caractere (secvențe de caractere codate UTF8), un obiect Buffer sau un obiect URL care folosește protocolul `file:`.
+Căile sistemului de operare sunt necesare pentru a accesa resursele. Acestea sunt oferite metodelor modulului `fs` drept parametru și pot fi un șir de caractere (secvențe de caractere codate UTF8), un obiect `Buffer` sau un obiect URL care folosește protocolul `file:`.
 
 ## Căi relative
 
@@ -31,18 +31,20 @@ Căile pe care le pasezi lui `fs` pot fi relative. Pentru simplificarea activit�
 const fs = require(`fs`);
 const path = require(`path`);
 
-// clasic
+// pentru compatibilitatate cu alte sisteme
 fs.readFile(path.join(__dirname, `fisier.txt`), (err, data) => {
   // cod
 });
 
-// relativ
+// relativ pe sisteme NIX
 fs.readFile(`./calea/catre/fisier.txt`, (err, data) => {
   // cod
 });
 ```
 
-## Protocolul file:
+Prin funcția cu rol de callback care este pasată metodei `readFile` avem acces la un obiect `Buffer` care ține conținutul fișierului.
+
+## Protocolul file
 
 Calea de acces la o resursă pe disc se poate face și utilizând un obiect url WHATWG. Suportul este oferit doar pentru obiectele care folosesc protocolul `file:`.
 

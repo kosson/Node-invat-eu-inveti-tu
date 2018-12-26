@@ -6,13 +6,13 @@ Proiectul Node reflectă legăturile care se stabilesc între codul JavaScript s
 
 Câteva module nucleu ar fi `fs`, `http`, `net`, `dgram`, `dns`, `os`, `buffer`, `events`, `stream` și alte câteva care vin să completeze un context bogat și expresiv cum ar fi `url`, `querystring`, `path` sau `crypto`.
 
-Responsabil de conectarea JS-ului cu funcțiile C++ este `process.binding()` parte a motorului V8. Pentru fiecare metodă a API-ului Nodejs există un corespondent în C++. Legătura cu C++-ul poate fi investigată prin resursele din directorul `/lib` al proiectului Nodejs. Motorul V8 face o traducere a valorilor din JavaScript în C++, care mai apoi sunt procesate de libuv pentru a manipula resursele sistemului.
+Responsabil de conectarea JS-ului cu funcțiile C++ este `process.binding()` parte a motorului V8. Pentru fiecare metodă a API-ului NodeJS există un corespondent în C++. Legătura cu C++-ul poate fi investigată prin resursele din directorul `/lib` al proiectului NodeJS. Motorul V8 face o traducere a valorilor din JavaScript în C++, care mai apoi sunt procesate de libuv pentru a manipula resursele sistemului.
 
-Nodejs rulează un singur fir de execuție pentru codul JavaScript și controlează execuția folosind un event loop.
+Nodejs rulează un singur fir de execuție pentru codul JavaScript și controlează execuția folosind un event loop. Pentru orice altceva Node nu va ezita să folosească multiple fire de execuție.
 
 ## process
 
-Atunci când aplicațiile Nodejs sunt scrise, un lucru foarte important este locul de unde se execută și mai ales căile de acces către fișiere și directoare care se formează. Alte lucruri interesante care pot constitui contextul de execuție pot fi variabilele de sistem, identificatorul de proces pentru aplicația pornită ș.a.m.d. Obiectul specializat `process` oferă toate aceste informații utile.
+Atunci când aplicațiile NodeJS sunt scrise, un lucru foarte important este locul de unde se execută și mai ales căile de acces către fișiere și directoare care se formează. Alte lucruri interesante care pot constitui contextul de execuție pot fi variabilele de sistem, identificatorul de proces pentru aplicația pornită ș.a.m.d. Obiectul specializat `process` oferă toate aceste informații utile.
 
 Pentru a-l accesa direct vei iniția o sesiune `node` și de acolo, apelezi metodele care returnează informația necesară.
 

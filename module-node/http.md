@@ -23,6 +23,7 @@ server.listen(8888);
 
 Atunci când serverul nostru primește o cerere HTTP, va fi apelat callback-ul împreună cu câteva obiecte care vor fi folosite pentru a gestiona solicitarea. Pentru a fi gata de a gestiona cereri, va trebui invocată și metoda `listen(8888)` căreia îi vom pasa portul pe care serverul ascultă.
 
+Callback-ului îi sunt paste două obiecte care prin convenție poartă numele de `request` și `response`. Aceste două obiecte sunt dotate cu abilitatea de a manipula date pe socket-urile pe care conexiunea s-a realizat. Ambele obiecte pentru a realiza operațiunile, vor delega procesarea event loop-ului, unde, cu adevărat se face comunicarea dinspre și înspre client.
 
 ## Request Body
 
@@ -38,10 +39,10 @@ request.on('data', (fragment) => {
 });
 ```
 
-Un `fragment` emis în fiecare eveniment `data` este un `Buffer`. Un `Buffer` este un mecanism al Node pentru citirea și manipularea streamurilor de date binare. În acest moment standardul ECMAScript a introdus un mecanism echivalent: `TypedArray`. Clasa `Buffer` permite interacțiunea cu streamuri de octeți în contextul streamurilor TCP sau operațiunile în care lucrezi cu sistemul de fișiere al unei mașini. Reține faptul că atunci când lucrezi cu șiruri într-un `Buffer`, trebuie să precizezi care este codarea caracterelor.
+Un `fragment` emis în fiecare eveniment `data` este un `Buffer`. Un `Buffer` este un mecanism al Node pentru citirea și manipularea stream-urilor de date binare. În acest moment standardul ECMAScript a introdus un mecanism echivalent: `TypedArray`. Clasa `Buffer` permite interacțiunea cu stream-uri de octeți în contextul stream-urilor TCP sau operațiunile în care lucrezi cu sistemul de fișiere al unei mașini. Reține faptul că atunci când lucrezi cu șiruri într-un `Buffer`, trebuie să precizezi care este codarea caracterelor.
 
 Dacă știi că datele primite prin TCP sunt șiruri de caractere, atunci cea mai bună tactică este să le acumulezi într-un array și apoi în cazul unui nou eveniment `end` să le concatenezi cu `Buffer.concat` pentru a le accesa într-un format accesibil.
-Acest algoritm este abstractizat în module npm dedicate, iar în cazul utilizării `Express` ai la dispoziție `body-parser` și `multer`.
+Acest algoritm este abstractizat în module `npm` dedicate, iar în cazul utilizării `Express` ai la dispoziție `body-parser` și `multer`.
 
 Erorile sunt și ele evenimente ale stream-ului `request`. Este necesar să ai o funcție receptor și pentru erori pentru că altfel, vor fi *emise* excepții și programul se va încheia.
 
@@ -62,7 +63,7 @@ Pentru a gestiona foarte ușor această etapă, obiectul `request` pune la dispo
 const { method, url, headers } = request;
 ```
 
-Obiectul `request` este o instanță a unui obiect `IncomingMesage`, care este creat de `http.Server` sau de `http.ClientRequest`. Adu-ți mereu aminte că acest obiect `IncomingMessage` este introdus ca prim argumente în funcțiile receptor ale evenimentelor `request` și `response`. Acest obiect oferă informații privind codul stării răspunsului, headerele, precum și datele din corp.
+Obiectul `request` este o instanță a unui obiect `IncomingMesage`, care este creat de `http.Server` sau de `http.ClientRequest`. Adu-ți mereu aminte că acest obiect `IncomingMessage` este introdus ca prim argument în funcțiile receptor ale evenimentelor `request` și `response`. Acest obiect oferă informații privind codul stării răspunsului, headerele, precum și datele din corp.
 
 Câteva informații din obiectul `request`:
 
@@ -112,19 +113,19 @@ Pentru setarea headerelor, există metoda dedicată `setHeader`.
 
 ```javascript
 response.setHeader('Content-Type', 'application/json');
-response.setHeader('X-Powered-By', 'bacon');
+response.setHeader('X-Powered-By', 'Express');
 ```
 
-Pentru a seta explicit headerele unui stream de răspuns, poți folosi metoda `writeHead`. Acestă metodă setează codul de răspuns și headerele ca proprietăți ale unui obiect.
+Pentru a seta explicit header-ele unui stream de răspuns, poți folosi metoda `writeHead`. Acestă metodă setează codul de răspuns și header-ele ca proprietăți ale unui obiect.
 
 ```javascript
 response.writeHead(200, {
   'Content-Type': 'application/json',
-  'X-Powered-By': 'bacon'
+  'X-Powered-By': 'Express'
 });
 ```
 
-Setarea unui cod de răspuns și a headerelor este semnalul că poți să te apuci de asamblarea corpului răspunsului. În acest sens ai la dispoziție metoda `write` și `end`.
+Setarea unui cod de răspuns și a header-elor este semnalul că poți să te apuci de asamblarea corpului răspunsului. În acest sens ai la dispoziție metoda `write` și `end`.
 
 ```javascript
 response.write('<html>');
@@ -137,7 +138,7 @@ response.end();
 response.end('<html><body><h1>Hello, World!</h1></body></html>');
 ```
 
-Metoda `end` semnalează serverului faptul că headerele și corpul au fost trimise și că serverul ar trebui să considere mesajul ca fiind complet. Metoda `response.end()` trebuie să fie apelată neapărat pentru fiecare răspuns. Dacă sunt incluse și datele, atunci acest apel este echivalent cu `response.write(data, encoding)` urmată de `response.end(callback)`. Dacă este specificat un callback, acesta va fi apelat când stream-ul de răspuns este deplin constituit.
+Metoda `end` semnalează serverului faptul că header-ele și corpul au fost trimise și că serverul ar trebui să considere mesajul ca fiind complet. Metoda `response.end()` trebuie să fie apelată neapărat pentru fiecare răspuns. Dacă sunt incluse și datele, atunci acest apel este echivalent cu `response.write(data, encoding)` urmată de `response.end(callback)`. Dacă este specificat un callback, acesta va fi apelat când stream-ul de răspuns este deplin constituit.
 
 ```javascript
 const http = require('http');
@@ -155,7 +156,7 @@ http.createServer((request, response) => {
     response.on('error', (err) => {
       console.error(err);
     });
-    // setează starea și headerele
+    // setează starea și header-ele
     response.statusCode = 200;
     response.setHeader('Content-Type', 'application/json');
     // contras, cele două linii ar fi putut să fie astfel scrise:
@@ -174,9 +175,11 @@ http.createServer((request, response) => {
 }).listen(8080);
 ```
 
+Faptul că datele sunt fragmentate în bucăți mici, constituie soluția prin care event loop-ul nu este blocat indiferent cât de mare este setul de date care a fost cerut de un client. Între fragmentele care trebuie trimise, se pot rezolva și alte cereri.
+
 ## Concluzii
 
-Adu-ți mereu aminte că obiectul `request` este un `ReadableStream`, iar obiectul `response` este un `WritableStream`. Deci, avem de a face cu două streamuri. Cunoscând acest fapt, putem face chiar piping între ele.
+Adu-ți mereu aminte că obiectul `request` este un `ReadableStream`, iar obiectul `response` este un `WritableStream`. Deci, avem de a face cu două stream-uri. Cunoscând acest fapt, putem face chiar piping între ele.
 
 ```javascript
 const http = require('http');

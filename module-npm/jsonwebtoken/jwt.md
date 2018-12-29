@@ -14,7 +14,7 @@ Se pun în headerul cererii trei fragmente alfanumerice codate BASE64 delimitate
 
 Este constituit dintr-un obiect JSON care menționează algoritmul care a fost folosit pentru semnarea jotului și tipul tokenului, care este JWT.
 
-```json
+```javascript
 {
   "alg": "HS256",
   "typ": "JWT"
@@ -27,7 +27,7 @@ Acest segment este codat BASE64.
 
 Cel de-al doilea segment reprezintă o parte constantă a tuturor cererilor care vor fi adresate serverului. Sunt conținute date despre utilizator.
 
-```json
+```javascript
 {
 "name": "Ion Dică",
 "isAdmin": true
@@ -45,3 +45,7 @@ Cele trei segmente arată similar următorului jot: `eyJhbGciOiJIUzI1NiIsInR5cCI
 ## Procesul de autentificare
 
 Mai întâi, pentru a putea utiliza API-ul ai nevoie de a trimite credențialele la un endpoint dedicat loginului. API-ul verifică credențialele și emite un token, care este returnat utilizatorului. Utilizatorul va atașa tokenul primit tuturor cererilor făcute fără să mai trimită credențialele. Pentru fiecare cerere, serverul verifică autenticitatea tokenului primit, iar dacă aceasta este confirmată, oferă celui care a făcut cererea resursele dorite.
+
+## Resurse
+
+[JSON Web Token (JWT) - RFC7519](https://tools.ietf.org/html/rfc7519)

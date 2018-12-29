@@ -1,6 +1,6 @@
 # Express.js
 
-Express este o bibliotecă de cod care în combinație cu nodejs are capacitatea de a servi pagini web și alte resurse. Pe scurt, poți face un server.
+Express este o bibliotecă de cod care în combinație cu NodeJS are capacitatea de a servi pagini web și alte resurse. Pe scurt, poți face un server.
 
 ## Folosirea middleware-ului
 

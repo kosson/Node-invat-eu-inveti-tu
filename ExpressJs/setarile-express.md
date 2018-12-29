@@ -4,7 +4,7 @@ Pentru cele mai multe cazuri nu este nevoie să cunoști în mare adâncime set�
 
 ## env
 
-Această variabilă indică în ce regim funcționează procesului Node.js. Poți seta această valoare folosind `process.env.NODE_ENV`, iar valorile sunt următoarele:
+Această variabilă indică în ce regim funcționează procesului NodeJS. Poți seta această valoare folosind `process.env.NODE_ENV`, iar valorile sunt următoarele:
 
 - `development`,
 - `preview`,

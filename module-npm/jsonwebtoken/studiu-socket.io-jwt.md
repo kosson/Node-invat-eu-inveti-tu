@@ -125,7 +125,7 @@ Să presupunem că avem mai mulți clienți conectați la server și că doreșt
 io.emit('nume_eveniment', {for: 'everyone'});
 ```
 
-Poți face broadcast excluzând de la primirea mesajului socketului emitentului, dacă este necesar. În acest sens `socket.io` pune la dispoziție un fanion numit `broadcast`.
+Poți face broadcast excluzând de la primirea mesajului socket-ului emitentului, dacă este necesar. În acest sens `socket.io` pune la dispoziție un fanion numit `broadcast`.
 
 ```javascript
 io.on('connection', (socket) => {

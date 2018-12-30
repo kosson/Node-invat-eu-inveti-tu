@@ -68,7 +68,7 @@ Este un identificator unic pentru JWT. Este opțional.
 
 ## Signature
 
-Semnătura este folosită pentru a ne asigura că mesajul nostru nu a fost alterat înainte de a ajunge la server.
+Semnătura este folosită pentru a ne asigura că mesajul nostru nu a fost alterat înainte de a ajunge la server. De regulă acest lucru se face folosind chei private.
 
 ## Resurse
 

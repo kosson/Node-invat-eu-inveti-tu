@@ -1,8 +1,8 @@
 # Socket.io
 
-Socket.io este o bibliotecă de cod care permite comunicare bidirecțională în timp real între clienți și un server. Un avantaj este faptul că se vor realiza conexiuni indiferent de layere-le interpuse(proxy-uri, load balance-re). Autoreconectarea clientului să va face automat.
+Socket.io este o bibliotecă de cod care permite comunicare bidirecțională în timp real între clienți și un server. Un avantaj este faptul că se vor realiza conexiuni indiferent de layer-ele interpuse (proxy-uri, load balance-re, etc). Reconectarea clientului se va face automat. Pentru interacțiunea cu toți clienții care se conectează, se utilizează clasa `Socket`.
 
-Este posibilă și comunicare la nivel binar. Din browser datele pot fi emise ca `ArrayBuffer` sau `Blob`, iar din NodeJS ca `ArrayBuffer` și `Buffer`.
+Este posibilă și comunicare a datelor în format binar. Din browser datele pot fi emise ca `ArrayBuffer` sau `Blob`, iar din NodeJS ca `ArrayBuffer` și `Buffer`.
 Pentru a separa canalele de comunicare, Socket.io permite realizarea de spații separate în funcție de modelul de comunicare sau separația resurselor. Aceste spații sunt numite *namespaces*, acestea comportându-se ca niște canale separate de comunicare. Aceste canale separate, vor folosi aceeași conexiune creată.
 
 În fiecare Namespace, poți crea zone diferite numite rooms (canale arbitrare).
@@ -237,7 +237,114 @@ io.clients((error, clients) => {
 });
 ```
 
-## Folosirea middleware-ului
+## Evenimente predefinite
+
+### connect
+
+Acest eveniment apare instantaneu la momentul conectării unui client.
+
+```javascript
+io.on('connect', (socket) => {
+  // ...
+});
+
+io.of('/admin').on('connect', (socket) => {
+  // ...
+});
+```
+
+### connection
+
+Este sinonom evenimentului `connect`.
+
+## Fanioane speciale pe socket.io
+
+### volatile
+
+Setează un modificator pentru un emit care urmează, dar pentru care datele ar putea fi pierdute din cauza pierderii legăturii cu, clientul.
+
+```javascript
+io.volatile.emit('uneveniment', {"date": "ceva"});
+```
+
+### binary
+
+Specifică dacă sunt așteptate date binare în cele care vor fi emise. Atunci când acest eveniment este emis, crește performanța. Valoarea este boolean.
+
+```javascript
+io.binary(false).emit('eveniment);
+```
+
+### local
+
+Setează un modificator pentru un emit care urmează, dar pentru care datelelor li se vor face broadcast doar pe nodul curent (folosit când se utilizează Redis).
+
+```javascript
+io.local.emit('eveniment', {"ceva":"date"});
+```
+
+## Clasa Socket
+
+Această clasă este utilizată de Socket.io pentru a gestiona clienții care se conectează. Un `Socket` ține de un anumit `Namespace` iar cel din oficiu este `/`. Pentru a asigura comunicarea, clasa `Socker` folosește o subclasă numită `Client`. Această clasă nu interacționează cu socket-urile TCP/IP.
+
+Clasa `Socket` moștenește de la `EventEmiter` suprascrie metoda `emit`, dar nu modfică restul metodelor `EventEmiter`. Toate metodele sunt ale lui `EventEmiter`.
+
+### socket.id
+
+Acesta este un identificator al sesiunii de comunicare deschisă. Această informație vine din subclasa `Client`.
+
+### socket.rooms
+
+Acesta este un obiect care ține evidența camerelor (*rooms*) în care se află clientul.
+
+```javascript
+io.on('connection', (socket) => {
+    socket.join('camera 007', () => {
+        let rooms = Object.keys(socket.rooms);
+        console.log(rooms);       
+    });
+});
+```
+
+### socket.client
+
+Aceasta este o referință către obiectul `Client`.
+
+### socket.conn
+
+Este o referință către conexiunea `Client` (obiectul `Socket` a lui `engine.io`). Acesta permite accesul direct la nivelul de transport IO, care în mare parte abstractizează socketul TCP/IP real.
+
+### socket.request
+
+Este un getter cu model de funcționare al unui proxy, care returnează o referință către obiectul `request`, care vine chiar de la subclasa `Client`. Este foarte util pentru a accesa headerele unei cereri cum ar fi `Cookie` sau `User-Agent`.
+
+### socket.handshake
+
+Oferă detaliile handshake-ului printr-un obiect.
+
+```javascript
+io.use((socket, next) => {
+    let handshake = socket.handshake;
+    // fă ceva cu datele.
+});
+io.on('connection', (socket) => {
+    let handshake = socket.handshake;
+});
+/*
+{
+  headers: /* the headers sent as part of the handshake */,
+  time: /* the date of creation (as string) */,
+  address: /* the ip of the client */,
+  xdomain: /* whether the connection is cross-domain */,
+  secure: /* whether the connection is secure */,
+  issued: /* the date of creation (as unix timestamp) */,
+  url: /* the request URL string */,
+  query: /* the query object */
+}
+*/
+```
+
+### socket.use(fn)
 
 În anumite scenarii este nevoie de folosirea unui middleware de fiecare dată când se primește un mesaj. În acest scop se va folosi metoda `use` care va primi drept callback o funcție ce primește drept parametri socketul și o funcție pentru a deferi execuția următorului middleware.
 
@@ -246,4 +353,29 @@ io.use(function (socket, next) {
     if (socket.request.headers.cookie) return next();
     next(new Error('Authentication error'));
 });
+```
+
+Funcția pasată trebuie considerată un middleware. Această funcție este executată pentru fiecare `Packet` sosit. Funcția primește drept parametru pachetul sosit și o funcție care trimite execuția următorului middleware. Erorile care ar putea apărea sunt trimise următorului middleware, dar și clientului ca pachete `error`.
+
+```javascript
+io.on('connection', (socket) => {
+    socket.use((packet, next) => {
+        if (packet.ceva === true) return next();
+        next(new Error('A ieșit prost'));
+    });
+});
+```
+
+### socket.send([...args][, ack])
+
+Trimite un eveniment `message`.
+
+### socket.emit(eventName[,..args][,ack])
+
+Această metodă suprascrie `EventEmitter.emit` și returnează un socket.
+Metoda emite un eveniment în socketul identificat de nume.
+
+```javascript
+socket.emit('hello', 'world');
+socket.emit('with-binary', 1, '2', { 3: '4', 5: new Buffer(6) });
 ```

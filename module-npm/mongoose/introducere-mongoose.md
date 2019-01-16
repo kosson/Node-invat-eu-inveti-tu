@@ -19,11 +19,11 @@ Schema indică numele câmpurilor și tipurile datelor.
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var BearSchema = new Schema({
+var ResursaSchema = new Schema({
   name: String
 });
 
-module.exports = mongoose.model('Bear', BearSchema);
+module.exports = mongoose.model('Resursa', ResursaSchema);
 ```
 
 Atenție, `module.exports` este obiectul returnat ca rezultat al unui apel `require` în NodeJS. Se folosește `module.exports` pentru cazul în care dorești să accesezi o funcție care să fie utilă și nu doar un simplu obiect cu proprietăți. Este și cazul nostru.
@@ -31,7 +31,7 @@ Atenție, `module.exports` este obiectul returnat ca rezultat al unui apel `requ
 ## Cere modelul bazei de date în scriptul de server:
 
 ```js
-var Bear = require('./app/models/bear'); //ai acces la obiectul de tip model Bear
+var Resursa = require('./app/models/resursă'); //ai acces la obiectul de tip model Bear
 ```
 
 Atenție, când faci cererea cu require folosește notație `./` pentru ca NodeJS să știe că este vorba despre un modul local.

@@ -45,7 +45,7 @@ User.findOne({email: data.email})
     .on('end', function(){console.log('am terminat cautarea');});
 ```
 
-În codul de mai sus `query` este de tip `Query`, ceea ce permite construirea interogării și trimiterea către sistemul de interogări al MongoDB folosind chainingul.
+În codul de mai sus `query` este de tip `Query`, ceea ce permite construirea interogării și trimiterea către sistemul de interogări al MongoDB folosind chainingul. Ceea ce construiește mogoose este un obiect de interogare.
 
 ```javascript
 // With a JSON doc
@@ -72,3 +72,5 @@ Person.
   select('name occupation').
   exec(callback);
 ```
+
+Metoda `exec` va lua întregul obiect de interograre și îl va trimite lui MongoDB.

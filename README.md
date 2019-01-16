@@ -12,4 +12,4 @@ Dacă totuși doriți să faceți cunoscute prin distribuire aceste materiale, v
 
 Colecția va fi actualizată foarte des, iar scopul final este realizarea un manual vizual, care să vină în sprijinul celor care doresc să înțeleagă acest limbaj de programare. Bazele programării sunt atinse în aceste materiale. Pentru cei care doresc să învețe și alte limbaje, au un start bun prin parcurgerea resurselor introductive și a celor referitoare la structurile de date.
 
-Colecția de materiale poartă licența Creative Commons CC-BY-NC-ND 4.0.
+Dacă ți-au fost utile aceste resurse, poți da o cafea sau poți să mă sprijini mai substanțial prin contul de la www.patreon.com/kosson

@@ -2,11 +2,11 @@
 
 În Node.js, dacă o funcție acceptă ca argument un callback, acesta trebuie să fie pasat ultimul.
 
-În „continuation-passing style” (CPS), caracteristic lucrului asincron, erorile sunt propagate ca un rezultat, ceea ce implică trimiterea lor ca argument unui callback.
+În *continuation-passing style* (CPS), caracteristic lucrului asincron, erorile sunt propagate ca un rezultat, ceea ce implică trimiterea lor ca argument unui callback.
 
 ```js
-fs.readFile('test.csv', 'utf8', function(error, data){
-  if(error) {
+fs.readFile('test.csv', 'utf8', function (error, data) {
+  if (error) {
     rezolvaEroarea(err);
   } else {
     proceseazaDatele(data);

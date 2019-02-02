@@ -73,9 +73,13 @@ console.log(ceva.valoareCalculata(3)); // 4.666666
 
 Trebuie să-ți imaginezi aceste fragmente de cod fiecare în fișierul propriu. Odată strânse într-unul singur (operațiunea de bundling - `cat registru.js modul01.js modul02.js app.js > main.js`) vor funcționa corespunzător.
 
+Node.js implementează modularitatea folosind [CommonJS](https://requirejs.org/docs/commonjs.html). Acest lucru permite organizarea codului mai eficientă și expunerea funcționalităților necesare printr-o interfață publică: `module.exports`. unul din motivele pentru care este folosit sistemul de module, este acela pentru că oferă incapsulare codului din modul. Este ca și cum ai avea codul izolat într-o funcție auto-executabilă: `(function () { })();`. Tot codul care este declarat în modul, nu poate fi accesat din afară.
+
 ## Ce este un modul
 
-Pur și simplu este un fișier JavaScript sau chiar o întreagă bibliotecă de cod. Acesta poate fi importat în alt cod folosindu-se funcția `require()` din Node. Însuși efortul de standardizare al JavaScript a pornit pe calea modularizării de ceva timp.
+Pur și simplu este un fișier JavaScript sau chiar o întreagă bibliotecă de cod. Acesta poate fi importat în alt cod folosindu-se funcția `require()` din Node. De regulă, fragmentul de text pe care îl pasezi lui `require('./numemodul')` este și calea către modul, fără a mai preciza extensia `.js`, care se înțelege automat. Însuși efortul de standardizare al JavaScript a pornit pe calea modularizării de ceva timp. Node.js folosește aplică modelul oferit de CommonJS, dar mai nou, oferă suport și pentru modulele introduse de versiunea ES2015.
+
+Cererea pentru un modul se face prin apelarea funcției `require('nume_modul')`. Această operațiune este una sincronă, însemnând că se va proceda la o localizare a fișierului JavaScript, citirea acestuia și construirea tuturor legăturilor la valorile din memorie. Dacă a fost apelat o dată, modulul va intra într-un cache din care va fi disponibil ori de câte ori va mai fi cerut din interiorul aplicației sau din alte module.
 
 ## Cum funcționează modularizarea
 
@@ -88,33 +92,87 @@ const express = require('express');
 Invocarea funcției, returnează un obiect.
 Putem să ne închipuim modulele precum niște fragmente de care depinde funcționarea întregii aplicații. În unele lucrări sunt numite de-a dreptul **dependințe**. În cazul Express este nevoie și de o instanțiere prin `express()`.
 
-## Exportul unor valori punctuale
-
-În node putem exporta valori punctuale adăugând proprietăți obiectului `exports` folosind `exports.valoare`.
+Ar fi util să privim mai îndeaproape cum lucrează modularizarea. Să presupunem că avem codul unui modul și acesta expune o funcție.
 
 ```javascript
+// fisierul salutare.js
+function salutari (nume) {
+    console.log('Salut ' + nume);
+};
+module.exports = salutari;
+
+// fișierul index.js
+const salut = require('./salutari');
+/* presupunem că ambele fișiere stau în aceeași rădăcină */ 
+salut('Ioanide');
+```
+
+Ce se petrece în spate este o împachetare a codului din modulul `salutare.js` într-o structură de execuție care permite modularizarea.
+
+```javascript
+(function (exports, require, module, __filename, __dirname) {
+    function salutari (nume) {
+        console.log('Salut ' + nume);
+    };
+    module.exports = salutari;
+})
+```
+
+Acesta este motivul pentru care funcția noastră are acces la `module` și la `exports`. Variabila `module` este o referință către modulul curent în curs de editare. Referința `module.exports` este obiectul sau valoarea la care va avea acces utilizatorul care va importa modulul.
+
+## Exportul valorilor
+
+Obiectul `module` reprezintă chiar modulul curent, iar valoarea lui `module.exports` reprezintă chiar obiectul care va fi returnat celor ce vor folosi acest modul. Toate variabilele definite într-un modul nu vor ajunge în obiectul `global`. Obiectul `exports` este un alias pentru `module.exports`.
+
+```javascript
+exports.facCeva = function () {
+    return 'fac și eu ceva';
+};
+// este echivalent cu
+module.exports.faceCeva = function () {
+    return 'fac și eu ceva';
+};
+```
+
+Reține faptul că în Node.js putem exporta valori adăugând proprietăți obiectului `exports` folosind `exports.identificator`. Node.js permite exportul unui string simplu, unui număr, une funcții sau al unui obiect complex.
+
+```javascript
+// obiect
 const obiect = {a: 1};
-exports.obiect = obiect;
-exports.valoare = function adauga (a, b) {
+exports.un_obiect = obiect;
+// funcție
+exports.o_functie = function adauga (a, b) {
     return a + b; // returnează valoarea calculată
 };
+// valoare
+module.exports.varsta = 12;
 ```
 
-## Exportul unui obiect
-
-Pentru a pune la dispoziție un obiect complex, care oferă mai multe funcționalități, se va folosi obiectul `module`, atribuind obiectul proprietății `exports`.
+Poți exporta module care abia au fost cerute. Acesta este cazul în care agregi într-un modul mai multe alte volume. Acest lucru permite centralizarea setărilor într-un director dedicat, unde există separat pentru fiecarea serviciu configurările necesare și un obiect Singleton central (`config.js`), care le importă pe restul expunându-le rând pe rând cu `module.exports`.
 
 ```javascript
-module.exports = function obiectComplex () {
-    this.ceva = 'un fragment de text';
-};
+// fișier config.js
+exports.redis = require('./redis');
+exports.mongodb = require('./mongodb');
 ```
 
-Obiectul `module` reprezintă chiar modulul curent, iar valoarea lui `modul.exports` reprezintă chiar obiectul care va fi returnat celor ce vor folosi acest modul.
+Ceea ce permite o astfel de schemă este expunerea accesului la configurările și operaționalizarea unui serviciu ca un modul accesibil tuturor celor care au nevoie de el.
+
+```javascript
+// redis.js
+var Redis   = require('redis');
+var config  = require('./config').redis;
+/* realizează conexiunea */
+var rclient = Redis.createClient(config.port, config.host, config.options);
+/* expune conexiunea realizată */
+module.exports = rclient;
+```
+
+Pentru toate modulele care necesită conectare la Redis, tot ce va fi nevoie este să chemi `var redis = require('./redis');`.
 
 ## Folosirea modulelor
 
-Pentru a accesa un modul, se va folosi funcția `require` căreia îi este pasat calea relativă sau absolută a fișierului care reprezintă modulul. Aceste module, fie provin dintr-un depozit extern așa cum este npmjs.com, fie pot fi constituite local.
+Pentru a accesa un modul, se va folosi funcția `require` căreia îi este pasat calea relativă sau absolută a fișierului care reprezintă modulul. Aceste module, fie provin dintr-un depozit extern așa cum este npmjs.com, fie pot fi constituite local. Dacă nu este specificată calea, atunci Node.js va căuta în modulele instalate - `node_modules`.
 Rolul lui `require` este acela de a găsi modulul, de a-l parsa și de a-l executa. La final, va returna valoarea exportată a modulului pe care o atribuim unei variabile locale pentru a avea o referință.
 La momentul cererii unui modul, Node.js știe să completeze automat extensia `.js`. Deci, poți să o menționezi sau nu.
 
@@ -140,6 +198,63 @@ const rute = require(path.join(__dirname, 'module', 'rute.js'));
 Calea absolută este oferită de `__dirname`.
 În cazul în care `require()` indică către un director, fără a specifica numele fișierului, înseamnă că este căutat `index.js`.
 
+## Caching
+
+Făcând primul apel `require` pentru a încărca un modul, Node.js va folosi un mecanism de caching prin care va păstra referința către obiectul sau valoarea adusă. Acest lucru înseamnă că de fiecare dată când modulul va fi cerut în diferitele părți ale aplicației, se va face o legătură la același obiect, dacă acesta a mai fost cerut anterior.
+
+Te poți gândi la module ca la niște obiecte Singleton, care își păstrează starea pe toată perioada de viață a aplicației.
+
+## Module ES6
+
+Node.js a început să implementeze sistemul de module din ES6. Pentru că pentru modulele implementate folosind CommonJS, folosesc fișiere cu extensia `.js`, pentru a folosi sistemul modular al ES6, va folosi fișiere cu extensia `.mjs`. Modulele ES6 vor fi încărcate asincron.
+Entitățile exportate dintr-un modul ES6, vor fi declarate folosind cuvântul cheie `export`.
+
+```javascript
+// test.mjs
+function facCeva () {
+    return 'ceva';
+};
+export facCeva;
+export default obi = {'a': 1};
+```
+
+Cuvântul cheie `export` poate fi pus înaintea declarației unei valori, a unei funcții sau unei clase. Cuvântul cheie `default` indică ceea ce expune din oficiu modulul atunci când este importat.
+
+Pentru a folosi un modul ES6 va trebui să-l imporți folosind cuvântul cheie `import`. Ca efect, va fi importat în modulul curent, ceea ce a exportat cel vizat. Folosirea lui `import` pare similară lui `require`, ceea ce înseamnă, de fapt că va fi creat un obiect ale cărui proprietăți vor fi valorile exportate.
+
+```javascript
+import * as nume_identificare from 'test.mjs';
+nume_identificare.facCeva(); 
+```
+
+### Module Node.js în cele ES6
+
+Într-un modul ES6 se pot cere module Node.js.
+
+```javascript
+// modul.mjs
+import fs from 'fs';
+import util from 'util';
+const fsp = fs.promises;
+```
+
+Invers nu funcționează, adică să ceri un modul ES6 dintr-unul Node.js pentru că implementarea modului de căutare a celor două diferă.
+
+## Module din directoare
+
+Până în acest moment ceea ce înțelegeam prim nodul, se înțelegea solicitarea unui singur fișier care conținea codul respectivului modul. Node.js permite importul a mai multor resurse, care sunt grupate într-un director, fiind descrise de un fișier `package.json`. Un astfel de modul se numește **pachet**.
+
+Să presupunem că într-un director numit `pachetulMeu` avem un fișier care poartă codul modului nostru în subdirectorul `./lib` și `package.json`, care descrie pachetul.
+
+```javascript
+{
+    name: "pachetulMeu",
+    main: "./lib/pachetfain.js"
+}
+```
+
+Dacă această structură se află în directorul `pachetfain`, atunci când va fi cerut cu `require('./pachetfain')`, Node.js va încărca și compila conținutul fișierului din `./pachetfain/lib/pachetfain.js`. În cazul în care Node.js nu găsește fișierul `package.json`, va căuta `index.js` sau `index.node`.
+
 ## Mantre
 
 - **module.exports** este obiectul returnat ca rezultat al unui apel `require()` în Node.js
@@ -162,4 +277,5 @@ exports.obj = {};
 
 ## Resurse
 
-Merită urmărit [răspunsul de pe Stackoverflow](http://stackoverflow.com/questions/5311334/what-is-the-purpose-of-node-js-module-exports-and-how-do-you-use-it).
+- Merită urmărit [răspunsul de pe Stackoverflow](http://stackoverflow.com/questions/5311334/what-is-the-purpose-of-node-js-module-exports-and-how-do-you-use-it).
+- [ECMAScript Modules](https://nodejs.org/api/esm.html)

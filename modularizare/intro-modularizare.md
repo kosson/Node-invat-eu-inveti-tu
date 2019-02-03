@@ -1,5 +1,7 @@
 # Modularizarea în Node
 
+## Introducere
+
 JavaScript este un limbaj de programare care nu a avut din start suport pentru module. Singura metodă de a modulariza codul era prin setarea unor variabile globale. Inconvenientul este evident de vreme ce poți atribui altă valoare unui identificator pierzând referința la valoarea preexistentă. O altă variantă a fost introducerea codului în funcții, care erau autoexecutabile, returnând un obiect, care se prezenta ca o interfață.
 
 ```javascript
@@ -77,7 +79,7 @@ Node.js implementează modularitatea folosind [CommonJS](https://requirejs.org/d
 
 ## Ce este un modul
 
-Pur și simplu este un fișier JavaScript sau chiar o întreagă bibliotecă de cod. Acesta poate fi importat în alt cod folosindu-se funcția `require()` din Node. De regulă, fragmentul de text pe care îl pasezi lui `require('./numemodul')` este și calea către modul, fără a mai preciza extensia `.js`, care se înțelege automat. Însuși efortul de standardizare al JavaScript a pornit pe calea modularizării de ceva timp. Node.js folosește aplică modelul oferit de CommonJS, dar mai nou, oferă suport și pentru modulele introduse de versiunea ES2015.
+În Node.js fiecare fișier este tratat ca un modul în sine. Toate variabilele locale ale unui modul sunt considerate private. De regulă, fragmentul de text pe care îl pasezi lui `require('./numemodul')` este și calea către modul, fără a mai preciza extensia `.js`, care se înțelege automat. Însuși efortul de standardizare al JavaScript a pornit pe calea modularizării de ceva timp. Node.js folosește aplică modelul oferit de CommonJS, dar mai nou, oferă suport și pentru modulele introduse de versiunea ES2015.
 
 Cererea pentru un modul se face prin apelarea funcției `require('nume_modul')`. Această operațiune este una sincronă, însemnând că se va proceda la o localizare a fișierului JavaScript, citirea acestuia și construirea tuturor legăturilor la valorile din memorie. Dacă a fost apelat o dată, modulul va intra într-un cache din care va fi disponibil ori de câte ori va mai fi cerut din interiorul aplicației sau din alte module.
 
@@ -119,6 +121,12 @@ Ce se petrece în spate este o împachetare a codului din modulul `salutare.js` 
 ```
 
 Acesta este motivul pentru care funcția noastră are acces la `module` și la `exports`. Variabila `module` este o referință către modulul curent în curs de editare. Referința `module.exports` este obiectul sau valoarea la care va avea acces utilizatorul care va importa modulul.
+
+### Caching
+
+Făcând primul apel `require` pentru a încărca un modul, Node.js va folosi un mecanism de caching prin care va păstra referința către obiectul sau valoarea adusă. Acest lucru înseamnă că de fiecare dată când modulul va fi cerut în diferitele părți ale aplicației, se va face o legătură la același obiect, dacă acesta a mai fost cerut anterior.
+
+Te poți gândi la module ca la niște obiecte Singleton, care își păstrează starea pe toată perioada de viață a aplicației.
 
 ## Exportul valorilor
 
@@ -198,12 +206,6 @@ const rute = require(path.join(__dirname, 'module', 'rute.js'));
 Calea absolută este oferită de `__dirname`.
 În cazul în care `require()` indică către un director, fără a specifica numele fișierului, înseamnă că este căutat `index.js`.
 
-## Caching
-
-Făcând primul apel `require` pentru a încărca un modul, Node.js va folosi un mecanism de caching prin care va păstra referința către obiectul sau valoarea adusă. Acest lucru înseamnă că de fiecare dată când modulul va fi cerut în diferitele părți ale aplicației, se va face o legătură la același obiect, dacă acesta a mai fost cerut anterior.
-
-Te poți gândi la module ca la niște obiecte Singleton, care își păstrează starea pe toată perioada de viață a aplicației.
-
 ## Module ES6
 
 Node.js a început să implementeze sistemul de module din ES6. Pentru că pentru modulele implementate folosind CommonJS, folosesc fișiere cu extensia `.js`, pentru a folosi sistemul modular al ES6, va folosi fișiere cu extensia `.mjs`. Modulele ES6 vor fi încărcate asincron.
@@ -254,6 +256,8 @@ Să presupunem că într-un director numit `pachetulMeu` avem un fișier care po
 ```
 
 Dacă această structură se află în directorul `pachetfain`, atunci când va fi cerut cu `require('./pachetfain')`, Node.js va încărca și compila conținutul fișierului din `./pachetfain/lib/pachetfain.js`. În cazul în care Node.js nu găsește fișierul `package.json`, va căuta `index.js` sau `index.node`.
+
+Acest model este urmat de pachetele pe care `npm` le gestionează.
 
 ## Mantre
 

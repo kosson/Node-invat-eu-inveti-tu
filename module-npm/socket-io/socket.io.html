@@ -1,0 +1,517 @@
+<!DOCTYPE html><html><head>
+      <title>socket.io</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="file:////home/nicolaie/.vscode/extensions/shd101wyy.markdown-preview-enhanced-0.3.11/node_modules/@shd101wyy/mume/dependencies/katex/katex.min.css">
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+      <style> 
+      /**
+ * prism.js Github theme based on GitHub's theme.
+ * @author Sam Clarke
+ */
+code[class*="language-"],
+pre[class*="language-"] {
+  color: #333;
+  background: none;
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.4;
+
+  -moz-tab-size: 8;
+  -o-tab-size: 8;
+  tab-size: 8;
+
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+  padding: .8em;
+  overflow: auto;
+  /* border: 1px solid #ddd; */
+  border-radius: 3px;
+  /* background: #fff; */
+  background: #f5f5f5;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+  padding: .1em;
+  border-radius: .3em;
+  white-space: normal;
+  background: #f5f5f5;
+}
+
+.token.comment,
+.token.blockquote {
+  color: #969896;
+}
+
+.token.cdata {
+  color: #183691;
+}
+
+.token.doctype,
+.token.punctuation,
+.token.variable,
+.token.macro.property {
+  color: #333;
+}
+
+.token.operator,
+.token.important,
+.token.keyword,
+.token.rule,
+.token.builtin {
+  color: #a71d5d;
+}
+
+.token.string,
+.token.url,
+.token.regex,
+.token.attr-value {
+  color: #183691;
+}
+
+.token.property,
+.token.number,
+.token.boolean,
+.token.entity,
+.token.atrule,
+.token.constant,
+.token.symbol,
+.token.command,
+.token.code {
+  color: #0086b3;
+}
+
+.token.tag,
+.token.selector,
+.token.prolog {
+  color: #63a35c;
+}
+
+.token.function,
+.token.namespace,
+.token.pseudo-element,
+.token.class,
+.token.class-name,
+.token.pseudo-class,
+.token.id,
+.token.url-reference .token.variable,
+.token.attr-name {
+  color: #795da3;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+.token.title,
+.token.title .token.punctuation {
+  font-weight: bold;
+  color: #1d3e81;
+}
+
+.token.list {
+  color: #ed6a43;
+}
+
+.token.inserted {
+  background-color: #eaffea;
+  color: #55a532;
+}
+
+.token.deleted {
+  background-color: #ffecec;
+  color: #bd2c00;
+}
+
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+
+/* JSON */
+.language-json .token.property {
+  color: #183691;
+}
+
+.language-markup .token.tag .token.punctuation {
+  color: #333;
+}
+
+/* CSS */
+code.language-css,
+.language-css .token.function {
+  color: #0086b3;
+}
+
+/* YAML */
+.language-yaml .token.atrule {
+  color: #63a35c;
+}
+
+code.language-yaml {
+  color: #183691;
+}
+
+/* Ruby */
+.language-ruby .token.function {
+  color: #333;
+}
+
+/* Markdown */
+.language-markdown .token.url {
+  color: #795da3;
+}
+
+/* Makefile */
+.language-makefile .token.symbol {
+  color: #795da3;
+}
+
+.language-makefile .token.variable {
+  color: #183691;
+}
+
+.language-makefile .token.builtin {
+  color: #0086b3;
+}
+
+/* Bash */
+.language-bash .token.keyword {
+  color: #0086b3;
+}html body{font-family:"Helvetica Neue",Helvetica,"Segoe UI",Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ul,html body>ol{margin-bottom:16px}html body ul,html body ol{padding-left:2em}html body ul.no-list,html body ol.no-list{padding:0;list-style-type:none}html body ul ul,html body ul ol,html body ol ol,html body ol ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:bold;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:bold}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em !important;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::before,html body code::after{letter-spacing:-0.2em;content:"\00a0"}html body pre>code{padding:0;margin:0;font-size:.85em !important;word-break:normal;white-space:pre;background:transparent;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;font-size:.85em !important;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:before,html body pre tt:before,html body pre code:after,html body pre tt:after{content:normal}html body p,html body blockquote,html body ul,html body ol,html body dl,html body pre{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body pre,html body code{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview .pagebreak,.markdown-preview .newpage{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center !important}.markdown-preview:not([for="preview"]) .code-chunk .btn-group{display:none}.markdown-preview:not([for="preview"]) .code-chunk .status{display:none}.markdown-preview:not([for="preview"]) .code-chunk .output-div{margin-bottom:16px}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,0.66);border:4px solid rgba(150,150,150,0.66);background-clip:content-box}html body[for="html-export"]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0}@media screen and (min-width:914px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px)}}@media screen and (max-width:914px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{font-size:14px !important;padding:1em}}@media print{html body[for="html-export"]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for="html-export"]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,0.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,0.66);border:4px solid rgba(150,150,150,0.66);background-clip:content-box}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc ul{padding:0 1.6em;margin-top:.8em}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc li{margin-bottom:.8em}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc ul{list-style-type:none}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% -  300px);padding:2em calc(50% - 457px -  150px);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for="html-export"]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for="html-export"]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+ 
+      </style>
+    </head>
+    <body for="html-export">
+      <div class="mume markdown-preview   ">
+      <h1 class="mume-header" id="socketio"><a href="http://Socket.io">Socket.io</a></h1>
+
+<p><a href="http://Socket.io">Socket.io</a> este o bibliotec&#x103; de cod care permite comunicare bidirec&#x21B;ional&#x103; &#xEE;n timp real &#xEE;ntre clien&#x21B;i &#x219;i un server. Un avantaj este faptul c&#x103; se vor realiza conexiuni indiferent de layer-ele interpuse (proxy-uri, load balance-re, etc). Reconectarea clientului se va face automat. Pentru interac&#x21B;iunea cu to&#x21B;i clien&#x21B;ii care se conecteaz&#x103;, se utilizeaz&#x103; clasa <code>Socket</code>.</p>
+<p>Este posibil&#x103; &#x219;i comunicare a datelor &#xEE;n format binar. Din browser datele pot fi emise ca <code>ArrayBuffer</code> sau <code>Blob</code>, iar din NodeJS ca <code>ArrayBuffer</code> &#x219;i <code>Buffer</code>.<br>
+Pentru a separa canalele de comunicare, <a href="http://Socket.io">Socket.io</a> permite realizarea de spa&#x21B;ii separate &#xEE;n func&#x21B;ie de modelul de comunicare sau separa&#x21B;ia resurselor. Aceste spa&#x21B;ii sunt numite <em>namespaces</em>, acestea comport&#xE2;ndu-se ca ni&#x219;te canale separate de comunicare. Aceste canale separate, vor folosi aceea&#x219;i conexiune creat&#x103;.</p>
+<p>&#xCE;n fiecare Namespace, po&#x21B;i crea zone diferite numite rooms (canale arbitrare).</p>
+<p>Expunerea serverului se face pur &#x219;i simplu prin cerere.</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript"><span class="token keyword">var</span> io <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&apos;socket.io&apos;</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// sau</span>
+<span class="token keyword">const</span> Server <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&apos;socket.io&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> io <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Server</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><p>Socket-ul are nevoie s&#x103; se ata&#x219;eze la un server http pentru a func&#x21B;iona a&#x219;a cum este cel pe care-l ofer&#x103; NodeJS din oficiu <code>httpServer</code>. Pe l&#xE2;ng&#x103; serverul HTTP, <a href="http://Socket.io">Socket.io</a> accept&#x103; &#x219;i un obiect cu op&#x21B;iuni de configurare.</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript"><span class="token keyword">var</span> http <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&apos;http&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> server <span class="token operator">=</span> http<span class="token punctuation">.</span><span class="token function">createServer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> io <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&apos;socket.io&apos;</span><span class="token punctuation">)</span><span class="token punctuation">(</span>server<span class="token punctuation">,</span> <span class="token punctuation">{</span>op&#x21B;iune<span class="token punctuation">:</span> valoare<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><p>Op&#x21B;iuni de configurare posibile:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Nume op&#x21B;iune</th>
+<th style="text-align:left">Valoare</th>
+<th style="text-align:left">Descriere</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>path</code></td>
+<td style="text-align:left"><code>/socket.io</code></td>
+<td style="text-align:left">calea pe care se va face captura datagramelor</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>serveClient</code></td>
+<td style="text-align:left"><code>true</code></td>
+<td style="text-align:left">indic&#x103; dac&#x103; vor fi servite fi&#x219;ierele corespondente clientului</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>adapter</code></td>
+<td style="text-align:left"></td>
+<td style="text-align:left">Indic&#x103; care <code>Adapter</code> trebuie folosit. Cel folosit din oficiu este unul bazat pe folosirea memoriei. Vezi <a href="https://github.com/socketio/socket.io-adapter">socket.io-adapter</a></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>origins</code></td>
+<td style="text-align:left"><code>*</code></td>
+<td style="text-align:left">originile permise de unde se accept&#x103; datagramele</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>parser</code></td>
+<td style="text-align:left"></td>
+<td style="text-align:left">Este parserul folosit. <a href="http://Socket.io">Socket.io</a> ofer&#x103; un <code>Parser</code> din oficiu. vezi <a href="https://github.com/socketio/socket.io-parser">socket.io-parser</a></td>
+</tr>
+</tbody>
+</table>
+<p>Modele de ata&#x219;are a serverului &#x219;i op&#x21B;iunilor.</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript"><span class="token keyword">const</span> io <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&apos;socket.io&apos;</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  path<span class="token punctuation">:</span> <span class="token string">&apos;/test&apos;</span><span class="token punctuation">,</span>
+  serveClient<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// either</span>
+<span class="token keyword">const</span> server <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&apos;http&apos;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">createServer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+io<span class="token punctuation">.</span><span class="token function">attach</span><span class="token punctuation">(</span>server<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+  pingInterval<span class="token punctuation">:</span> <span class="token number">10000</span><span class="token punctuation">,</span>
+  pingTimeout<span class="token punctuation">:</span> <span class="token number">5000</span><span class="token punctuation">,</span>
+  cookie<span class="token punctuation">:</span> <span class="token boolean">false</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+server<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span><span class="token number">3000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// or</span>
+io<span class="token punctuation">.</span><span class="token function">attach</span><span class="token punctuation">(</span><span class="token number">3000</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+  pingInterval<span class="token punctuation">:</span> <span class="token number">10000</span><span class="token punctuation">,</span>
+  pingTimeout<span class="token punctuation">:</span> <span class="token number">5000</span><span class="token punctuation">,</span>
+  cookie<span class="token punctuation">:</span> <span class="token boolean">false</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><h2 class="mume-header" id="multiplexare">Multiplexare</h2>
+
+<p><a href="http://Socket.io">Socket.io</a> ofer&#x103; posibilitatea utiliz&#x103;rii unei singure conexiuni pentru mai multe Namespace-uri.</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript"><span class="token keyword">var</span> io <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&apos;socket.io&apos;</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token number">80</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> chat <span class="token operator">=</span> io<span class="token punctuation">.</span><span class="token keyword">of</span><span class="token punctuation">(</span><span class="token string">&apos;/chat&apos;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">&apos;connection&apos;</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>socket<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    socket<span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span><span class="token string">&apos;mesaj&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;ceva ce doar /chat va primi&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    chat<span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span><span class="token string">&apos;mesaj&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;ceva primit de to&#x21B;i participan&#x21B;ii din /chat&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">var</span> news <span class="token operator">=</span> io<span class="token punctuation">.</span><span class="token keyword">of</span><span class="token punctuation">(</span><span class="token string">&apos;/news&apos;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">&apos;connection&apos;</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>socket<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    socket<span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span><span class="token string">&apos;mesaj&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;ceva trimis pe /news&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// &#xEE;n client</span>
+<span class="token keyword">var</span> chat <span class="token operator">=</span> io<span class="token punctuation">.</span><span class="token function">connect</span><span class="token punctuation">(</span><span class="token string">&apos;http://localhost/chat&apos;</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    news <span class="token operator">=</span> io<span class="token punctuation">.</span><span class="token function">connect</span><span class="token punctuation">(</span><span class="token string">&apos;http://localhost/news&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+chat<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">&apos;connect&apos;</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  chat<span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span><span class="token string">&apos;ceva pe chat&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+news<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">&apos;news&apos;</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  news<span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span><span class="token string">&apos;O nou&#x103; &#x219;tire&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><h2 class="mume-header" id="r%C4%83spunsuri-de-confirmare">R&#x103;spunsuri de confirmare</h2>
+
+<p>Uneori, atunci c&#xE2;nd trimi&#x21B;i mesaje, ai nevoie de confirm&#x103;ri privind starea acestora.</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript"><span class="token keyword">var</span> io <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&apos;socket.io&apos;</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token number">80</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+io<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">&apos;connection&apos;</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>socket<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  socket<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">&apos;ferret&apos;</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>name<span class="token punctuation">,</span> word<span class="token punctuation">,</span> fn<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">fn</span><span class="token punctuation">(</span>name <span class="token operator">+</span> <span class="token string">&apos; says &apos;</span> <span class="token operator">+</span> word<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// client</span>
+<span class="token keyword">var</span> socket <span class="token operator">=</span> <span class="token function">io</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// TIP: io() with no args does auto-discovery</span>
+  socket<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">&apos;connect&apos;</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment">// TIP: you can avoid listening on `connect` and listen on events directly too!</span>
+    socket<span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span><span class="token string">&apos;ferret&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;tobi&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;woot&apos;</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>data<span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment">// args are sent in order to acknowledgement function</span>
+      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// data will be &apos;tobi says woot&apos;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><h2 class="mume-header" id="emiterea-pe-toate-socketurile">Emiterea pe toate socketurile</h2>
+
+<p>Se comport&#x103; ca un alias pentru namespace-ul din oficiu <code>/</code>.</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript">io<span class="token punctuation">.</span>sockets<span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span><span class="token string">&apos;hi&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;everyone&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// echivalent cu</span>
+io<span class="token punctuation">.</span><span class="token keyword">of</span><span class="token punctuation">(</span><span class="token string">&apos;/&apos;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span><span class="token string">&apos;hi&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;everyone&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><h2 class="mume-header" id="resurse-statice-clien%C8%9Bilor">Resurse statice clien&#x21B;ilor</h2>
+
+<p><a href="http://Socket.io">Socket.io</a> stabile&#x219;te automat o leg&#x103;ur&#x103; cu agentul utilizatorului c&#x103;ruia &#xEE;i sunt trimise automat resurse de c&#x103;tre serverul <a href="http://Socket.io">Socket.io</a>. Directorul stabilit din oficiu pentur a servi resursele de conectare clientului este <code>/socket.io</code>. Po&#x21B;i schimba aceast&#x103; valoare la una preferat&#x103;, dac&#x103; acest lucru este necesar.</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript"><span class="token keyword">const</span> io <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&apos;socket.io&apos;</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+io<span class="token punctuation">.</span><span class="token function">path</span><span class="token punctuation">(</span><span class="token string">&apos;/myownpath&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// client-side</span>
+<span class="token keyword">const</span> socket <span class="token operator">=</span> <span class="token function">io</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  path<span class="token punctuation">:</span> <span class="token string">&apos;/myownpath&apos;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><h2 class="mume-header" id="namespace-uri">Namespace-uri</h2>
+
+<p>Namespace-urile reprezint&#x103; seturi de socketuri conectate ca o zon&#x103; identificabil&#x103; distinct, care este specificat&#x103; de numele unei c&#x103;i. Aceast&#x103; cale identific&#x103; namespace-ul. Orice client se va conecta automat la r&#x103;d&#x103;cin&#x103; (<code>/</code> - namespace-ul principal) &#x219;i abia dup&#x103; aceea la alte namespece-uri. Indiferent de namespace-urile la care se conecteaz&#x103;, to&#x21B;i clien&#x21B;ii vor folosi aceea&#x219;i conexiune. Nu se va genera o conexiune separat&#x103; pentru fiecare namespace &#xEE;n parte. Namespace-urile pot fi considerate endpoint-uri sau c&#x103;i.</p>
+<p>Namespace-ul din oficiu este <code>/</code>, care este identificat prin <code>io.sockets</code> sau pur &#x219;i simplu <code>io</code> (form&#x103; prescurtat&#x103; acceptat&#x103;). Toate mesajele emise pe aceste canale vor ajunge la to&#x21B;i clien&#x21B;ii conecta&#x21B;i la serverul de socketuri.</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript">io<span class="token punctuation">.</span>sockets<span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span><span class="token string">&apos;general&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;Mesaj tuturor&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+io<span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span><span class="token string">&apos;general&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;Mesaj tuturor&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><p>Fiecare namespace emite un eveniment numit <code>connection</code> care prime&#x219;te instan&#x21B;a <code>Socket</code> drept parametru.</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript">io<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">&apos;connection&apos;</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span>socket<span class="token punctuation">)</span><span class="token punctuation">{</span>
+  socket<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">&apos;disconnect&apos;</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><h3 class="mume-header" id="crearea-de-namespace-uri">Crearea de namespace-uri</h3>
+
+<p>&#xCE;n acest scop, serverul <a href="http://Socket.io">Socket.io</a> pune la dispozi&#x21B;ie metoda <code>of</code>. Metoda <code>of</code> poate crea un spa&#x21B;iu separat &#xEE;n canalul de comunica&#x21B;ii.</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript"><span class="token keyword">var</span> adminNsp <span class="token operator">=</span> io<span class="token punctuation">.</span><span class="token keyword">of</span><span class="token punctuation">(</span><span class="token string">&apos;/admin&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+adminNsp<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">&apos;connection&apos;</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>socket<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">&apos;S-a conectat cineva&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>    
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+nsp<span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span><span class="token string">&apos;general&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;salut&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// client</span>
+<span class="token keyword">var</span> asminNsp <span class="token operator">=</span> <span class="token function">io</span><span class="token punctuation">(</span><span class="token string">&apos;/admin&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><p>Modul &#xEE;n care se creeaz&#x103; namespace-urile poate conduce la concluzia eronat&#x103; c&#x103; acestea ar fi c&#x103;i ale URL-ului. URL-urile nu sunt influien&#x21B;ate, singurul &#xEE;n cazul lui <code>Socket.io</code> fiind <code>/socket.io/</code>, pe care se acceseaz&#x103; componenta clientului.</p>
+<h3 class="mume-header" id="crearea-de-rooms-camere">Crearea de rooms (camere)</h3>
+
+<p>Pentru fiecare namespace pot fi definite canale pe care socket-ul poate face un <code>join</code> (se al&#x103;tur&#x103;) sau <code>leave</code> (p&#x103;r&#x103;se&#x219;te).<br>
+Po&#x21B;i <em>intra</em> &#xEE;ntr-un room (<em>camer&#x103;</em>).</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript">socket<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">&apos;connection&apos;</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>socket<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    socket<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token string">&apos;nume_room&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><p>Din moment ce e&#x219;ti &#xEE;ntr-o camer&#x103;, pentru a face broadcasting sau pentru a emite, se pot folosi inter&#x219;anjabil metodele <code>to</code> &#x219;i <code>in</code>.</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript">io<span class="token punctuation">.</span><span class="token function">to</span><span class="token punctuation">(</span><span class="token string">&apos;nume_room&apos;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span><span class="token string">&apos;nume_eveniment&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;date&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><p>Pentru a p&#x103;r&#x103;si un canal, se folose&#x219;te metoda <code>leave</code> la fel cum ai folosit <code>join</code>.</p>
+<blockquote>
+<p>Fiecare <code>Socket</code> al lui <a href="http://Socket.IO">Socket.IO</a> este identificat printr-un identificator unic generat aleator <code>Socket#id</code>. Pentru a simplifica lucrurile, toate socketurile se conecteaz&#x103; la o camer&#x103; identificat&#x103; prin acest identificator unic. Acest lucru permite broadcast-ul de mesaje pe toate socketurile conectate.</p>
+</blockquote>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript">io<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">&apos;connect&apos;</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>socket<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    socket<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">&apos;nume_eveniment&apos;</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>id<span class="token punctuation">,</span> msg<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        socket<span class="token punctuation">.</span>broadcast<span class="token punctuation">.</span><span class="token function">to</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span><span class="token string">&apos;un mesaj&apos;</span><span class="token punctuation">,</span> msg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><p>Pentru a emite un eveniment tuturor clien&#x21B;ilor conecta&#x21B;i, se va folosi metoda <code>emit</code>.</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript"><span class="token keyword">var</span> io <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&apos;socket.io&apos;</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+io<span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span><span class="token string">&apos;salutare toata lumea&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// acest mesaj va aparea tuturor celor conecta&#x21B;i</span>
+
+<span class="token keyword">const</span> admin <span class="token operator">=</span> io<span class="token punctuation">.</span><span class="token keyword">of</span><span class="token punctuation">(</span><span class="token string">&apos;/admin&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+admin<span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span><span class="token string">&apos;Salutare tuturor administratorilor&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><p>Atunci c&#xE2;nd se emite dintr-un namespace, nu se vor putea primi confirm&#x103;ri (<em>acknowledgements</em>).</p>
+<h2 class="mume-header" id="eviden%C8%9Ba-clien%C8%9Bilor">Eviden&#x21B;a clien&#x21B;ilor</h2>
+
+<p>Pentru a ob&#x21B;ine o metod&#x103; de a se &#x21B;ine eviden&#x21B;a clien&#x21B;ilor conecta&#x21B;i. Fiecare client are un id. Pentru a se gestiona clien&#x21B;ii, exist&#x103; o metod&#x103; <code>clients</code> pe care o putem folosi pentru un namespace specificat.</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript"><span class="token keyword">var</span> io <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">&apos;socket.io&apos;</span><span class="token punctuation">)</span><span class="token punctuation">(</span>https<span class="token punctuation">)</span><span class="token punctuation">;</span>
+io<span class="token punctuation">.</span><span class="token keyword">of</span><span class="token punctuation">(</span><span class="token string">&apos;/admin&apos;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">clients</span><span class="token punctuation">(</span> <span class="token punctuation">(</span>error<span class="token punctuation">,</span> clients<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token keyword">throw</span> error<span class="token punctuation">;</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>clients<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// este un array cu to&#x21B;i cei conecta&#x21B;i    </span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><p>Po&#x21B;i ob&#x21B;ine &#x219;i clien&#x21B;ii conecta&#x21B;i &#xEE;ntr-un room.</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript">io<span class="token punctuation">.</span><span class="token keyword">of</span><span class="token punctuation">(</span><span class="token string">&apos;/admin&apos;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token keyword">in</span><span class="token punctuation">(</span><span class="token string">&apos;general&apos;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">clients</span><span class="token punctuation">(</span><span class="token punctuation">(</span>error<span class="token punctuation">,</span> clients<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token keyword">throw</span> error<span class="token punctuation">;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>clients<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// un array al clien&#x21B;ilor</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><p>Pentru a ob&#x21B;ine o colec&#x21B;ie cu to&#x21B;i clien&#x21B;ii conecta&#x21B;i pe r&#x103;d&#x103;cin&#x103; <code>/</code>, pur &#x219;i simplu aplici metoda <code>clients</code> pe server direct.</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript">io<span class="token punctuation">.</span><span class="token function">clients</span><span class="token punctuation">(</span><span class="token punctuation">(</span>error<span class="token punctuation">,</span> clients<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>clients<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// un array cu to&#x21B;i cei conecta&#x21B;i pe r&#x103;d&#x103;cin&#x103;.    </span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><h2 class="mume-header" id="evenimente-predefinite">Evenimente predefinite</h2>
+
+<h3 class="mume-header" id="connect">connect</h3>
+
+<p>Acest eveniment apare instantaneu la momentul conect&#x103;rii unui client.</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript">io<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">&apos;connect&apos;</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>socket<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token comment">// ...</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+io<span class="token punctuation">.</span><span class="token keyword">of</span><span class="token punctuation">(</span><span class="token string">&apos;/admin&apos;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">&apos;connect&apos;</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>socket<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token comment">// ...</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><h3 class="mume-header" id="connection">connection</h3>
+
+<p>Este sinonom evenimentului <code>connect</code>.</p>
+<h2 class="mume-header" id="fanioane-speciale-pe-socketio">Fanioane speciale pe <a href="http://socket.io">socket.io</a></h2>
+
+<h3 class="mume-header" id="volatile">volatile</h3>
+
+<p>Seteaz&#x103; un modificator pentru un emit care urmeaz&#x103;, dar pentru care datele ar putea fi pierdute din cauza pierderii leg&#x103;turii cu, clientul.</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript">io<span class="token punctuation">.</span>volatile<span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span><span class="token string">&apos;uneveniment&apos;</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token string">&quot;date&quot;</span><span class="token punctuation">:</span> <span class="token string">&quot;ceva&quot;</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><h3 class="mume-header" id="binary">binary</h3>
+
+<p>Specific&#x103; dac&#x103; sunt a&#x219;teptate date binare &#xEE;n cele care vor fi emise. Atunci c&#xE2;nd acest eveniment este emis, cre&#x219;te performan&#x21B;a. Valoarea este boolean.</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript">io<span class="token punctuation">.</span><span class="token function">binary</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span>&apos;eveniment<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><h3 class="mume-header" id="local">local</h3>
+
+<p>Seteaz&#x103; un modificator pentru un emit care urmeaz&#x103;, dar pentru care datelelor li se vor face broadcast doar pe nodul curent (folosit c&#xE2;nd se utilizeaz&#x103; Redis).</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript">io<span class="token punctuation">.</span>local<span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span><span class="token string">&apos;eveniment&apos;</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token string">&quot;ceva&quot;</span><span class="token punctuation">:</span><span class="token string">&quot;date&quot;</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><h2 class="mume-header" id="clasa-socket">Clasa Socket</h2>
+
+<p>Aceast&#x103; clas&#x103; este utilizat&#x103; de <a href="http://Socket.io">Socket.io</a> pentru a gestiona clien&#x21B;ii care se conecteaz&#x103;. Un <code>Socket</code> &#x21B;ine de un anumit <code>Namespace</code> iar cel din oficiu este <code>/</code>. Pentru a asigura comunicarea, clasa <code>Socker</code> folose&#x219;te o subclas&#x103; numit&#x103; <code>Client</code>. Aceast&#x103; clas&#x103; nu interac&#x21B;ioneaz&#x103; cu socket-urile TCP/IP.</p>
+<p>Clasa <code>Socket</code> mo&#x219;tene&#x219;te de la <code>EventEmiter</code> suprascrie metoda <code>emit</code>, dar nu modfic&#x103; restul metodelor <code>EventEmiter</code>. Toate metodele sunt ale lui <code>EventEmiter</code>.</p>
+<h3 class="mume-header" id="socketid"><a href="http://socket.id">socket.id</a></h3>
+
+<p>Acesta este un identificator al sesiunii de comunicare deschis&#x103;. Aceast&#x103; informa&#x21B;ie vine din subclasa <code>Client</code>.</p>
+<h3 class="mume-header" id="socketrooms">socket.rooms</h3>
+
+<p>Acesta este un obiect care &#x21B;ine eviden&#x21B;a camerelor (<em>rooms</em>) &#xEE;n care se afl&#x103; clientul.</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript">io<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">&apos;connection&apos;</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>socket<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    socket<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token string">&apos;camera 007&apos;</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+        <span class="token keyword">let</span> rooms <span class="token operator">=</span> Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span>socket<span class="token punctuation">.</span>rooms<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>rooms<span class="token punctuation">)</span><span class="token punctuation">;</span>       
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><h3 class="mume-header" id="socketclient">socket.client</h3>
+
+<p>Aceasta este o referin&#x21B;&#x103; c&#x103;tre obiectul <code>Client</code>.</p>
+<h3 class="mume-header" id="socketconn">socket.conn</h3>
+
+<p>Este o referin&#x21B;&#x103; c&#x103;tre conexiunea <code>Client</code> (obiectul <code>Socket</code> a lui <code>engine.io</code>). Acesta permite accesul direct la nivelul de transport IO, care &#xEE;n mare parte abstractizeaz&#x103; socketul TCP/IP real.</p>
+<h3 class="mume-header" id="socketrequest">socket.request</h3>
+
+<p>Este un getter cu model de func&#x21B;ionare al unui proxy, care returneaz&#x103; o referin&#x21B;&#x103; c&#x103;tre obiectul <code>request</code>, care vine chiar de la subclasa <code>Client</code>. Este foarte util pentru a accesa headerele unei cereri cum ar fi <code>Cookie</code> sau <code>User-Agent</code>.</p>
+<h3 class="mume-header" id="sockethandshake">socket.handshake</h3>
+
+<p>Ofer&#x103; detaliile handshake-ului printr-un obiect.</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript">io<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token punctuation">(</span>socket<span class="token punctuation">,</span> next<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> handshake <span class="token operator">=</span> socket<span class="token punctuation">.</span>handshake<span class="token punctuation">;</span>
+    <span class="token comment">// f&#x103; ceva cu datele.</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+io<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">&apos;connection&apos;</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>socket<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> handshake <span class="token operator">=</span> socket<span class="token punctuation">.</span>handshake<span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">/*
+{
+  headers: /* the headers sent as part of the handshake */</span><span class="token punctuation">,</span>
+  time<span class="token punctuation">:</span> <span class="token comment">/* the date of creation (as string) */</span><span class="token punctuation">,</span>
+  address<span class="token punctuation">:</span> <span class="token comment">/* the ip of the client */</span><span class="token punctuation">,</span>
+  xdomain<span class="token punctuation">:</span> <span class="token comment">/* whether the connection is cross-domain */</span><span class="token punctuation">,</span>
+  secure<span class="token punctuation">:</span> <span class="token comment">/* whether the connection is secure */</span><span class="token punctuation">,</span>
+  issued<span class="token punctuation">:</span> <span class="token comment">/* the date of creation (as unix timestamp) */</span><span class="token punctuation">,</span>
+  url<span class="token punctuation">:</span> <span class="token comment">/* the request URL string */</span><span class="token punctuation">,</span>
+  query<span class="token punctuation">:</span> <span class="token comment">/* the query object */</span>
+<span class="token punctuation">}</span>
+<span class="token operator">*</span><span class="token operator">/</span>
+</pre><h3 class="mume-header" id="socketusefn">socket.use(fn)</h3>
+
+<p>&#xCE;n anumite scenarii este nevoie de folosirea unui middleware de fiecare dat&#x103; c&#xE2;nd se prime&#x219;te un mesaj. &#xCE;n acest scop se va folosi metoda <code>use</code> care va primi drept callback o func&#x21B;ie ce prime&#x219;te drept parametri socketul &#x219;i o func&#x21B;ie pentru a deferi execu&#x21B;ia urm&#x103;torului middleware.</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript">io<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span>socket<span class="token punctuation">,</span> next<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>socket<span class="token punctuation">.</span>request<span class="token punctuation">.</span>headers<span class="token punctuation">.</span>cookie<span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">next</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Error</span><span class="token punctuation">(</span><span class="token string">&apos;Authentication error&apos;</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><p>Func&#x21B;ia pasat&#x103; trebuie considerat&#x103; un middleware. Aceast&#x103; func&#x21B;ie este executat&#x103; pentru fiecare <code>Packet</code> sosit. Func&#x21B;ia prime&#x219;te drept parametru pachetul sosit &#x219;i o func&#x21B;ie care trimite execu&#x21B;ia urm&#x103;torului middleware. Erorile care ar putea ap&#x103;rea sunt trimise urm&#x103;torului middleware, dar &#x219;i clientului ca pachete <code>error</code>.</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript">io<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">&apos;connection&apos;</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>socket<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    socket<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token punctuation">(</span>packet<span class="token punctuation">,</span> next<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>packet<span class="token punctuation">.</span>ceva <span class="token operator">===</span> <span class="token boolean">true</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">next</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Error</span><span class="token punctuation">(</span><span class="token string">&apos;A ie&#x219;it prost&apos;</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre><h3 class="mume-header" id="socketsendargs-ack">socket.send([...args][, ack])</h3>
+
+<p>Trimite un eveniment <code>message</code>.</p>
+<h3 class="mume-header" id="socketemiteventnameargsack">socket.emit(eventName[,..args][,ack])</h3>
+
+<p>Aceast&#x103; metod&#x103; suprascrie <code>EventEmitter.emit</code> &#x219;i returneaz&#x103; un socket.<br>
+Metoda emite un eveniment &#xEE;n socketul identificat de nume.</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript">socket<span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span><span class="token string">&apos;hello&apos;</span><span class="token punctuation">,</span> <span class="token string">&apos;world&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+socket<span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span><span class="token string">&apos;with-binary&apos;</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token string">&apos;2&apos;</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token number">3</span><span class="token punctuation">:</span> <span class="token string">&apos;4&apos;</span><span class="token punctuation">,</span> <span class="token number">5</span><span class="token punctuation">:</span> <span class="token keyword">new</span> <span class="token class-name">Buffer</span><span class="token punctuation">(</span><span class="token number">6</span><span class="token punctuation">)</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</pre>
+      </div>
+      
+      
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    </body></html>

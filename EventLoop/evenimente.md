@@ -15,9 +15,15 @@ myEmitter.on('event', () => {
 myEmitter.emit('event');
 ```
 
+Node privește `EventEmitter`-ul ca pe o clasă care își găsește implementarea în modulul `events`.
+
+```javascript
+const EventEmitter = require('events');
+```
+
 ## this și arguments
 
-De cele mai multe ori este nevoie să lucrezi cu obiectul this pe care îl formează callback-ul. La invocarea callback-ului, `this` va indica obiectul generat de invocarea metodei `eventEmitter.emit()`. Dacă nu vei folosi callback-uri declarate cu `function` nu vei avea acces la `this`. Metoda permite și pasarea mai multor argumente funcțiilor cu rol de callback.
+De cele mai multe ori este nevoie să lucrezi cu obiectul `this` pe care îl formează callback-ul. La invocarea callback-ului, `this` va indica obiectul generat de invocarea metodei `eventEmitter.emit()`. Dacă nu vei folosi callback-uri declarate cu `function`, nu vei avea acces la `this`. Metoda permite și pasarea mai multor argumente funcțiilor cu rol de callback.
 
 ```javascript
 const EventEmitter = require('events');

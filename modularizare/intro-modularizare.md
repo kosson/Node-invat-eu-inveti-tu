@@ -132,16 +132,6 @@ Te poți gândi la module ca la niște obiecte Singleton, care își păstrează
 
 Obiectul `module` reprezintă chiar modulul curent, iar valoarea lui `module.exports` reprezintă chiar obiectul care va fi returnat celor ce vor folosi acest modul. Toate variabilele definite într-un modul nu vor ajunge în obiectul `global`. Obiectul `exports` este un alias pentru `module.exports`.
 
-```javascript
-exports.facCeva = function () {
-    return 'fac și eu ceva';
-};
-// este echivalent cu
-module.exports.faceCeva = function () {
-    return 'fac și eu ceva';
-};
-```
-
 Reține faptul că în Node.js putem exporta valori adăugând proprietăți obiectului `exports` folosind `exports.identificator`. Node.js permite exportul unui string simplu, unui număr, une funcții sau al unui obiect complex.
 
 ```javascript
@@ -155,6 +145,110 @@ exports.o_functie = function adauga (a, b) {
 // valoare
 module.exports.varsta = 12;
 ```
+
+### Exportul de variabile globale
+
+În modul, poți crea variabile globale pe care mai apoi să le expui celui care importă modulul.
+
+```javascript
+// modul.js expune
+var ceva = function c () {}
+// modul care importa
+require('./modul.js');
+```
+
+Acest mod de a expune funcționalitățile modulelor este de evitat.
+
+### Exportul unei funcții anonime
+
+Pentru a evita poluarea mediului global, ai putea împacheta serviciile într-o funcție, pe care să o exportăm.
+
+```javascript
+// modul.js expune
+module.exports = function spun () { console.log('bau')};
+// app.js care importă
+var spun = require('./modul.js');
+spun();
+```
+
+### Exportul unei funcții numite
+
+```javascript
+// modul.js expune
+exports.facCeva = function () {
+    console.log('fac și eu ceva');
+};
+// este echivalent cu
+module.exports.faceCeva = function () {
+    console.log('fac și eu ceva');
+};
+// app.js care importă
+var faceCeva = require('./modul.js').faceCeva;
+```
+
+### Exportul unui obiect
+
+Poți exporta un obiect simplu instanțiat dintr-un constructor.
+
+```javascript
+// modul.js
+var Obiect = function () {};
+Obiect.prototype.cevaNou = function () {
+    console.log('bau`);
+};
+module.exports = new Obiect();
+// app.js
+var obi = require('./modul');
+obi.cevaNou();
+```
+
+sau poți specifica direct care să fie numele obiectului.
+
+```javascript
+// modul.js
+var Obiect = function () {};
+Obiect.prototype.cevaNou = function () {
+    console.log('bau`);
+};
+exports.Obi = new Obiect();
+// app.js
+var obi = require('./modul').Obi;
+obi.cevaNou();
+```
+
+### Exportul unui prototype
+
+Uneori este necesară instanțierea unui obiect din modulul în care ajunge. Pentru a realiza acest lucru, vom exporta funcția constructur cu un obiect prototipal îmbogățit.
+
+```javascript
+// modul.js
+var Obiect = function () {};
+Obiect.prototype.cevaNou = function () {
+    console.log('bau`);
+};
+module.exports = Obiect;
+// app.js
+var Obi = require('./modul');
+var obiNou = new Obi();
+obiNou();
+```
+
+Ai putea exporta un constructor care să aibă nume.
+
+```javascript
+// modul.js
+var Obiect = function () {};
+Obiect.prototype.cevaNou = function () {
+    console.log('bau`);
+};
+exports.Obiect = Obiect;
+// app.js
+var Obi = require('./modul').Obiect;
+var obiNou = new Obi();
+obiNou();
+```
+
+### Exportul altor module
 
 Poți exporta module care abia au fost cerute. Acesta este cazul în care agregi într-un modul mai multe alte volume. Acest lucru permite centralizarea setărilor într-un director dedicat, unde există separat pentru fiecarea serviciu configurările necesare și un obiect Singleton central (`config.js`), care le importă pe restul expunându-le rând pe rând cu `module.exports`.
 

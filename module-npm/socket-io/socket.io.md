@@ -102,9 +102,13 @@ io.on('connect', function (socket) {
 });
 ```
 
-### Proprietatea `of`
+### Metoda `of(nsp)`
 
 Această proprietate este folosită pentru a crea namespace-uri, adică niște benzi de circulația a pachetelor care se pot diferenția chiar dacă folosesc aceeași conexiune.
+
+```javascript
+const adminNamespace = io.of('/admin');
+```
 
 ### Proprietatea `sockets`
 
@@ -161,7 +165,7 @@ io.on('connection', (socket) => {
 });
 ```
 
-Rulând `socket.io` cu adaptorul de Redis, vei putea folosi multiple instanțe `socket.io` pe procede și servere diferite. Acestea vor putea să emită evenimente unele altora. Broadcastul va fi asigurat către clienți prin mecanismul Pub/Sub al Redis-ului.
+Rulând `socket.io` cu adaptorul de Redis, vei putea folosi multiple instanțe `socket.io` pe procese și servere diferite. Acestea vor putea să emită evenimente unele altora. Broadcastul va fi asigurat către clienți prin mecanismul Pub/Sub al Redis-ului.
 
 ### Metoda `origins([value])`
 
@@ -171,9 +175,45 @@ Această metodă poate seta originile pachetelor. Dacă nu primește un argument
 io.origins(['https://foo.example.com:443']);
 ```
 
+### Metoda `origins(fn)`
+
+Primește drept argument o funcție, care la rândul ei are două argumente. Funcția returnează obiectul server. Argumentele acestei metode pot fi:
+
+- un șir de caractere, care indică originea și
+- callback-ul, care are drept argumente un obiect de eroare și unul de succes.
+
+Cât privește callback-ul, cel de-aul doilea argument va fi o valoare `Boolean`, care indică dacă de pe originea indicată se pot primi pachete. Dacă valoarea este `false`, trebuie introdusă o valoare string drept valoare pentru eroare, care va fi adăugată răspunsului server-ului.
+
+```javascript
+io.origins((origin, callback) => {
+  if (origin !== 'https://foo.example.com') {
+    return callback('origin not allowed', false);
+  }
+  callback(null, true);
+});
+```
+
+Această funcție va fi executată pentru fiecare request. Din acest motiv, va trebui ținută la un minimum. Atunci când nu poți identifica sursa, valoarea pentru aceasta va fi `*`. În cazul utilizării cu framework-ul Express, headerele CORS vor fi afectate doar pentru cererile `socket.io`. Pentru Express, se va folosi modulul `cors`.
+
+### Metoda attach(httpServer[, options])
+
+Argumentul `httpServer` este cel la care va fi atașată instanța socket.io. Pot fi introduse opțiuni de configurare a serverului.
+
+### Metoda `attach(port[, options])`
+
+Menționează portul pe care va rula instanța de socket atașată unui server http. Similar poți folosi metoda `listen(httpServer[, options])`.
+
+### Metoda `bind(engine)`
+
+Metoda returnează obiectul server după ce l-a legat de o anume versiune de server `socket.io`.
+
+### Metoda `onconnection(socket)`
+
+Metoda returnează serverul după ce a creat un nou client `socket.io` de la instanța de `Socket` reprezentând `engine.io`.
+
 ## Multiplexare
 
-Socket.io oferă posibilitatea utilizării unei singure conexiuni pentru mai multe Namespace-uri. Fiecare pachet aparține unui namespace. Un namespace este identificat cu o cale reprezentată astfel `/cale`. Totuși, indiferent de faptul că un client va alege să folosească diferite namespace-uri, prima conectare se va face întotdeauna la namespace-ul `/`. Dacă pentru un namespace serverul răspunde cu un pachet `CONNECT`, calea multiplexată trebuie să fie considerată conectată.
+Socket.io oferă posibilitatea utilizării unei singure conexiuni pentru mai multe Namespace-uri. Fiecare pachet aparține unui namespace. Un namespace este identificat cu o cale reprezentată astfel: `/cale`. Totuși, indiferent de faptul că un client va alege să folosească diferite namespace-uri, prima conectare se va face întotdeauna la namespace-ul `/`. Dacă pentru un namespace serverul răspunde cu un pachet `CONNECT`, calea multiplexată trebuie să fie considerată conectată.
 
 ```javascript
 var io = require('socket.io')(80);
@@ -286,7 +326,25 @@ nsp.emit('general', 'salut');
 var asminNsp = io('/admin');
 ```
 
-Modul în care se creează namespace-urile poate conduce la concluzia eronată că acestea ar fi căi ale URL-ului. URL-urile nu sunt influiențate, singurul în cazul lui `Socket.io` fiind `/socket.io/`, pe care se accesează componenta clientului.
+Modul în care se creează namespace-urile poate conduce la concluzia eronată că acestea ar fi căi ale URL-ului. URL-urile nu sunt influiențate, singurul în cazul lui `Socket.io` fiind `/socket.io/`, pe care se accesează componenta clientului. Pentru crearea de namespace-uri, metoda `of` acceptă și regex-uri.
+
+```javascript
+const dynamicNsp = io.of(/^\/dynamic-\d+$/).on('connect', (socket) => {
+  const newNamespace = socket.nsp; // newNamespace.name === '/dynamic-101'
+
+  // broadcast to all clients in the given sub-namespace
+  newNamespace.emit('hello');
+});
+
+// client-side
+const socket = io('/dynamic-101');
+
+// broadcast to all clients in each sub-namespace
+dynamicNsp.emit('hello');
+
+// use a middleware for each sub-namespace
+dynamicNsp.use((socket, next) => { /* ... */ });
+```
 
 ### Crearea de rooms (camere)
 
@@ -395,7 +453,7 @@ io.volatile.emit('uneveniment', {"date": "ceva"});
 Specifică dacă sunt așteptate date binare în cele care vor fi emise. Atunci când acest eveniment este emis, crește performanța. Valoarea este boolean.
 
 ```javascript
-io.binary(false).emit('eveniment);
+io.binary(false).emit('eveniment');
 ```
 
 ### local

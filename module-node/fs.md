@@ -124,3 +124,12 @@ fs.open('fisier.txt', 'a', (err, fd) => {
 ## Modificarea permisiunilor unui fișier
 
 Metoda `fs.chmod` modifică în mod asincron permisiunile unui fișier.
+
+## fs.watch
+
+În anumite scenarii este necesară urmărirea unui fișier pentru a detecta modificări care pot apărea. În acest sens, `fs` are metoda `watch()`, care are drept sarcină semnalarea oricărei modificări care apare.
+
+```javascript
+const​ fs = require(​'fs'​);
+​fs.watch(​'fisier.txt'​, () => console.log(​'S-a modificat!'​));
+```

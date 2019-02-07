@@ -16,7 +16,7 @@ Fiind o interfață bazată pe evenimente, la momentul când se termină de lucr
 
 ## Evenimentul close
 
-Acest eveniment este emis atunci când este invocată metoda `citescLinie.close()`, dacă ar fi să urmăm exemplul de mai sus. Mai este emis un astfel de eveniment atunci când streamul de `input` primește un eveniment `end`, când streamul de `input` primește codul pentru combinația de <ctrl>-D, ceea ce indică EOT - End of Transmission sau când streamul `input` primește combinația <ctrl>-C pentru a semnala `SIGINT`.
+Acest eveniment este emis atunci când este invocată metoda `citescLinie.close()`, dacă ar fi să urmăm exemplul de mai sus. Mai este emis un astfel de eveniment atunci când streamul de `input` primește un eveniment `end`, când stream-ul de `input` primește codul pentru combinația de <ctrl>-D, ceea ce indică EOT - End of Transmission sau când stream-ul `input` primește combinația <ctrl>-C pentru a semnala `SIGINT`.
 
 
 ## Evenimentul line
@@ -115,3 +115,5 @@ Argumentul obiect poate fi folosit doar dacă se folosește un TTY text. Dacă e
 Valoarea `stream` poate fi un `stream.Writable`. La `dir` poți avea următoarele opțiuni: `-1` va șterge tot ce este la stânga cursorului, `1` va șterge tot de la dreapta cursorului și `0`, care va șterge toată linia.
 
 ## readline.clearScreenDown(stream)
+
+TODO: termină de completat!!!

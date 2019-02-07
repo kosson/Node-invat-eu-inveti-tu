@@ -8,6 +8,8 @@ Douglas McIlroy, unul dintre autorii UNIX-ului, a scris o notă în care surprin
 
 **IO** înseamnă In/Out - o paradigmă a intrărilor și a ieșirilor. Întrările și ieșirile în NodeJS au un comportament asincron, ceea ce înseamnă că va trebui pasat un callback care va acționa asupra datelor.
 
+Stream-urile lucrează cu fragmente - **chunks**. Acestea sunt trimise între două puncte de comunicare. Streamurile sunt emitere de evenimente. Acest lucru înseamnă că se poate gestiona lucrul cu acestea atașându-se callback-uri pe diferitele evenimente.
+
 ## Interfața Stream
 
 În Node, interfața Stream este implementată de modulul `stream`. Acest modul oferă un API care poate fi implementat de mai multe obiecte în Node care doresc să implementeze interfața streams. Exemple de stream-uri în NodeJS:

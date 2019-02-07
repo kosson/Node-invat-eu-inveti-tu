@@ -173,7 +173,7 @@ Te poți gândi la module ca la niște obiecte Singleton, care își păstrează
 
 Obiectul `module` reprezintă chiar modulul curent, iar valoarea lui `module.exports` reprezintă chiar obiectul care va fi returnat celor ce vor folosi acest modul. Toate variabilele definite într-un modul nu vor ajunge în obiectul `global`. Obiectul `exports` este un alias pentru `module.exports`.
 
-Reține faptul că în Node.js putem exporta valori adăugând proprietăți obiectului `exports` folosind `exports.identificator`. Node.js permite exportul unui string simplu, unui număr, une funcții sau al unui obiect complex.
+Reține faptul că în Node.js putem exporta valori adăugând proprietăți obiectului `exports` folosind `exports.identificator`. Totuși, pentru corectitudine, `exports` și `module.exports` sunt două obiecte diferite în Node.js. Pentru a nu distruge alias-ul, nu atribui niciodată direct lui `exports` nicio valoare (`exports =  function () {}`). Ferește-te de această greșeală. Gândește-l pe `exports` ca un obiect care trebuie populat.
 
 ```javascript
 // obiect
@@ -263,9 +263,25 @@ var obi = require('./modul').Obi;
 obi.cevaNou();
 ```
 
+În cazul în care vei instanția de mai multe ori obiectul, acesta va fi același pentru că de fiecare dată când vom instanția, nu vom crea un obiect nou, ci ne va fi servit din cache o referință către primul.
+
+```javascript
+module.exports = new Obiect(); // înlocuiește obiectul exports cu cel nou creat.
+// app.js
+var obi1 = require('./modul');
+var obi2 = require('./modul');
+// obi2 nu va fi un obiect nou, ci o referință către obi1.
+```
+
+Vei obține două obiecte separate doar dacă exporți constructorul.
+
+```javascript
+module.exports = Obiect;
+```
+
 ### Exportul unui prototype
 
-Uneori este necesară instanțierea unui obiect din modulul în care ajunge. Pentru a realiza acest lucru, vom exporta funcția constructur cu un obiect prototipal îmbogățit.
+Uneori este necesară instanțierea unui obiect din modulul în care ajunge. Pentru a realiza acest lucru, vom exporta funcția constructor cu un obiect prototipal îmbogățit.
 
 ```javascript
 // modul.js

@@ -14,6 +14,8 @@ fs.readFile('test.csv', 'utf8', function (error, data) {
 });
 ```
 
+Obiectul `error` este primul argument pasat funcției callback. Doar prin inspectarea acestuia, vom ști dacă a apărut o eroare. În cazul în care valoarea sa este `null`, totul a decurs normal.
+
 ## Propagarea erorilor
 
 În cazul funcțiilor sincrone propagarea se face folosind `throw`, care trimite eroarea prin întreaga stivă până când aceasta este „prinsă”.

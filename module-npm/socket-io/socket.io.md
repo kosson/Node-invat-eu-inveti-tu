@@ -1,6 +1,10 @@
 # Socket.io
 
-Socket.io este o bibliotecă de cod care permite comunicare bidirecțională în timp real între clienți și un server. Un avantaj este faptul că se vor realiza conexiuni indiferent de layer-ele interpuse (proxy-uri, load balance-re, etc). Reconectarea clientului se va face automat. Pentru interacțiunea cu toți clienții care se conectează, se utilizează clasa `Socket`. Nivelul de transport este asigurat prin XHR/JSONP și acolo unde este disponibil se va folosi WebSocket. Socket.IO nu este o implementare de WebSocket. Socket.io atașează informații suplimentare fiecărui pachet (tip pachet și namespace, ack id) și din acest motiv nu se poate conecta la servere WebSocket.
+Socket.io este o bibliotecă de cod care permite comunicare bidirecțională în timp real între clienți și un server. Un avantaj este faptul că se vor realiza conexiuni indiferent de layer-ele interpuse (proxy-uri, load balance-re, etc). Reconectarea clientului se va face automat. Socket.io folosește în subsidiar `engine.io` care este un protocol de comunicare ce va folosi tehnologii de conectare care să asigure o legătură strabilă indiferent de tehnologiile interpuse între client și server. 
+
+Pentru interacțiunea cu toți clienții care se conectează, se utilizează clasa `Socket`. Nivelul de transport este asigurat prin XHR/JSONP (numit și long-polling) și acolo unde este posibil, se va folosi WebSocket, dacă legătura stabilită permite. Socket.IO nu este o implementare de WebSocket. Socket.io atașează informații suplimentare fiecărui pachet (tip pachet și namespace, ack id) și din acest motiv nu se poate conecta la servere WebSocket.
+
+Un client care a reușit să facă o conexiune, va sta conectat pe termen nedefinit, iar atunci când serverul nu mai este disponibil, va încerca să se conecteze fără a se deconecta.
 
 Este posibilă și comunicare a datelor în format binar. Din browser datele pot fi emise ca `ArrayBuffer` sau `Blob`, iar din NodeJS ca `ArrayBuffer` și `Buffer`.
 Pentru a separa canalele de comunicare, `Socket.io` permite realizarea de spații separate în funcție de modelul de comunicare sau separația resurselor. Aceste spații sunt numite *namespaces*, acestea comportându-se ca niște canale separate de comunicare. Aceste canale separate, vor folosi aceeași conexiune creată.
@@ -211,32 +215,6 @@ Metoda returnează obiectul server după ce l-a legat de o anume versiune de ser
 
 Metoda returnează serverul după ce a creat un nou client `socket.io` de la instanța de `Socket` reprezentând `engine.io`.
 
-## Multiplexare
-
-Socket.io oferă posibilitatea utilizării unei singure conexiuni pentru mai multe Namespace-uri. Fiecare pachet aparține unui namespace. Un namespace este identificat cu o cale reprezentată astfel: `/cale`. Totuși, indiferent de faptul că un client va alege să folosească diferite namespace-uri, prima conectare se va face întotdeauna la namespace-ul `/`. Dacă pentru un namespace serverul răspunde cu un pachet `CONNECT`, calea multiplexată trebuie să fie considerată conectată.
-
-```javascript
-var io = require('socket.io')(80);
-var chat = io.of('/chat').on('connection', function (socket) {
-    socket.emit('mesaj', 'ceva ce doar /chat va primi');
-    chat.emit('mesaj', 'ceva primit de toți participanții din /chat');
-});
-var news = io.of('/news').on('connection', function (socket) {
-    socket.emit('mesaj', 'ceva trimis pe /news');
-});
-// în client
-var chat = io.connect('http://localhost/chat'),
-    news = io.connect('http://localhost/news');
-
-chat.on('connect', function () {
-  chat.emit('ceva pe chat');
-});
-
-news.on('news', function () {
-  news.emit('O nouă știre');
-});
-```
-
 ## Răspunsuri de confirmare
 
 Uneori, atunci când trimiți mesaje, ai nevoie de confirmări privind starea acestora.
@@ -293,7 +271,7 @@ const socket = io({
 });
 ```
 
-## Namespace-uri
+## Namespace-uri / multiplexare
 
 Namespace-urile reprezintă seturi de socketuri conectate ca o zonă identificabilă distinct, care este specificată de numele unei căi. Această cale identifică namespace-ul. Orice client se va conecta automat la rădăcină (`/` - namespace-ul principal) și abia după aceea la alte namespace-uri. Indiferent de namespace-urile la care se conectează, toți clienții vor folosi aceeași conexiune. Nu se va genera o conexiune separată pentru fiecare namespace în parte. Namespace-urile pot fi considerate endpoint-uri sau rute.
 
@@ -309,6 +287,34 @@ Fiecare namespace emite un eveniment numit `connection` care primește instanța
 ```javascript
 io.on('connection', function(socket){
   socket.on('disconnect', function(){ });
+});
+```
+
+În momentul în care clientul se conectează la server, automat se va declanșa evenimentul `connection`. Funcția callback cu rol de receptor, va fi executată și va primi drept parametru un obiect care reprezintă chiar clientul conectat. Acest parametru este numit prin convenție `socket`. Acest obiect este un `EventEmitter`, ceea ce permite atașarea de evenimente pentru a comunica cu browserul. Atașarea unui eveniment `connection` la server este echivalentul conectării direct la namespace-ul `/` în cazul în care nu este specificată altă cale.
+
+### Multiplexare
+
+Socket.io oferă posibilitatea utilizării unei singure conexiuni pentru mai multe Namespace-uri. Fiecare pachet aparține unui namespace. Un namespace este identificat cu o cale reprezentată astfel: `/cale`. Totuși, indiferent de faptul că un client va alege să folosească diferite namespace-uri, prima conectare se va face întotdeauna la namespace-ul `/`. Dacă pentru un namespace serverul răspunde cu un pachet `CONNECT`, calea multiplexată trebuie să fie considerată conectată.
+
+```javascript
+var io = require('socket.io')(80);
+var chat = io.of('/chat').on('connection', function (socket) {
+    socket.emit('mesaj', 'ceva ce doar /chat va primi');
+    chat.emit('mesaj', 'ceva primit de toți participanții din /chat');
+});
+var news = io.of('/news').on('connection', function (socket) {
+    socket.emit('mesaj', 'ceva trimis pe /news');
+});
+// în client
+var chat = io.connect('http://localhost/chat'),
+    news = io.connect('http://localhost/news');
+
+chat.on('connect', function () {
+  chat.emit('ceva pe chat');
+});
+
+news.on('news', function () {
+  news.emit('O nouă știre');
 });
 ```
 
@@ -426,7 +432,7 @@ Acest eveniment apare instantaneu la momentul conectării unui client.
 io.on('connect', (socket) => {
   // ...
 });
-
+// conectarea specificând o anume cale
 io.of('/admin').on('connect', (socket) => {
   // ...
 });

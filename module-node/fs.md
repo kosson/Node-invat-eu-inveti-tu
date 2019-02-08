@@ -91,9 +91,9 @@ path.parse(caleaCatreFisier).ext === `.json`; // true
 
 Vezi documentația de la https://nodejs.org/api/path.html#path_path_parse_path.
 
-## fs.readFile - citirea unui fișier
+## fs.readFile(path[, options], callback)
 
-A lucra cu un fișier în Node.js folosind modulul `fs`, implică crearea automată a unui obiect `Buffer` în care este trimis conținutul fișierului. Ferește-te de citirea unor fișiere în mod sincron (`fs.readFileSync(__dirname + '/nume_fisier.txt', 'utf8')`) pentru că acest lucru va bloca firul de execuție. Ferește-te de citirea unor fișiere de mari dimensiuni în mod sincron pentru că va crea obiecte `Buffer` de mari dimensiuni.
+A lucra cu un fișier în Node.js folosind modulul `fs`, implică crearea automată a unui obiect `Buffer` în care este trimis conținutul fișierului. Ferește-te de citirea unor fișiere în mod sincron (`fs.readFileSync(__dirname + '/nume_fisier.txt', 'utf8')`) pentru că acest lucru va bloca firul de execuție. Făcând același lucru, vei creaa obiecte `Buffer` de mari dimensiuni.
 
 ```javascript
 var resursă = fs.readFile(__dirname + 'fisier.txt', function (error, date) {
@@ -104,6 +104,27 @@ var resursă = fs.readFile(__dirname + 'fisier.txt', function (error, date) {
 Datele de lucru în cazul funcțiilor de citire asincrone, vor returna un `Buffer`. Dacă menționezi standardul de codare al caracterelor, ceea ce va trimite ca date în callback va fi chiar textul resursei.
 
 Folosirea acestei metode de a citi datele unui fișier, va încărca întreg fișierul în memorie. În cazul în care se va lucra cu fișiere de mari dimensiuni, este indicat să se folosească `fs.createReadStream`.
+
+### Promisificare fs.readFile„
+
+În cazul în care ai nevoie să trasformi metoda într-o promisiune, pur și simplu va trebui să creezi o funcție care să fie respectiva promisiune.
+
+```javascript
+function readFilePromise (caleFisier) {
+  // creează și returnează un obiect promisiune
+  return new Promise( function (resolve, reject) {         // funcția anonimă inițiază operațiunea asincronă
+    fs.readFile(caleFisier, "utf8", function (err, data) { // operațiunea de încărcare este gestionată de un callback
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(data); // promisiunea este rezolvată cu succes și este apelat automat următorul then din lant
+    });
+  });
+};
+```
+
+Funcția creată este un ambalaj pentru fișierul care se va încărca asincron în promisiune.
 
 ## Adăugarea datelor într-un fișier
 
@@ -203,8 +224,8 @@ Metoda `read()` preia datele dintr-un buffer și le returnează. Datele pe care 
 ## Transformarea stream-urilor
 
 ```javascript
-var fs = require('fs');
-var path = require('path');
+var fs     = require('fs');
+var path   = require('path');
 var stream = require('stream');
 
 var inFile = path.join(__dirname, 'dateprimare.txt'),
@@ -311,7 +332,7 @@ unStreamReadable.on('data', function (fragment) {
 
 Întreaga resursă de date va fi consumată de stream-ul nostru readable. De fiecare dată când un fragment din buffer este trimis, se declanșează execuția callback-ului. După prelucrarea fragmentului anterior, se va primi un alt fragment, care va fi prelucrat și tot așa până la consumarea întregii resurse.
 
-### Metoda fs.createWriteStream()
+### fs.createWriteStream
 
 Această metodă oferă posibilitatea de a constitui un stream prin care să trimitem date într-o resursă.
 

@@ -1,23 +1,35 @@
 # Modulul readline
 
 Acesta oferă o interfață pentru citirea datelor dintr-un stream Readable cum este `process.stdin`, de exemplu și accesarea linie cu linie a acestora.
-Pentru a-l accesa ai nevoie să-l apelezi `const readline = require('readline');`.
+Pentru a-l accesa ai nevoie să-l ceri `const readline = require('readline');`.
 
-Pentru a instanția o interfață care va putea citi rând cu rând, este nevoie de a invoca metoda specifică a obiectului constituit.
+Pentru a instanția o interfață care va putea citi rând cu rând, este nevoie de a invoca metoda specifică pentru obiectul constituit.
 
 ```javascript
-const readline = require('readline');
+const readline  = require('readline');
 var citescLinie = readline.createInterface();
 ```
 
 Fiecare o astfel de instanțiere a interfeței va fi legată de un singur stream `Readable` de input și unul singur `Writable` de output.
+
+## Clasa Interface
+
+Pentru a putea citi linie cu linie un fișier, mai întâi, trebuie inițiată o interfață care va citi un singur input care este un stream `Readable`, urmând să trimită datele prelucrate într-un singur stream `Writable`. Interfața este inițializată folosind metoda `createInterface`.
+
+```javascript
+const readline = require('readline');
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+```
 
 Fiind o interfață bazată pe evenimente, la momentul când se termină de lucru cu un stream `Readable`, de regulă se va emite un eveniment `close`.
 
 ## Evenimentul close
 
 Acest eveniment este emis atunci când este invocată metoda `citescLinie.close()`, dacă ar fi să urmăm exemplul de mai sus. Mai este emis un astfel de eveniment atunci când streamul de `input` primește un eveniment `end`, când stream-ul de `input` primește codul pentru combinația de <ctrl>-D, ceea ce indică EOT - End of Transmission sau când stream-ul `input` primește combinația <ctrl>-C pentru a semnala `SIGINT`.
-
 
 ## Evenimentul line
 
@@ -53,7 +65,7 @@ citescLinie.on('resume', () => {
 
 ## Eveniment SIGCONT
 
-Acest eveniment este emis atunci când un proces Node este adus din background. În background este trimis un proces atunci când apare combinația <ctrl>-Z, adică `SIGTSTP`. Dacă streamul a fost pus pe pauză înainte ca acest eveniment să apară, SIGCONT nu va mai fi emis.
+Acest eveniment este emis atunci când un proces Node.js este adus din background. În background este trimis un proces atunci când apare combinația <ctrl>-Z, adică `SIGTSTP`. Dacă streamul a fost pus pe pauză înainte ca acest eveniment să apară, SIGCONT nu va mai fi emis.
 
 ```javascript
 citescLinie.on('SIGCONT', () => {

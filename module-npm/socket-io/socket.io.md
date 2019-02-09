@@ -108,11 +108,13 @@ io.on('connect', function (socket) {
 
 ### Metoda `of(nsp)`
 
-Această proprietate este folosită pentru a crea namespace-uri, adică niște benzi de circulația a pachetelor care se pot diferenția chiar dacă folosesc aceeași conexiune.
+Această metodă este folosită pentru a crea namespace-uri, adică adrese diferite care folosesc aceeași conexiune. Important este faptul că namespace-ul poate fi un șir de caractere, o expresie regulată sau chiar o funcție.
 
 ```javascript
 const adminNamespace = io.of('/admin');
 ```
+
+Metoda va returna un namespace.
 
 ### Proprietatea `sockets`
 
@@ -199,7 +201,7 @@ io.origins((origin, callback) => {
 
 Această funcție va fi executată pentru fiecare request. Din acest motiv, va trebui ținută la un minimum. Atunci când nu poți identifica sursa, valoarea pentru aceasta va fi `*`. În cazul utilizării cu framework-ul Express, headerele CORS vor fi afectate doar pentru cererile `socket.io`. Pentru Express, se va folosi modulul `cors`.
 
-### Metoda attach(httpServer[, options])
+### Metoda `attach(httpServer[, options])`
 
 Argumentul `httpServer` este cel la care va fi atașată instanța socket.io. Pot fi introduse opțiuni de configurare a serverului.
 
@@ -271,18 +273,33 @@ const socket = io({
 });
 ```
 
+## Ce este un socket
+
+Un `socket` este un obiect instanțiat în baza clasei [`Socket`](https://socket.io/docs/server-api/#Socket), care are rolul să comunice cu browserul clientului. De la bun început, socket-urile aparțin namespace-ului general `/`. Un obiect `socket` nu folosește direct TCP/IP sockets. Acest obiect creat pe baza clasei `Socket` moștenește din clasa `EventEmitter` din Node.js, ceea ce îl transformă într-un obiect care poate emite și reacționa la evenimente. Documentația aduce mențiunea că această clasă suprascrie metoda `emit` a clasei `EventEmitter`, dar restul este păstrat intact. 
+
 ## Namespace-uri / multiplexare
 
-Namespace-urile reprezintă seturi de socketuri conectate ca o zonă identificabilă distinct, care este specificată de numele unei căi. Această cale identifică namespace-ul. Orice client se va conecta automat la rădăcină (`/` - namespace-ul principal) și abia după aceea la alte namespace-uri. Indiferent de namespace-urile la care se conectează, toți clienții vor folosi aceeași conexiune. Nu se va genera o conexiune separată pentru fiecare namespace în parte. Namespace-urile pot fi considerate endpoint-uri sau rute.
+Namespace-urile reprezintă seturi de socketuri conectate ca o zonă identificabilă distinct, care este specificată de numele unei căi. Această cale identifică namespace-ul. Orice client se va conecta automat la rădăcină (`/` - namespace-ul principal) și abia după aceea la alte namespace-uri. 
 
-Namespace-ul din oficiu este `/`, care este identificat prin `io.sockets` sau pur și simplu `io` (formă prescurtată acceptată). Toate mesajele emise pe aceste canale vor ajunge la toți clienții conectați la serverul de socketuri.
+Indiferent de namespace-urile la care se conectează, toți clienții vor folosi aceeași conexiune. Nu se va genera o conexiune separată pentru fiecare namespace în parte. Namespace-urile pot fi considerate endpoint-uri sau rute.
+
+Un *namespace* poate fi înțeles ca adresa unei case de pe o stradă. Casa respectivă are camere. Vom vedea că poți să te alături participanților unei camere (*room*).
+
+```javascript
+const io = require('socket.io')();
+io.emit('general', 'Salutare toată lumea!');
+```
+
+Instanțierea obiectului `io` pur și simplu generează namespace-ul din oficiu care este `/`,  identificat prin `io.sockets` sau pur și simplu `io` (formă prescurtată acceptată). Toate mesajele emise pe aceste canale vor ajunge la toți clienții conectați la serverul de socket-uri.
 
 ```javascript
 io.sockets.emit('general', 'Mesaj tuturor');
 io.emit('general', 'Mesaj tuturor');
 ```
 
-Fiecare namespace emite un eveniment numit `connection` care primește instanța `socket` drept parametru.
+Propriu-zis, `io.emit('tuturor', date)` este echivalent cu `io.of('/').emit('tuturor', date)`. Putem spune că `io.emit('tuturor', date)` este o prescurtare pentru secvența care menționează și namespace-ul.
+
+Fiecare namespace emite un eveniment numit `connection` care primește instanța `socket` drept parametru, care reprezintă răspunsul de la client.
 
 ```javascript
 io.on('connection', function(socket){
@@ -290,9 +307,9 @@ io.on('connection', function(socket){
 });
 ```
 
-În momentul în care clientul se conectează la server, automat se va declanșa evenimentul `connection`. Funcția callback cu rol de receptor, va fi executată și va primi drept parametru un obiect care reprezintă chiar clientul conectat. Acest parametru este numit prin convenție `socket`. Acest obiect este un `EventEmitter`, ceea ce permite atașarea de evenimente pentru a comunica cu browserul. Atașarea unui eveniment `connection` la server este echivalentul conectării direct la namespace-ul `/` în cazul în care nu este specificată altă cale.
+Privind din perspectiva namespace-urilor, `io.on('connection', () => {})` este o prescurtare la varianta care menționează numele namespace-ului: `io.of('/').on(...)`. Acest amănunt trebuie reținut pentru că în momentul în care vei dori ca un client să se conecteze pe alt namespace, va trebui să creezi un listener pe acel namespace meniționându-l: `io.of('/admin').on('connect', (socket) => {})`. Ca o regulă generală, dacă nu este specificat namespace-ul, acesta va fi cel general.
 
-### Multiplexare
+În momentul în care clientul se conectează la server, automat se va declanșa evenimentul `connection`. Funcția callback cu rol de receptor, va fi executată și va primi drept parametru un obiect care reprezintă chiar clientul conectat. Acest parametru este numit prin convenție `socket`. Acest obiect este un `EventEmitter`, ceea ce permite atașarea de evenimente pentru a comunica cu browserul. Atașarea unui eveniment `connection` la server este echivalentul conectării direct la namespace-ul `/` în cazul în care nu este specificată altă cale.
 
 Socket.io oferă posibilitatea utilizării unei singure conexiuni pentru mai multe Namespace-uri. Fiecare pachet aparține unui namespace. Un namespace este identificat cu o cale reprezentată astfel: `/cale`. Totuși, indiferent de faptul că un client va alege să folosească diferite namespace-uri, prima conectare se va face întotdeauna la namespace-ul `/`. Dacă pentru un namespace serverul răspunde cu un pachet `CONNECT`, calea multiplexată trebuie să fie considerată conectată.
 
@@ -320,19 +337,27 @@ news.on('news', function () {
 
 ### Crearea de namespace-uri
 
-În acest scop, serverul Socket.io pune la dispoziție metoda `of`. Metoda `of` poate crea un spațiu separat în canalul de comunicații.
+Socket.io pune la dispoziție metoda `of` pentru a crea un spațiu separat în canalul de comunicații.
 
 ```javascript
 var adminNsp = io.of('/admin');
 adminNsp.on('connection', function (socket) {
     console.log('S-a conectat cineva');    
 });
-nsp.emit('general', 'salut');
+adminNsp.emit('general', 'salut');
 // client
-var asminNsp = io('/admin');
+var adminNsp = io('/admin');
 ```
 
-Modul în care se creează namespace-urile poate conduce la concluzia eronată că acestea ar fi căi ale URL-ului. URL-urile nu sunt influiențate, singurul în cazul lui `Socket.io` fiind `/socket.io/`, pe care se accesează componenta clientului. Pentru crearea de namespace-uri, metoda `of` acceptă și regex-uri.
+Antenție la faptul că partea de client trebuie să definească și ea conectorul pentru canalul creat pe namespace-ul nou. Acesta este specificat, adăugând calea ca argument lui `io('/calenoua')`.
+
+Modul în care se creează namespace-urile poate conduce la concluzia eronată că acestea ar fi căi ale URL-ului. URL-urile nu sunt influiențate, singurul în cazul lui `Socket.io` fiind `/socket.io/`, pe care clientul are acces la componenta care-i permite conectarea la serves. Pentru crearea de namespace-uri, metoda `of` acceptă și regex-uri.
+
+Dacă dorești, din namespace-ul general `/` poți trimite mesaje către namespace-uri definite, cu o singură condiție. Aceasta este ca mai întâi să se fi creat deja canalul general și clientul să se fi conectat pe el, dar și pe cel definit separat. Reține faptul că generarea canalului principal și conectarea clientului se fac într-o manieră asincronă, ceea ce conduce la concluzia că mesajul trimis din canalul principal către cel definit separt se poate face după ce s-au stabilit toate conexiunile. O concluzie foarte importantă este că un namespace poate trimite mesaje întregului namespace indiferent de ce alte sub-namespace-uri au fost create și câte *rooms* au fiecare.
+
+### Conectare dinamică la un namespace
+
+După cum deja am aflat, metoda `of`, care crează namespace-urile, suplimentar unui string, acceptă drept valoare pentru parametrul care specifică calea și un regexp, și la nevoie chiar o funcție.
 
 ```javascript
 const dynamicNsp = io.of(/^\/dynamic-\d+$/).on('connect', (socket) => {

@@ -275,7 +275,24 @@ const socket = io({
 
 ## Ce este un socket
 
-Un `socket` este un obiect instanțiat în baza clasei [`Socket`](https://socket.io/docs/server-api/#Socket), care are rolul să comunice cu browserul clientului. De la bun început, socket-urile aparțin namespace-ului general `/`. Un obiect `socket` nu folosește direct TCP/IP sockets. Acest obiect creat pe baza clasei `Socket` moștenește din clasa `EventEmitter` din Node.js, ceea ce îl transformă într-un obiect care poate emite și reacționa la evenimente. Documentația aduce mențiunea că această clasă suprascrie metoda `emit` a clasei `EventEmitter`, dar restul este păstrat intact. 
+Un `socket` este un obiect instanțiat în baza clasei [`Socket`](https://socket.io/docs/server-api/#Socket), care are rolul să comunice cu browserul clientului. De la bun început, socket-urile aparțin namespace-ului general `/`. Un obiect `socket` nu folosește direct TCP/IP sockets. Acest obiect creat pe baza clasei `Socket` moștenește din clasa `EventEmitter` din Node.js, ceea ce îl transformă într-un obiect care poate emite și reacționa la evenimente. Documentația aduce mențiunea că această clasă suprascrie metoda `emit` a clasei `EventEmitter`, dar restul este păstrat intact.
+
+```javascript
+// server side
+io.on('connection', function(socket){
+  socket.on('salutări', function(){ });
+});
+```
+
+În fragmentul de cod de mai sus, obiectul `socket` pasat callback-ului este un obiect care aparține serverului socket.io din server. Clientul va genera și el pe partea sa un obiect `socket`, dar acesta nu este cel de pe server. Sunt două planuri diferite, care trebuie înțelese distinct în ceea ce privește acest obiect.
+
+```javascript
+socket.on('connection', function(socket){
+    socket.emit('salutări', 'salve prietene!');
+})
+```
+
+
 
 ## Namespace-uri / multiplexare
 
@@ -351,6 +368,65 @@ var adminNsp = io('/admin');
 
 Antenție la faptul că partea de client trebuie să definească și ea conectorul pentru canalul creat pe namespace-ul nou. Acesta este specificat, adăugând calea ca argument lui `io('/calenoua')`.
 
+**Fii avizat**! 
+
+Comunicarea pe namespace-uri este bidirecțională. Acest lucru înseamnă că namespace-urile declarate pe server, trebuie să aibă un corespondent pe client.
+
+```javascript
+// server.js
+let namespaces = []; // array-ul populat va fi exportat din modul
+let adminNs   = new Namespace(0, 'admin',   '/img/admin.jpeg',   '/admin');
+let creatorNs = new Namespace(1, 'creator', '/img/creator.jpeg', '/creator');
+let userNs    = new Namespace(2, 'user',    '/img/users.jpeg',   '/user');
+
+// CONSTRUCȚIE ROOMS
+adminNs.addRoom(new Room(0, 'general', 'admin'));
+creatorNs.addRoom(new Room(0, 'resources', 'creator'));
+userNs.addRoom(new Room(0, 'chat', 'user'));
+
+namespaces.push(adminNs, creatorNs, userNs);
+io.on('connection', (socket) => {
+    // trimite către client informații despre toate endpoint-urile existente
+    let nsData = namespaces.map((ns) => {
+        return {
+            img: ns.img,
+            endpoint: ns.endpoint
+        };
+    });
+    socket.emit('data', nsData); // trimite clientului datele
+    // pe eventul 'data' trebuie sa asculte userul la prima conectare
+});
+
+// client
+var socket     = io();          // primul contact [NECESAR]
+var userNsp    = io('/user');   // se va conecta automat
+var creatorNsp = io('/creator');// se va conecta automat
+var adminNsp   = io('/admin');  // se va conecta automat
+
+// imediat ce te conectezi, asculta datele specifice
+socket.on('data', (nsData) => {
+  // console.log(JSON.stringify(nsData));
+  // AFIȘEAZĂ TOATE ROLURILE ÎN BAZA NAMESPACE-URILOR
+  let namespaces = document.querySelector('.namespaces');
+  namespaces.innerHTML = '';
+  nsData.forEach((ns) => {
+    namespaces.innerHTML += `<span class="namespace" data-ns="${ns.endpoint}"><img src="${ns.img}" />${ns.endpoint.slice(1)}</span>`;
+  });
+
+  // ATAȘEAZĂ RECEPTORI PE FIECARE ROL
+  Array.from(document.getElementsByClassName('namespace')).forEach((element) => {
+    // console.log(element);    
+    element.addEventListener('click', (e) => {
+      // console.log(e.target);
+      let endpoint = element.getAttribute('data-ns');
+      console.log(endpoint);      
+    });
+  });
+});
+```
+
+
+
 Modul în care se creează namespace-urile poate conduce la concluzia eronată că acestea ar fi căi ale URL-ului. URL-urile nu sunt influiențate, singurul în cazul lui `Socket.io` fiind `/socket.io/`, pe care clientul are acces la componenta care-i permite conectarea la serves. Pentru crearea de namespace-uri, metoda `of` acceptă și regex-uri.
 
 Dacă dorești, din namespace-ul general `/` poți trimite mesaje către namespace-uri definite, cu o singură condiție. Aceasta este ca mai întâi să se fi creat deja canalul general și clientul să se fi conectat pe el, dar și pe cel definit separat. Reține faptul că generarea canalului principal și conectarea clientului se fac într-o manieră asincronă, ceea ce conduce la concluzia că mesajul trimis din canalul principal către cel definit separt se poate face după ce s-au stabilit toate conexiunile. O concluzie foarte importantă este că un namespace poate trimite mesaje întregului namespace indiferent de ce alte sub-namespace-uri au fost create și câte *rooms* au fiecare.
@@ -379,20 +455,96 @@ dynamicNsp.use((socket, next) => { /* ... */ });
 
 ### Crearea de rooms (camere)
 
-Pentru fiecare namespace pot fi definite canale pe care socket-ul poate face un `join` (se alătură) sau `leave` (părăsește).
-Poți *intra* într-un room (*cameră*).
+Pentru fiecare namespace pot fi definite camere la care socket-ul clientului poate fi adăugat folosind metoda `join` (se alătură). Același socket client poate fi scos dintr-o cameră folosindu-se metoda `leave` (părăsește). Constituirea de camere (*rooms*) este o prerogativă a serverului. Din oficiu, clientul nu știe pe ce camere a fost adăugat pentru că acest lucru se petrece în partea de server. Logica programului de pe server în comunicare cu cea de la client va fi cea care va înștiința clientul despre camerele disponibile.
+
+Clientul se conectează la un namespace, dar nu știe care sunt camerele disponibile. Tot ceea ce va ști este că primește mesaje unui anume namespace pentru că și el va trebui să se conecteze la acel namespace.
+
+#### Cum setezi o camera
+
+Gestionarea accesului și ieșirii dintr-o *cameră* se face în partea de server folosind două metode: [`socket.join('nume_camera')`](https://socket.io/docs/server-api/#socket-join-room-callback) și `socket.leave('nume_camera')`. Opțional `socket.join('nume_camera', function() { //gestioneaza conectarea});` poate primi un callback util pentru a gestiona conectarea și ce se petrece cu un client care a intrat într-o cameră.
 
 ```javascript
 socket.on('connection', function (socket) {
-    socket.join('nume_room');
+    socket.join('cam01');
+    socket.to('cam01').emit('special', `${socket.id} ești membru al cam01`);
 });
 ```
+
+Folosind meoda `join` putem spune să introducem clientul reprezentat de obiectul `socket` în cameră.
+
+De îndată ce un socket va fi introdus într-o cameră, poți să emiți către client ce date dorești. Poate fi un mesaj sau un `Buffer`. În momentul în care se va face `emit`-ul toți clienții care erau deja în cameră, vor afla de prezența noului venit.
+
+Clientul nu va ști că a fost adăugat unei camere, dar va putea asculta pe un anumite eveniment.
+
+```javascript
+socket.on('special', (date) => {
+    console.log(date);
+})
+```
+
+Mesajele de la `socket.to('cam01')` vor fi primite doar de cei care sunt în acele camere. Mesajele prefixate cu namespace-ul, vor fi primite de la server, nu de la socket, având efectul concret că vor fi primite de toți cei conectați la server prin acea cameră inclusiv cel care a emis mesajul `io.of('/').to('cam01').emit('special')`. Când faci emit doar cu socketul, toți vor primi mesajul din cameră, dar nu și cel care-l emite.
+
+#### Conectarea la mai multe camere
+
+Un client poate fi conectat la mai multe camere deodată. Metoda pentru a realiza acest lucru este tot [`join`](https://socket.io/docs/server-api/#socket-join-rooms-callback) cu notabila excepție că îi pasezi drept prim parametru un array în care sunt menționate toate camerele la care socketul va fi conectat.
+
+#### Comunicarea din camere
 
 Din moment ce ești într-o cameră, pentru a face broadcasting sau pentru a emite, se pot folosi interșanjabil metodele `to` și `in`.
 
 ```javascript
-io.to('nume_room').emit('nume_eveniment', 'date');
+socket.to('camera_albastra').emit('salutari', date);
 ```
+
+Pentru a emite date către mai multe camere, vor trebui înlănțuite camerele folosind metoda `to`.
+
+```javascript
+socket.to('camera01').to('camera02').emit('salutari', date);
+```
+
+O mențiune importantă care trebuie făcută aici. În momentul în care emiți într-o cameră folosind un socket, mesajul nu va fi primit și de cel care l-a emis. Dacă dorești acest lucru, va trebui să emiți date către o cameră specificând în clar namespace-ul. În concluzie, [socket-ul nu va primi și el mesajul](https://socket.io/docs/server-api/#socket-to-room).
+
+În cazul în care dorești să trimiți punctual un mesaj într-o cameră de oriunde te-ai afla în codul de pe server, poți să face acest lucru specificând namespace-ul.
+
+```javascript
+const io = require('socket.io')(https);
+const nameSpSeparat = io.of('/separat');
+nameSpSeparat.to('spatiul01').emit('salutare', date);
+```
+
+#### Camera proprie și conectare socket la socket
+
+Te poți conecta la propria cameră pentru că id-ul de socket poate fi folosit drept identificator. 
+
+```javascript
+socket.to(socket.id).emit('auth', token);
+```
+
+Același principiu poate fi folosit pentru a comunica direct socket la socket dacă cunoști id-ul altuia.
+
+```javascript
+socket.to(altSocketId).emit('unulaunu', date);
+```
+
+#### Mesaje tuturor
+
+Namespace-ul trimite mesaj tuturor indiferent dacă aparține unei camere sau nu.
+
+```javascript
+io.emit(); // mesajul ajunge la toți
+// echivalent cu
+io.of('/').emit();
+```
+
+Pentru a trimite tuturor participanților dintr-o cameră, prefixezi camera cu namespace-ul sub care sunt toate camerele.
+
+```javascript
+io.of('/nume_namespace').emit('tuturor', date);
+```
+
+
+
+#### Cum părăsești o cameră
 
 Pentru a părăsi un canal, se folosește metoda `leave` la fel cum ai folosit `join`.
 
@@ -417,6 +569,249 @@ admin.emit('Salutare tuturor administratorilor');
 ```
 
 Atunci când se emite dintr-un namespace, nu se vor putea primi confirmări (*acknowledgements*).
+
+
+
+### Scenariu de conectare la o cameră și comunicare
+
+Să presupunem că am stabilit comunicarea cu browserul clientului și că am stabilit care sunt namespace-urile și camerele lor asociate în obiecte distincte. După cum am menționat deja, clientul nu va ști la momentul conectării pe un namespace în ce cameră va fi. Dar pentru o comunicare cu interfața pe care o realizăm clientului, va trebui să comunicăm de pe server datele privind câte namespace-uri există și camerele arondate acestora. Vom porni de la premisa că avem la dispoziție un array cu obiecte care reprezintă namespace-urile construite. Aceste obiecte vor avea o proprietate care este un array de obiecte care reprezintă camerele fiecărui namespace.
+
+```javascript
+let namespaces = []; // array-ul populat va fi exportat din modul
+let adminNs   = new Namespace(0, 'admin',   '/img/admin.jpeg',   '/admin');
+let creatorNs = new Namespace(1, 'creator', '/img/creator.jpeg', '/creator');
+let userNs    = new Namespace(2, 'user',    '/img/users.jpeg',   '/user');
+
+// CONSTRUCȚIE ROOMS
+adminNs.addRoom(new Room(0, 'general', 'admin'));
+creatorNs.addRoom(new Room(0, 'resources', 'creator'));
+userNs.addRoom(new Room(0, 'chat', 'user'));
+
+namespaces.push(adminNs, creatorNs, userNs);
+```
+
+În cazul de mai sus, punctul central îl va constitui array-ul obiectelor namespace.
+
+Următorul pas este ca din server să stabilim un prim contact pe evenimentul `connection`.
+
+```javascript
+// PRIMA CONECTARE va fi făcută pe RĂDĂCINA! (/)
+io.on('connection', (socket) => {
+    // trimite către client date necesare pentru fiecare endpoint.
+    let nsData = namespaces.map((namespace) => {
+        return {
+            img:      namespace.img,
+            endpoint: namespace.endpoint
+        };
+    });
+    socket.emit('data', nsData); // trimite clientului datele
+    // pe eventul 'data' trebuie sa asculte userul la prima conectare
+});
+```
+
+Clientul va asculta pe evenimentul `data` pentru datele relevate.
+
+```javascript
+// imediat ce te conectezi, asculta datele specifice
+socket.on('data', (data) => {
+  // AFIȘEAZĂ TOATE ROLURILE ÎN BAZA NAMESPACE-URILOR
+  let namespaces = document.querySelector('.namespaces');
+  namespaces.innerHTML = '';
+  data.forEach((ns) => {
+    namespaces.innerHTML += `<span class="namespace" data-ns="${ns.endpoint}"><img src="${ns.img}" />${ns.endpoint.slice(1)}</span>`;
+  });
+  // ATAȘEAZĂ RECEPTORI PE FIECARE ROL
+  Array.from(document.getElementsByClassName('namespace')).forEach((element) => {  
+    element.addEventListener('click', (e) => {
+      let endpoint = element.getAttribute('data-ns');
+      // apelează funcția de conectare la namespace
+  	  joinNamespace(endpoint);
+    });
+  });
+  joinNamespace('/users');
+});
+```
+
+Acesta este un scenariu foarte simplu de comunicare între server și client cu scopul de a expune datele de conectare pe camere.
+
+Pentru managementul conectărilror ulterioare, vom gestiona clienții prin alocarea lor dinamică.
+
+```javascript
+namespaces.forEach(function manageNsp (namespace) {
+    // pentru fiecare endpoint, la conectarea clientului
+    io.of(namespace.endpoint).on('connection', (nsSocket) => {
+        console.log(`User ${nsSocket.id} joined ${namespace.endpoint}`); // vezi cine s-a conectat
+        nsSocket.emit('nsRoomLoad', namespace.rooms); 
+        // pentru toate namespace-urile primise, clientul trebuie să 
+        // aterizeze undeva. Va ateriza în primul namespace din toate trimise
+        // care va avea atașat toate camerele disponibile pentru acel ns
+
+        // integrarea userului în camera pe care a ales-o!
+        nsSocket.on('joinRoom', (roomToJoin, nrUsersCallbackFromClient) => {
+            // #0 Înainte de a te alătura unei camere, trebuie să o părăsești
+            // pe anterioara, altfel mesajele se vor duce în mai multe deodată.
+            const roomToLeave = Object.keys(nsSocket.rooms)[1];
+            // utilizatorul va fi în cea de-a doua valoare pentru cameră din obiect
+            // pentru că prima cameră pentru un namespace este propria cameră a userului.
+            // Concluzia este că userul are din start propria cameră la conectarea cu un ns!!!
+            nsSocket.leave(roomToLeave);
+            updateUsersInRooms(namespace, roomToleave); // actualizează numărul celor rămași
+
+            /* #1 Adaugă clientul unei camere */
+            nsSocket.join(roomToJoin);
+
+            /* #2 Aflăm care este camera aleasă de user din obiectul camerelor */
+            const nsRoom = namespace.rooms.find((room) => {
+                return room.roomTitle === roomToJoin;
+                // căutăm în obiectele room colectate prin instanțierea clasei Namespace
+                // dacă există vreo cameră precum cea obținută mai sus.
+                // va returna chiar obiectul de cameră, 
+                // dacă aceasta a fost găsită între cele asociate namespace-ului
+            });
+
+            /* #3 Îi trimitem istoria */
+            nsSocket.emit('historyUpdate', nsRoom.history); // ori de câte ori cineva se va conecta, va primi și istoricul
+            
+            /* #4 trimitem numărul membrilor actualizat cu fiecare sosire */
+            updateUsersInRooms(namespace, roomToJoin);
+        });
+        // ascultarea mesajelor de la client pentru actualizarea tuturor socketurilor din room
+        // trebuie sa identifici in care cameră este clientul si sa trimiti datele sale din mesaj tuturor
+        nsSocket.on('comPeRoom', (data) => {
+            // putem trimite mai multe informații pe lângă mesajul original
+            const dataPlus = {
+                mesaj: data.text,
+                time: Date.now(),
+                username: "nu-hardcoda-info"
+            };
+            console.log(dataPlus);
+            // AFLA în ce room este acest socket client care a emis mesajul
+            // https: //socket.io/docs/server-api/#socket-rooms
+            console.log(nsSocket.rooms); // obiectul cu toate camerele în care este userul
+            // utilizatorul va fi în cea de-a doua valoare pentru cameră din obiect
+            // pentru că prima cameră pentru un namespace este propria cameră a userului.
+            const roomTitle = Object.keys(nsSocket.rooms)[1];
+            // console.log(roomTitle);
+            // Avem nevoie și de obiectul room corespondent camerei în care este socketul
+            const nsRoom = namespace.rooms.find((room) => {
+                return room.roomTitle === roomTitle;
+                // căutăm în obiectele room colectate prin instanțierea clasei Namespace
+                // dacă există vreo cameră precum cea obținută mai sus.
+                // va returna chiar obiectul de cameră, 
+                // dacă aceasta a fost găsită între cele asociate namespace-ului
+            });
+            nsRoom.addMessage(dataPlus); // ori de câte ori vine un mesaj, va fi băgat în history
+            io.of(namespace.endpoint).to(roomTitle).emit('comPeRoom', dataPlus);
+            // se menționează explicit numele namespace-ului în loc de nsSocket
+            // pentru ca mesajul să fie primit și de cel care l-a emis
+        });
+    });
+});
+
+function updateUsersInRooms (namespace, roomToJoin) {
+    // trimite tuturor socketurilor conectate numarul de useri prezenti după update-ul prezent doar in UI-ul ultimului venit.
+    // https://socket.io/docs/server-api/#namespace-clients-callback
+    // execută callback-ul clientului
+    io.of(namespace.endpoint).in(roomToJoin).clients((err, clients) => {
+        // actualizează în toți clienții
+        io.of('/users').in(roomToJoin).emit('updateMembers', clients.length);
+        // callbackul este rulat cu datele despre user și actualizează
+        // DOM-ul din client în timp real. OAU!!!!!!!
+    });
+}
+```
+
+Pe partea de client, putem construi două funcții specializate pentru conectarea la namespace și alta privind conectarea pe cameră
+
+```javascript
+let nsSocket = '';
+
+// ACCES LA NAMESPACE
+function joinNamespace(endpoint) {
+   // mai întâi verifică dacă există un socket activ
+  if(nsSocket) {
+    // dacă există un socket activ, atunci a rămas de la o sesiune anterioară
+	nsSocket.close(); // este nevoie să-l închizi
+    // scoate funcțiile receptor care au fost adăugate pentru alt namespace
+    document.querySelector('#input-text').removeEventListener('submit', submission);
+  }
+  nsSocket = io(`${endpoint}`); // setează variabila globală
+
+  /* Desfășoară toată logica de după crearea endpointului */
+
+  // PRIMEȘTE DE LA SERVER CARE SUNT CAMERELE PENTRU ENDPOINTUL ALES
+  nsSocket.on('nsRoomLoad', (nsRooms) => {
+    // pe evenimentul nsRoomLoad asculta datele care precizează câte camere sunt.
+    console.log(nsRooms);
+  });
+
+  /*POSIBIL MODEL DE PRELUARE DATE DIN FORM*/ 
+  // TODO: Explorează integrarea cu aplicația
+  nsSocket.on('comPeRoom', (msg) => {
+    console.log(msg);
+    document.querySelector('#mesaje').innerHTML += `<li>${msg.text}</li>`;
+  });
+  document.querySelector('.form').addEventListener('submit', submission);
+}
+
+// callback pentru funcția receptor
+function submission (event) {
+  event.preventDefault(); // previne un refresh de pagină la send
+  const newMessage = document.querySelector('#user-msg').value;
+  nsSocket.emit('newMsg2Server', {
+    text: newMessage
+  });
+}
+
+// ACCES LA ROOM
+function joinRoom(roomName) {
+
+  /* #1 Intră într-o cameră */
+  // trimite serverului numele camerei pentru care se dorește intrarea
+  // informațiile privind camerele disponibile trebuie să preexiste.
+  nsSocket.emit('joinRoom', roomName, (newNumberOfMembers) => {
+    // odată adăugat la un room, vom actualiza numărul participanților
+    // este locul din DOM unde este afișat numărul clienților din cameră
+    // FIXME: Actualizează DOM-ul să aibă un element care să afișeze numărul de useri.
+    document.querySelector('.numar-curent-de-useri').innerHTML = `${newNumberOfMembers}`;
+  });
+    
+  // Adaugă funcții receptor pentru toate camerele
+  let roomNodes = document.getElementsByClassName('room');
+  Array.from(roomNodes).forEach((elem) => {
+    elem.addEventListener('click', (e) => {
+      joinRoom(e.target.innerText);
+    });
+  });
+    
+  /* #2 Actualizează istoricul mesajelor */
+  nsSocket.on('historyUpdate', (history) => {
+    // afișează istoricul modificând DOM-ul
+    const mesajNou = document.querySelector('#mesaje');
+    // la prima conectare, se vor șterge toate mesajele
+    mesajeleDinUI.innerHTML = "";
+    // trecem prin mesajele istorice
+    history.forEach((mesaj) => {
+      const newMsg = buidHTML(mesaj);
+      const mesajeleExistente = mesajeleDinUI.innerHTML; // mesajeleExistente va porni gol.
+      mesajeleDinUI.innerHTML = mesajeleExistente + newMsg; // la el se vor adăuga cele din istoric
+      // apoi la ceea ce preexistă se vor adăuga altele care au intrat in istoric cu fiecare emit din client
+      // aceasta este metoda de a construi top-down
+      mesajeleDinUI.scrollTo(0, mesajeleDinUI.scrollHeight);
+      // se va vedea ultimul mesaj intrat, nu primul care forțează userul să facă scroll.
+    });
+
+    /* #3 Actualizează numărul membrilor afișat */
+    nsSocket.on('updatemembers', (numMembers) => {
+      document.querySelector('.numar-curent-de-useri').innerHTML = `${numMembers}`;
+    });
+  });
+}
+```
+
+
+
+
 
 ## Evidența clienților
 
@@ -638,3 +1033,61 @@ Acest eveniment va apela callbackul înainte ca socket să trimită un pachet. A
 
 - `type`, care indică tipul pachetului primit și
 - `data`, fiind un pachet de date dacă tipul este un `message`.
+
+## Client
+
+### socket
+
+#### socket.emit(eventName\[, …args][, ack])
+
+Clientul poate emite date folosind un anumit eveniment convenit cu serverul. În plus, mai poate trimite ca al treilea argument (`[, ack]`), o funcție callback, dar care este foarte specială pentru că va fi executată, nu local în client, ci va fi trimisă serverului, care o va executa el. Magie curată!
+
+```javascript
+// din client
+function joinRoom(roomName) {
+  // trimite serverului numele camerei pentru care se dorește intrarea
+  // informațiile privind camerele disponibile trebuie să preexiste.
+  nsSocket.emit('joinRoom', roomName, (newNumberOfMembers) => {
+    // odată adăugat la un room, vom actualiza numărul participanților
+    document.querySelector('.numar-curent-de-useri').innerHTML = `${newNumberOfMembers}`;
+  });
+}
+ 
+/* SERVERUL */
+var {io,namespaces} = require('./server');
+
+// PRIMA CONECTARE va fi făcută pe RĂDĂCINA! (/)
+io.on('connection', (socket) => {
+    // trimite către client date necesare pentru fiecare endpoint.
+    // parcurge array-ul namespace-urilor și redu cu map la minimum esențial
+    let nsData = namespaces.map((ns) => {
+        return {
+            img: ns.img,
+            endpoint: ns.endpoint
+        };
+    });
+    // console.log(nsData);
+    socket.emit('data', nsData); // trimite clientului datele
+    // pe eventul data trebuie sa asculte userul la prima conectare
+});
+
+// CONECTĂRI ULTERIOARE PE ENDPOINTURILE ALESE DE CLIENT
+// ascultarea dinamică a conexiunilor cu LOOP prin namespaces pentru a vedea cine cui namespace apartine.
+namespaces.forEach(function manageNsp (namespace) {
+    io.of(namespace.endpoint).on('connection', (nsSocket) => {
+        console.log(`User ${nsSocket.id} joined ${namespace.endpoint}`); // vezi cine s-a conectat
+        nsSocket.emit('nsRoomLoad', namespaces[0].rooms); 
+        // pentru toate namespace-urire primise, clientul trebuie să 
+        // aterizeze undeva. Va ateriza în primul namespace din toate trimise
+        // care va avea atașat toate camerele disponibile pentru acel ns
+
+        // integrarea userului în camera pe care a ales-o!
+        nsSocket.on('joinRoom', (roomToJoin, nrUsersCallbackFromClient) => {
+            // FIXME: Nu uita să construiești un mecanism de history
+            nsSocket.join(roomToJoin);
+            nrUsersCallbackFromClient();
+        });
+    });
+});
+```
+

@@ -6,6 +6,8 @@ Atunci când un program Node.js rulează pe un procesor multicore, poți folosi 
 
 Este recomandabil ca Node.js să fie rulat în modul `cluster` atunci când sunt așteptate sarcini mai grele din partea sa. Ceea ce se va petrece atunci când folosim clustering-ul este că se vor inițializa mai mulți workeri, care vor balansa capacitatea de prelucrare a lui NodeJS. Pornirea lui NodeJS este recomandabilă în cluster mode.
 
+Fiecare worker va avea propriul mediu lexical separat de al celorlalți.
+
 Pentru a porni clusteringul ai nevoie să chemi biblioteca de cod și să declari un master. Modulul `cluster` este unul standard pentru NodeJS așa cum este `fs`, de exemplu.
 
 ```javascript
@@ -66,6 +68,8 @@ Fiecare `cluster.fork()` reprezintă câte o instanță a event loop-ului. Ceea 
 ab -c 50 -n 500 http://localhost:3000/rutarapida
 # -n 500 - fă 500 de cereri.
 ```
+
+## Recomandare
 
 În producție vei folosi un cluster manager precum PM2.
 

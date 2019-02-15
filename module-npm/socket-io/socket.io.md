@@ -1,5 +1,7 @@
 # Socket.io
 
+## 1. Introducere
+
 Socket.io este o bibliotecă de cod care permite comunicare bidirecțională în timp real între clienți și un server. Un avantaj este faptul că se vor realiza conexiuni indiferent de layer-ele interpuse (proxy-uri, load balance-re, etc). Reconectarea clientului se va face automat. Socket.io folosește în subsidiar `engine.io` care este un protocol de comunicare ce va folosi tehnologii de conectare care să asigure o legătură strabilă indiferent de tehnologiile interpuse între client și server. 
 
 Pentru interacțiunea cu toți clienții care se conectează, se utilizează clasa `Socket`. Nivelul de transport este asigurat prin XHR/JSONP (numit și long-polling) și acolo unde este posibil, se va folosi WebSocket, dacă legătura stabilită permite. Socket.IO nu este o implementare de WebSocket. Socket.io atașează informații suplimentare fiecărui pachet (tip pachet și namespace, ack id) și din acest motiv nu se poate conecta la servere WebSocket.
@@ -22,7 +24,11 @@ Clientul se va conecta la server pentru că acesta este expus pe server pe calea
 
 To clientul va trebui ca în scriptul principal pe care îl va încărca în pagină, să inițieze comunicarea cu serverul creând o instanță: `var socket = io()`. Dacă invoci obiectul fără niciun argument, descoperirea serverului din backend se va face automat.
 
-## Instanțierea constructorul 
+1.1 Universul socket-io
+
+![Socket.io dependency graph](/media/nicolaie/DATA/DEVELOPMENT/JAVASCRIPT/Node-invat-eu-inveti-tu/module-npm/socket-io/dependencies.jpg "Universul socket-io")
+
+## 2. Instanțierea obiectului server
 
 Socket-ul are nevoie să se atașeze la un server `http` pentru a funcționa așa cum este cel pe care-l oferă NodeJS din oficiu `httpServer`. Pe lângă serverul HTTP, constructorul `Socket.io` acceptă suplimentar și un obiect cu opțiuni de configurare.
 
@@ -69,16 +75,16 @@ io.attach(3000, {
 });
 ```
 
-## Proprietăți și metode ale obiectului
+### 2.1. Proprietăți și metode ale obiectului `io` (server)
 
 Odată instanțiat obiectul server, acesta expune câteva proprietăți și metode.
 
-### Proprietatea `on`
+#### 2.1.1. Proprietatea `on`
 
 Serverul odată instanțiat poate interacționa prin gestionarea evenimentelor la care răspunde prin callback-uri.
 
 ```javascript
-ion.on('connect', function (socket) {});
+io.on('connect', function (socket) {});
 ```
 
 Ascultarea conexiunii pentru a gestiona pachetele care sosesc se face prin atașarea unui callback care va răspunde procesând datele primite și eventual trimițând un răspuns. Obiectul `socket` primit de callback reprezintă clientul conectat. Lui îi vom putea atașa un eveniment prin care îi vom comunica date.
@@ -106,7 +112,7 @@ io.on('connect', function (socket) {
 });
 ```
 
-### Metoda `of(nsp)`
+#### 2.1.2. Metoda `of(nsp)`
 
 Această metodă este folosită pentru a crea namespace-uri, adică adrese diferite care folosesc aceeași conexiune. Important este faptul că namespace-ul poate fi un șir de caractere, o expresie regulată sau chiar o funcție.
 
@@ -116,7 +122,7 @@ const adminNamespace = io.of('/admin');
 
 Metoda va returna un namespace.
 
-### Proprietatea `sockets`
+#### 2.1.3. Proprietatea `sockets`
 
 Acesta este un alias pentru namespace-ul rădăcină: `/`.
 
@@ -126,7 +132,7 @@ io.sockets.emit('salutare', 'toată lumea');
 io.of('/').emit('salutare', 'toată lumea');
 ```
 
-### Metoda `serveClient([value])`
+#### 2.1.4. Metoda `serveClient([value])`
 
 Argumentul acceptat este o valoare `Boolean`. Dacă valoarea returnată este `true`, serverul atașat va servi fișierele către client.
 
@@ -140,7 +146,7 @@ io.serveClient(false);
 io.attach(http);
 ```
 
-### Metoda `path([value])`
+#### 2.1.5. Metoda `path([value])`
 
 Metoda path acceptă drept argument un șir de caractere, care va crea calea menționată prin care vor fi servite fișiere și `engine.io`-ul. Valoarea din oficiu este `/socket.io`.
 
@@ -154,7 +160,7 @@ const socket = io({
 });
 ```
 
-### Metoda `adapter([value])`
+#### 2.1.6. Metoda `adapter([value])`
 
 Indică prin valoarea dată ce adaptor este nevoie în cazul în care intenționezi să folosești `socket.io` cu servicii externe. Exemplul manualului este un server [Redis](https://github.com/socketio/socket.io-redis). Valoarea din oficiu indică folosirea memoriei mașinii pe care rulează serverul. Dacă nu este introdus niciun argument, metoda returnează adaptorul în uz curent.
 
@@ -173,7 +179,7 @@ io.on('connection', (socket) => {
 
 Rulând `socket.io` cu adaptorul de Redis, vei putea folosi multiple instanțe `socket.io` pe procese și servere diferite. Acestea vor putea să emită evenimente unele altora. Broadcastul va fi asigurat către clienți prin mecanismul Pub/Sub al Redis-ului.
 
-### Metoda `origins([value])`
+#### 2.1.7. Metoda `origins([value])`
 
 Această metodă poate seta originile pachetelor. Dacă nu primește un argument, va returna valoarea curentă.
 
@@ -181,7 +187,7 @@ Această metodă poate seta originile pachetelor. Dacă nu primește un argument
 io.origins(['https://foo.example.com:443']);
 ```
 
-### Metoda `origins(fn)`
+#### 2.1.8. Metoda `origins(fn)`
 
 Primește drept argument o funcție, care la rândul ei are două argumente. Funcția returnează obiectul server. Argumentele acestei metode pot fi:
 
@@ -201,23 +207,23 @@ io.origins((origin, callback) => {
 
 Această funcție va fi executată pentru fiecare request. Din acest motiv, va trebui ținută la un minimum. Atunci când nu poți identifica sursa, valoarea pentru aceasta va fi `*`. În cazul utilizării cu framework-ul Express, headerele CORS vor fi afectate doar pentru cererile `socket.io`. Pentru Express, se va folosi modulul `cors`.
 
-### Metoda `attach(httpServer[, options])`
+#### 2.1.9. Metoda `attach(httpServer[, options])`
 
 Argumentul `httpServer` este cel la care va fi atașată instanța socket.io. Pot fi introduse opțiuni de configurare a serverului.
 
-### Metoda `attach(port[, options])`
+#### 2.1.10. Metoda `attach(port[, options])`
 
 Menționează portul pe care va rula instanța de socket atașată unui server http. Similar poți folosi metoda `listen(httpServer[, options])`.
 
-### Metoda `bind(engine)`
+#### 2.1.11. Metoda `bind(engine)`
 
 Metoda returnează obiectul server după ce l-a legat de o anume versiune de server `socket.io`.
 
-### Metoda `onconnection(socket)`
+#### 2.1.12. Metoda `onconnection(socket)`
 
 Metoda returnează serverul după ce a creat un nou client `socket.io` de la instanța de `Socket` reprezentând `engine.io`.
 
-## Răspunsuri de confirmare
+## 3. Răspunsuri de confirmare
 
 Uneori, atunci când trimiți mesaje, ai nevoie de confirmări privind starea acestora.
 
@@ -238,7 +244,7 @@ var socket = io(); // TIP: io() with no args does auto-discovery
   });
 ```
 
-## Emiterea pe toate socketurile
+## 4. Emiterea pe toate socketurile
 
 Se comportă ca un alias pentru namespace-ul din oficiu `/`.
 
@@ -248,7 +254,7 @@ io.sockets.emit('hi', 'everyone');
 io.of('/').emit('hi', 'everyone');
 ```
 
-## Broadcasting
+## 5. Broadcasting
 
 Dacă atașezi un fanion `broadcasting` proprietății `emit` sau `send`, vei putea trimite mesaje tuturor mai puțin ție, cel care face broadcastingul.
 
@@ -259,9 +265,9 @@ io.on('connection', function (socket) {
 });
 ```
 
-## Resurse statice clienților
+## 6. Resurse statice clienților
 
-Socket.io stabilește automat o legăură cu agentul utilizatorului căruia îi sunt trimise automat resurse de către serverul Socket.io. Directorul stabilit din oficiu pentru a servi resursele de conectare clientului este `/socket.io`. Poți schimba această valoare la una preferată, dacă acest lucru este necesar.
+Socket.io stabilește automat o legătură cu agentul utilizatorului căruia îi sunt trimise automat resurse de către serverul Socket.io. Directorul stabilit din oficiu pentru a servi resursele de conectare clientului este `/socket.io`. Poți schimba această valoare la una preferată, dacă acest lucru este necesar.
 
 ```javascript
 const io = require('socket.io')();
@@ -273,7 +279,7 @@ const socket = io({
 });
 ```
 
-## Ce este un socket
+## 7. Ce este un socket
 
 Un `socket` este un obiect instanțiat în baza clasei [`Socket`](https://socket.io/docs/server-api/#Socket), care are rolul să comunice cu browserul clientului. De la bun început, socket-urile aparțin namespace-ului general `/`. Un obiect `socket` nu folosește direct TCP/IP sockets. Acest obiect creat pe baza clasei `Socket` moștenește din clasa `EventEmitter` din Node.js, ceea ce îl transformă într-un obiect care poate emite și reacționa la evenimente. Documentația aduce mențiunea că această clasă suprascrie metoda `emit` a clasei `EventEmitter`, dar restul este păstrat intact.
 
@@ -294,7 +300,7 @@ socket.on('connection', function(socket){
 
 
 
-## Namespace-uri / multiplexare
+## 8. Namespace-uri / multiplexare
 
 Namespace-urile reprezintă seturi de socketuri conectate ca o zonă identificabilă distinct, care este specificată de numele unei căi. Această cale identifică namespace-ul. Orice client se va conecta automat la rădăcină (`/` - namespace-ul principal) și abia după aceea la alte namespace-uri. 
 
@@ -352,7 +358,7 @@ news.on('news', function () {
 });
 ```
 
-### Crearea de namespace-uri
+### 8.1. Crearea de namespace-uri
 
 Socket.io pune la dispoziție metoda `of` pentru a crea un spațiu separat în canalul de comunicații.
 
@@ -431,7 +437,7 @@ Modul în care se creează namespace-urile poate conduce la concluzia eronată c
 
 Dacă dorești, din namespace-ul general `/` poți trimite mesaje către namespace-uri definite, cu o singură condiție. Aceasta este ca mai întâi să se fi creat deja canalul general și clientul să se fi conectat pe el, dar și pe cel definit separat. Reține faptul că generarea canalului principal și conectarea clientului se fac într-o manieră asincronă, ceea ce conduce la concluzia că mesajul trimis din canalul principal către cel definit separt se poate face după ce s-au stabilit toate conexiunile. O concluzie foarte importantă este că un namespace poate trimite mesaje întregului namespace indiferent de ce alte sub-namespace-uri au fost create și câte *rooms* au fiecare.
 
-### Conectare dinamică la un namespace
+### 8.2. Conectare dinamică la un namespace
 
 După cum deja am aflat, metoda `of`, care crează namespace-urile, suplimentar unui string, acceptă drept valoare pentru parametrul care specifică calea și un regexp, și la nevoie chiar o funcție.
 
@@ -453,13 +459,13 @@ dynamicNsp.emit('hello');
 dynamicNsp.use((socket, next) => { /* ... */ });
 ```
 
-### Crearea de rooms (camere)
+### 8.3. Crearea de rooms (camere)
 
 Pentru fiecare namespace pot fi definite camere la care socket-ul clientului poate fi adăugat folosind metoda `join` (se alătură). Același socket client poate fi scos dintr-o cameră folosindu-se metoda `leave` (părăsește). Constituirea de camere (*rooms*) este o prerogativă a serverului. Din oficiu, clientul nu știe pe ce camere a fost adăugat pentru că acest lucru se petrece în partea de server. Logica programului de pe server în comunicare cu cea de la client va fi cea care va înștiința clientul despre camerele disponibile.
 
 Clientul se conectează la un namespace, dar nu știe care sunt camerele disponibile. Tot ceea ce va ști este că primește mesaje unui anume namespace pentru că și el va trebui să se conecteze la acel namespace.
 
-#### Cum setezi o camera
+#### 8.3.1. Cum setezi o camera
 
 Gestionarea accesului și ieșirii dintr-o *cameră* se face în partea de server folosind două metode: [`socket.join('nume_camera')`](https://socket.io/docs/server-api/#socket-join-room-callback) și `socket.leave('nume_camera')`. Opțional `socket.join('nume_camera', function() { //gestioneaza conectarea});` poate primi un callback util pentru a gestiona conectarea și ce se petrece cu un client care a intrat într-o cameră.
 
@@ -484,11 +490,11 @@ socket.on('special', (date) => {
 
 Mesajele de la `socket.to('cam01')` vor fi primite doar de cei care sunt în acele camere. Mesajele prefixate cu namespace-ul, vor fi primite de la server, nu de la socket, având efectul concret că vor fi primite de toți cei conectați la server prin acea cameră inclusiv cel care a emis mesajul `io.of('/').to('cam01').emit('special')`. Când faci emit doar cu socketul, toți vor primi mesajul din cameră, dar nu și cel care-l emite.
 
-#### Conectarea la mai multe camere
+#### 8.3.2. Conectarea la mai multe camere
 
 Un client poate fi conectat la mai multe camere deodată. Metoda pentru a realiza acest lucru este tot [`join`](https://socket.io/docs/server-api/#socket-join-rooms-callback) cu notabila excepție că îi pasezi drept prim parametru un array în care sunt menționate toate camerele la care socketul va fi conectat.
 
-#### Comunicarea din camere
+#### 8.3.3 Comunicarea din camere
 
 Din moment ce ești într-o cameră, pentru a face broadcasting sau pentru a emite, se pot folosi interșanjabil metodele `to` și `in`.
 
@@ -512,7 +518,7 @@ const nameSpSeparat = io.of('/separat');
 nameSpSeparat.to('spatiul01').emit('salutare', date);
 ```
 
-#### Camera proprie și conectare socket la socket
+#### 8.3.4. Camera proprie și conectare socket la socket
 
 Te poți conecta la propria cameră pentru că id-ul de socket poate fi folosit drept identificator. 
 
@@ -526,7 +532,7 @@ Același principiu poate fi folosit pentru a comunica direct socket la socket da
 socket.to(altSocketId).emit('unulaunu', date);
 ```
 
-#### Mesaje tuturor
+#### 8.3.5. Mesaje tuturor
 
 Namespace-ul trimite mesaj tuturor indiferent dacă aparține unei camere sau nu.
 
@@ -544,7 +550,7 @@ io.of('/nume_namespace').emit('tuturor', date);
 
 
 
-#### Cum părăsești o cameră
+#### 8.3.6. Cum părăsești o cameră
 
 Pentru a părăsi un canal, se folosește metoda `leave` la fel cum ai folosit `join`.
 
@@ -572,7 +578,7 @@ Atunci când se emite dintr-un namespace, nu se vor putea primi confirmări (*ac
 
 
 
-### Scenariu de conectare la o cameră și comunicare
+#### 8.3.7. Scenariu de conectare la o cameră și comunicare
 
 Să presupunem că am stabilit comunicarea cu browserul clientului și că am stabilit care sunt namespace-urile și camerele lor asociate în obiecte distincte. După cum am menționat deja, clientul nu va ști la momentul conectării pe un namespace în ce cameră va fi. Dar pentru o comunicare cu interfața pe care o realizăm clientului, va trebui să comunicăm de pe server datele privind câte namespace-uri există și camerele arondate acestora. Vom porni de la premisa că avem la dispoziție un array cu obiecte care reprezintă namespace-urile construite. Aceste obiecte vor avea o proprietate care este un array de obiecte care reprezintă camerele fiecărui namespace.
 
@@ -813,7 +819,7 @@ function joinRoom(roomName) {
 
 
 
-## Evidența clienților
+## 9. Evidența clienților
 
 Pentru a obține o metodă de a se ține evidența clienților conectați. Fiecare client are un id. Pentru a se gestiona clienții, există o metodă `clients` pe care o putem folosi pentru un namespace specificat.
 
@@ -842,7 +848,7 @@ io.clients((error, clients) => {
 });
 ```
 
-## Evenimente predefinite
+## 10. Evenimente predefinite (server)
 
 ### connect
 
@@ -1036,7 +1042,49 @@ Acest eveniment va apela callbackul înainte ca socket să trimită un pachet. A
 
 ## Client
 
-### socket
+### Obiectul conexiunii `io`
+
+#### io(\[url][, options])
+
+Primul pas în stabilirea unei conexiuni cu serverul este să instanțiezi un obiect socket apelând metoda `io` cu câțiva parametri.
+
+- **url** este un `String` care menționează namespace-ul la care se face conexiunea. Dacă nu este menționat, conectarea se va face la `window.location`, adică url-ul pe care este pagina deschisă.
+- **options** este un `Object` care poate fi populat cu opțiunile de conectare a clientului la server.
+
+Metoda va returna un obiect `Socket`.
+
+Ceea ce se va petrece în spatele cortinei, este o instațiere a unui `Manager` pentru url-ul pasat. Dacă există și alte apeluri din pagina clientului, `Manager`-ul va fi reutilizat cu excepția cazului în care opțiunea `multiplex` are setată valoarea la `false`. Setarea multiplexării la `false` atrage după sine generarea unei noi conexiuni de fiecare dată când clientul se conectează la server. Acest lucru este echivalentul opțiunii `'force new connection': true` pasate în obiectul de configurare a conexiunii sau mai nou `forceNew: true`.
+
+Conectarea la un namespace specificat, de exemplu `io('/users')` declanșează câteva etape de conectare:
+
+- prima dată clientul se va conecta pe rădăcină la `http://localhost` sau la rădăcina indicată de valoarea `window.location`;
+- Imediat după, conexiunea Socket.IO se va face la namespace-ul specificat: `/users`.
+
+#### Trimiterea parametrilor
+
+Dacă ai nevoie să trimiți din client către server parametri, care să fie atașați apelului fără a mai folosi un eveniment dedicat, poți face acest lucru folosindu-te de posibilitatea de a trimite opțiuni la momentul conectării, fie atașând la namespace: `http://localhost/users?token=b10ef34`, fie trimițând în obiectul de opțiuni ca al doilea argument, o proprietate `query`, care să conțină datele necesare.
+
+```javascript
+const socket = io({
+  query: {
+    token: 'b10ef34'
+  }
+});
+```
+
+Trimiterea parametrilor este în tandem cu momentul primirii acestora pe server. Obiectul `socket` are o proprietate [`handshake`](https://socket.io/docs/server-api/#socket-request), care este referința către un obiect, care între celelalte, are și `query`, care este chiar obiectul trimis de client.
+
+```javascript
+{
+  query: {}
+}
+```
+
+Handshake-ul ce întâmplă o singură dată, la momentul conectării clientului cu serverul.
+
+
+
+### Obiectul `socket`
 
 #### socket.emit(eventName\[, …args][, ack])
 

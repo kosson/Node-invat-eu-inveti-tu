@@ -4,12 +4,36 @@ Mongoose este un ORM - Object Relational Mapper. Acest lucru implică faptul că
 
 De fiecare dată când Mongoose face o cerere către baza de date MongoDB, aceasta ajunge la Index-ul lui MongoDB. Indexul este o structură de date care ține minte unde se află datele în documentele organizate în colecții. Pentru fiecare colecție din MongoDB este creat un indice. Din nefericire, MongoDB face un index doar pentru id-urile documentelor. Dacă se face o căutare după numele unui câmp dintr-un document, MongoDB, va trebui să caute document cu document, ceea ce implică timpi mai mari de răspuns al datelor (*full collection scan*). O soluție pentru aceste situații ar fi implementarea unui mecanism de caching (poate Redis).
 
-## Totul in Mongoose pornește de la o schema.
+## Totul in Mongoose pornește de la o schema
 
-Fiecare schema se mapează pe o colecție MongoDB.
+Fiecare schema are drept corespondent o colecție MongoDB.
 
 Vezi exemplul dat [la capitolul dedicat acestora](http://mongoosejs.com/docs/guide.html) din documentația oficială.
-Schema indică numele câmpurilor și tipurile datelor.
+Schema indică numele câmpurilor și tipurile datelor. Un exemplu tipic este cel oferit de documentația oficială.
+
+```javascript
+  var mongoose = require('mongoose');
+  var Schema = mongoose.Schema;
+
+  var blogSchema = new Schema({
+    title:  String,
+    author: String,
+    body:   String,
+    comments: [{ body: String, date: Date }],
+    date: { type: Date, default: Date.now },
+    hidden: Boolean,
+    meta: {
+      votes: Number,
+      favs:  Number
+    }
+  });
+```
+
+
+
+### Definirea unei scheme
+
+
 
 ## Creează un model de date
 

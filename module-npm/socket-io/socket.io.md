@@ -2,11 +2,23 @@
 
 ## 1. Introducere
 
-Socket.io este o bibliotecă de cod care permite comunicare bidirecțională în timp real între clienți și un server. Un avantaj este faptul că se vor realiza conexiuni indiferent de layer-ele interpuse (proxy-uri, load balance-re, etc). Reconectarea clientului se va face automat. Socket.io folosește în subsidiar `engine.io` care este un protocol de comunicare ce va folosi tehnologii de conectare care să asigure o legătură strabilă indiferent de tehnologiile interpuse între client și server. 
+Socketurile sunt baza tuturor conexiunilor pe web. La nivelul cel mai de jos al unei conexiuni care se stabilește prin TCP (Transfer Control Protocol), socketurile de rețea[^Network socket]
 
-Pentru interacțiunea cu toți clienții care se conectează, se utilizează clasa `Socket`. Nivelul de transport este asigurat prin XHR/JSONP (numit și [long-polling](https://en.wikipedia.org/wiki/Push_technology#Long_polling)) și acolo unde este posibil, se va folosi WebSocket, dacă legătura stabilită permite. Socket.IO nu este o implementare de WebSocket. Socket.io atașează informații suplimentare fiecărui pachet (tip pachet și namespace, ack id) și din acest motiv nu se poate conecta la servere WebSocket.
+[^Network socket]: [Network socket, Wikipedia]()https://en.wikipedia.org/wiki/Network_socket
 
-Un client care a reușit să facă o conexiune, va sta conectat pe termen nedefinit, iar atunci când serverul nu mai este disponibil, va încerca să se conecteze fără a se deconecta.
+ sunt stream-uri de bytes între două computere, unul cu rol de client, iar celălalt cu rol de server. Propriu-zis, ceea ce introduci byte cu byte într-o parte, apare în cealaltă parte. Atunci când apelezi un server, mai întâi se deschide o conexiune socket și apoi se trimite un header al cererii urmat de un body. Headerul și corpul sunt bytes transmiși serverului. Dimensiunea este specificată în header și astfel socketul serverului va ști când să se oprească din ascultat cererea. În cazul în care în header nu este specificat `Keep-Alive`, serverul va închide conexiunea.
+
+Protocolul în baza căruia funcționează și serverul Socket.io este [The WebSocket Protocol (RFC 6455)](https://tools.ietf.org/html/rfc6455). Trebuie menționat din capul locului că acest protocol nu sunt socket-urile TCP descrise mai sus.
+
+###1.1. Privire generală Socket.IO 
+
+Socket.io este o bibliotecă de cod care permite comunicare bidirecțională în timp real între clienți și un server. Un avantaj este faptul că se vor realiza conexiuni indiferent de layer-ele interpuse (proxy-uri, load balance-re, etc). Reconectarea clientului se va face automat. Socket.io folosește în subsidiar `engine.io` care este un protocol de comunicare ce va folosi tehnologii de conectare care să asigure o legătură stabilă indiferent de tehnologiile interpuse între client și server. 
+
+Pentru interacțiunea cu toți clienții care se conectează, se utilizează clasa `Socket`. Nivelul de transport este asigurat prin XHR/JSONP (numit și [long-polling](https://en.wikipedia.org/wiki/Push_technology#Long_polling)) și acolo unde este posibil, se va folosi WebSocket, dacă legătura stabilită permite. Serverul va *upgrada* conexiunea confirmând cu `*HTTP/1.1 101 Switching Protocols*` în headerul de răspuns. Acest upgrade instruiește clientul să mențină legătura cu serverul și să folosească conexiunea stabilită ca un stream.
+
+Socket.IO nu este o implementare de WebSocket. Socket.io atașează informații suplimentare fiecărui pachet (tip pachet și namespace, ack id) și din acest motiv nu se poate conecta la servere WebSocket.
+
+Un client care a reușit să facă o conexiune, va sta conectat pe termen nedefinit, iar atunci când serverul nu mai este disponibil, va încerca să se conecteze fără a se deconecta. Acest lucru este posibil pentru că socket.io implementează un mecanism de sincronizare prin care cele două părți află despre starea celuilalt. Mecanismul implică setarea de timere în ambele părți, care măsoară intervalele de timp în care răspunsul este primit la momentul când este inițiată comunicarea (etapa de handshake). Aceste timere necesită ca toate cererile ulterioare ale clientului să fie direcționate către același server. În cazul în care sunt folosite mai multe noduri (multiple servere sau un cluster), este necesară folosirea unui mecanism intermediar de gestiune a împerechierii cererii cu serverul sau worker-ul. Acesta se numește *sticky-session*. Pentru mai multe detalii, vezi [*stiky load balancing*](https://socket.io/docs/using-multiple-nodes/).
 
 Este posibilă și comunicare a datelor în format binar. Din browser datele pot fi emise ca `ArrayBuffer` sau `Blob`, iar din NodeJS ca `ArrayBuffer` și `Buffer`.
 Pentru a separa canalele de comunicare, `Socket.io` permite realizarea de spații separate în funcție de modelul de comunicare sau separația resurselor. Aceste spații sunt numite *namespaces*, acestea comportându-se ca niște canale separate de comunicare. Aceste canale separate, vor folosi aceeași conexiune creată.
@@ -24,7 +36,31 @@ Clientul se va conecta la server pentru că acesta este expus pe server pe calea
 
 To clientul va trebui ca în scriptul principal pe care îl va încărca în pagină, să inițieze comunicarea cu serverul creând o instanță: `var socket = io()`. Dacă invoci obiectul fără niciun argument, descoperirea serverului din backend se va face automat.
 
-1.1 Universul socket-io
+### 1.2. Long polling
+
+Traducerea termenului *polling* în limba română este de *apel selectiv*, iar în interacțiunea unui client cu serverul, această activitate ar putea privită ca un dialog permanent cu scopul de a menține o legătură continuă care să permită serverului să trimită un răspuns la un moment dat. Această activitate trebuie privită din perspectiva standardului HTTP, care nu este proiectat să mențină o legătură permanentă, ci doar apeluri la care se răspunde punctual cu o resursă. Polling-ul de bază se realizează cu API-ul `XMLHttpRequest`, iar în cazul în care nu există suport pe server pentru long pooling, acesta poate fi făcut folosind `JSONP`. Marele dezavantaj al acestei tehnici este că are nevoie de resurse considerabile de calcul, memorie și bandă.
+
+Odată cu evoluția Internetului, necesitatea de a dezvolta aplicații în client care să ofere facilitatea de comunicarea în timp real cu serverul, a condus la apariția faimosului API `XMLHttpRequest` în browser în periada *Războiului browserelor*. Acest API a deschis drumul manipulării modelului de comunicare HTTP bazat pe cerere - răspuns într-unul care să pară a fi *real time*. Unul din acest modele se numește **long polling**[^Push technology].
+
+[^Push technology]: Acest model face parte din suita care generic se numesc tehnologii de push. Pentru mai multe detalii, vezi [Push technology, Long pooling, Wikipedia](https://en.wikipedia.org/wiki/Push_technology#Long_polling)
+
+Spre deosebire de celelalte tehnici, long polling-ul va încerca să mențină deschisă o conexiune cât mai mult posibil, oferind clientului un răspuns atunci când date proaspete sunt disponibile. Long polling-ul implementează `XMLHttpRequest`.
+
+Implementarea unui astfel de model implică sprijinul serverului, care să accepte astfel de conexiuni specializate. Din partea clientului se așteaptă ca acesta să fie capabil de a gestiona o singură conexiune, cea către server. Atunci când clientul primește date, va mai iniția o conexiune după și așa mai departe, legătura cu serverul părând a fi neîntreruptă. De fapt, există mici pauze, care sunt gândite pentru a degreva serverul de încărcare. Aceste pauze pot parametrizabile prin setarea header-ului `Keep-Alive` în momentul în care clientul așteaptă un răspuns.
+
+Serverul are o misiune mai delicată pentru că trebuie să gestioneze starea în care se află conexiunile. În cazul în care avem de a face cu o arhitectură mai complexă (multiple servere cu balans), care necesită constituirea unui adevărat mecanism care să țină evidența stării conexiunii. Atributul folosit pentru managementul stării în arhitecturi complexe este **stickiness**, **session stickiness**. 
+
+Acest mecanism de gestiune a stării conexiunii, va avea în sarcină și rezolvarea problemelor de timeout, care ar putea apărea dată fiind parcurgerea mai multor componente software posibile: servere, balance-re, proxy-uri, etc. Pentru evitarea complexităților pe care le-a angajat *long polling*-ul cu scopul de a oferi o comunicare apropiată de real-time, a fost proiectat un protocol țintit către comunicare bidirecțională: `WebSockets` sau `WebRTC`. Apariția acestui standard este de dată recentă și încă mediul de dezvoltare are nevoie de a maturiza soluții de implementare.
+
+În cazul Socket.IO, este folosită tehnica de long polling pentru a stabili conexiunea și apoi se face un salt, dacă este posibil și suportat la comunicarea pe websockets. Reține faptul că diferite arhitecturi de comunicare (proxy-uri, *balancer*e) vor bloca comunicarea pe Websockets și din acest motiv încă este nevoie de long polling. Un alt motiv este suportul, care în momentul acesta încă nu este uniform.
+
+Long polling-ul este un artificiu de comunicare peste modelul HTTP, care vine cu un set de probleme. De exemplu, ordonarea mesajelor în cazul în care un client deschide mai multe tab-uri și astfel, mai multe cereri către server fără posibilitatea de a le ordona. În scenariile în care datele sunt păstrate pe client, așa cum pot fi token-uri de autentificare, este posibil ca acestea să fie suprascrise, dacă se folosesc mecanisme de persistență precum `localStorage` sau `IndexDb`.
+
+Alte probleme apar atunci când dorești distribuirea conexiunilor pe mai multe procese sau servere folosindu-se mecanisme de ***sticky session***. De exemplu, toate conexiunile de pe un domeniu pot *ateriza* pe un singur proces, restul nefiind încărcate deloc. Un alt exemplu este legat de posibilitatea ca un atacator să declanșeze un DoS pentru că alocarea pe servere/procese este un determinată de IP-uri care pot fi aflate, și de aici o suprafață de atact facilă.
+
+Pentru a nu gestiona deficiențele pe care long polling-ul le aduce, este de dorit lucrul doar cu clienți care suportă websockets. Soluția pentru clienții care accesează serverul de după proxy-uri sau alte filtre este securizarea canalului de comunicare prin TSL: `https://` în loc de `http://` și `wss://` în loc de `ws://`.
+
+### 1.3. Universul socket-io
 
 ![Socket.io dependency graph](/media/nicolaie/DATA/DEVELOPMENT/JAVASCRIPT/Node-invat-eu-inveti-tu/module-npm/socket-io/dependencies.jpg "Universul socket-io")
 
@@ -37,6 +73,8 @@ var http = require('http');
 var server = http.createServer();
 var io = require('socket.io')(server, {opțiune: valoare});
 ```
+
+În cele mai multe scenarii, serverul socket, va folosi un server creat cu ajutorul lui `Express`.
 
 Opțiuni de configurare posibile:
 
@@ -122,7 +160,7 @@ const adminNamespace = io.of('/admin');
 
 Metoda va returna un namespace.
 
-#### 2.1.3. Proprietatea `sockets`
+#### 2.1.3. Proprietatea  `sockets`
 
 Acesta este un alias pentru namespace-ul rădăcină: `/`.
 
@@ -132,7 +170,7 @@ io.sockets.emit('salutare', 'toată lumea');
 io.of('/').emit('salutare', 'toată lumea');
 ```
 
-#### 2.1.4. Metoda `serveClient([value])`
+#### 2.1.4. Metoda  `serveClient([value])`
 
 Argumentul acceptat este o valoare `Boolean`. Dacă valoarea returnată este `true`, serverul atașat va servi fișierele către client.
 
@@ -146,7 +184,7 @@ io.serveClient(false);
 io.attach(http);
 ```
 
-#### 2.1.5. Metoda `path([value])`
+#### 2.1.5. Metoda  `path([value])`
 
 Metoda path acceptă drept argument un șir de caractere, care va crea calea menționată prin care vor fi servite fișiere și `engine.io`-ul. Valoarea din oficiu este `/socket.io`.
 
@@ -267,7 +305,7 @@ io.on('connection', function (socket) {
 
 ## 6. Resurse statice clienților
 
-Socket.io stabilește automat o legătură cu agentul utilizatorului căruia îi sunt trimise automat resurse de către serverul Socket.io. Directorul stabilit din oficiu pentru a servi resursele de conectare clientului este `/socket.io`. Poți schimba această valoare la una preferată, dacă acest lucru este necesar.
+Socket.io stabilește automat o legătură la client căruia îi sunt trimise automat informații. Directorul stabilit din oficiu pentru a servi resursele de conectare clientului este `/socket.io`. Poți schimba această valoare la una preferată, dacă acest lucru este necesar.
 
 ```javascript
 const io = require('socket.io')();
@@ -279,28 +317,7 @@ const socket = io({
 });
 ```
 
-## 7. Ce este un socket
-
-Un `socket` este un obiect instanțiat în baza clasei [`Socket`](https://socket.io/docs/server-api/#Socket), care are rolul să comunice cu browserul clientului. De la bun început, socket-urile aparțin namespace-ului general `/`. Un obiect `socket` nu folosește direct TCP/IP sockets. Acest obiect creat pe baza clasei `Socket` moștenește din clasa `EventEmitter` din Node.js, ceea ce îl transformă într-un obiect care poate emite și reacționa la evenimente. Documentația aduce mențiunea că această clasă suprascrie metoda `emit` a clasei `EventEmitter`, dar restul este păstrat intact.
-
-```javascript
-// server side
-io.on('connection', function(socket){
-  socket.on('salutări', function(){ });
-});
-```
-
-În fragmentul de cod de mai sus, obiectul `socket` pasat callback-ului este un obiect care aparține serverului socket.io din server. Clientul va genera și el pe partea sa un obiect `socket`, dar acesta nu este cel de pe server. Sunt două planuri diferite, care trebuie înțelese distinct în ceea ce privește acest obiect.
-
-```javascript
-socket.on('connection', function(socket){
-    socket.emit('salutări', 'salve prietene!');
-})
-```
-
-
-
-## 8. Namespace-uri / multiplexare
+## 7. Namespace-uri / multiplexare
 
 Namespace-urile reprezintă seturi de socketuri conectate ca o zonă identificabilă distinct, care este specificată de numele unei căi. Această cale identifică namespace-ul. Orice client se va conecta automat la rădăcină (`/` - namespace-ul principal) și abia după aceea la alte namespace-uri. 
 
@@ -358,7 +375,7 @@ news.on('news', function () {
 });
 ```
 
-### 8.1. Crearea de namespace-uri
+### 7.1. Crearea de namespace-uri
 
 Socket.io pune la dispoziție metoda `of` pentru a crea un spațiu separat în canalul de comunicații.
 
@@ -431,13 +448,11 @@ socket.on('data', (nsData) => {
 });
 ```
 
-
-
 Modul în care se creează namespace-urile poate conduce la concluzia eronată că acestea ar fi căi ale URL-ului. URL-urile nu sunt influiențate, singurul în cazul lui `Socket.io` fiind `/socket.io/`, pe care clientul are acces la componenta care-i permite conectarea la serves. Pentru crearea de namespace-uri, metoda `of` acceptă și regex-uri.
 
 Dacă dorești, din namespace-ul general `/` poți trimite mesaje către namespace-uri definite, cu o singură condiție. Aceasta este ca mai întâi să se fi creat deja canalul general și clientul să se fi conectat pe el, dar și pe cel definit separat. Reține faptul că generarea canalului principal și conectarea clientului se fac într-o manieră asincronă, ceea ce conduce la concluzia că mesajul trimis din canalul principal către cel definit separt se poate face după ce s-au stabilit toate conexiunile. O concluzie foarte importantă este că un namespace poate trimite mesaje întregului namespace indiferent de ce alte sub-namespace-uri au fost create și câte *rooms* au fiecare.
 
-### 8.2. Conectare dinamică la un namespace
+### 7.2. Conectare dinamică la un namespace
 
 După cum deja am aflat, metoda `of`, care crează namespace-urile, suplimentar unui string, acceptă drept valoare pentru parametrul care specifică calea și un regexp, și la nevoie chiar o funcție.
 
@@ -459,13 +474,13 @@ dynamicNsp.emit('hello');
 dynamicNsp.use((socket, next) => { /* ... */ });
 ```
 
-### 8.3. Crearea de rooms (camere)
+### 7.3. Crearea de rooms (camere)
 
 Pentru fiecare namespace pot fi definite camere la care socket-ul clientului poate fi adăugat folosind metoda `join` (se alătură). Același socket client poate fi scos dintr-o cameră folosindu-se metoda `leave` (părăsește). Constituirea de camere (*rooms*) este o prerogativă a serverului. Din oficiu, clientul nu știe pe ce camere a fost adăugat pentru că acest lucru se petrece în partea de server. Logica programului de pe server în comunicare cu cea de la client va fi cea care va înștiința clientul despre camerele disponibile.
 
 Clientul se conectează la un namespace, dar nu știe care sunt camerele disponibile. Tot ceea ce va ști este că primește mesaje unui anume namespace pentru că și el va trebui să se conecteze la acel namespace.
 
-#### 8.3.1. Cum setezi o camera
+#### 7.3.1. Cum setezi o camera
 
 Gestionarea accesului și ieșirii dintr-o *cameră* se face în partea de server folosind două metode: [`socket.join('nume_camera')`](https://socket.io/docs/server-api/#socket-join-room-callback) și `socket.leave('nume_camera')`. Opțional `socket.join('nume_camera', function() { //gestioneaza conectarea});` poate primi un callback util pentru a gestiona conectarea și ce se petrece cu un client care a intrat într-o cameră.
 
@@ -490,11 +505,11 @@ socket.on('special', (date) => {
 
 Mesajele de la `socket.to('cam01')` vor fi primite doar de cei care sunt în acele camere. Mesajele prefixate cu namespace-ul, vor fi primite de la server, nu de la socket, având efectul concret că vor fi primite de toți cei conectați la server prin acea cameră inclusiv cel care a emis mesajul `io.of('/').to('cam01').emit('special')`. Când faci emit doar cu socketul, toți vor primi mesajul din cameră, dar nu și cel care-l emite.
 
-#### 8.3.2. Conectarea la mai multe camere
+#### 7.3.2. Conectarea la mai multe camere
 
 Un client poate fi conectat la mai multe camere deodată. Metoda pentru a realiza acest lucru este tot [`join`](https://socket.io/docs/server-api/#socket-join-rooms-callback) cu notabila excepție că îi pasezi drept prim parametru un array în care sunt menționate toate camerele la care socketul va fi conectat.
 
-#### 8.3.3 Comunicarea din camere
+#### 7.3.3 Comunicarea din camere
 
 Din moment ce ești într-o cameră, pentru a face broadcasting sau pentru a emite, se pot folosi interșanjabil metodele `to` și `in`.
 
@@ -518,7 +533,7 @@ const nameSpSeparat = io.of('/separat');
 nameSpSeparat.to('spatiul01').emit('salutare', date);
 ```
 
-#### 8.3.4. Camera proprie și conectare socket la socket
+#### 7.3.4. Camera proprie și conectare socket la socket
 
 Te poți conecta la propria cameră pentru că id-ul de socket poate fi folosit drept identificator. 
 
@@ -532,7 +547,7 @@ Același principiu poate fi folosit pentru a comunica direct socket la socket da
 socket.to(altSocketId).emit('unulaunu', date);
 ```
 
-#### 8.3.5. Mesaje tuturor
+#### 7.3.5. Mesaje tuturor
 
 Namespace-ul trimite mesaj tuturor indiferent dacă aparține unei camere sau nu.
 
@@ -548,9 +563,7 @@ Pentru a trimite tuturor participanților dintr-o cameră, prefixezi camera cu n
 io.of('/nume_namespace').emit('tuturor', date);
 ```
 
-
-
-#### 8.3.6. Cum părăsești o cameră
+#### 7.3.6. Cum părăsești o cameră
 
 Pentru a părăsi un canal, se folosește metoda `leave` la fel cum ai folosit `join`.
 
@@ -576,9 +589,7 @@ admin.emit('Salutare tuturor administratorilor');
 
 Atunci când se emite dintr-un namespace, nu se vor putea primi confirmări (*acknowledgements*).
 
-
-
-#### 8.3.7. Scenariu de conectare la o cameră și comunicare
+#### 7.3.7. Scenariu de conectare la o cameră și comunicare
 
 Să presupunem că am stabilit comunicarea cu browserul clientului și că am stabilit care sunt namespace-urile și camerele lor asociate în obiecte distincte. După cum am menționat deja, clientul nu va ști la momentul conectării pe un namespace în ce cameră va fi. Dar pentru o comunicare cu interfața pe care o realizăm clientului, va trebui să comunicăm de pe server datele privind câte namespace-uri există și camerele arondate acestora. Vom porni de la premisa că avem la dispoziție un array cu obiecte care reprezintă namespace-urile construite. Aceste obiecte vor avea o proprietate care este un array de obiecte care reprezintă camerele fiecărui namespace.
 
@@ -815,11 +826,7 @@ function joinRoom(roomName) {
 }
 ```
 
-
-
-
-
-## 9. Evidența clienților
+## 8. Evidența clienților
 
 Pentru a obține o metodă de a se ține evidența clienților conectați. Fiecare client are un id. Pentru a se gestiona clienții, există o metodă `clients` pe care o putem folosi pentru un namespace specificat.
 
@@ -848,9 +855,9 @@ io.clients((error, clients) => {
 });
 ```
 
-## 10. Evenimente predefinite (server)
+## 9. Evenimente predefinite (server)
 
-### connect
+### 9.1. connect
 
 Acest eveniment apare instantaneu la momentul conectării unui client.
 
@@ -866,13 +873,13 @@ io.of('/admin').on('connect', (socket) => {
 
 La fiecare conectare a clientului indiferent de motiv, va fi generat un id unic diferit.
 
-### connection
+### 9.2. connection
 
 Este sinonim evenimentului `connect`.
 
-## Fanioane speciale pe socket.io
+## 10. Fanioane speciale pentru server
 
-### volatile
+### 10.1. `volatile`
 
 Setează un modificator pentru un `emit` care urmează, dar pentru care datele ar putea fi pierdute din cauza pierderii legăturii cu, clientul.
 
@@ -880,7 +887,7 @@ Setează un modificator pentru un `emit` care urmează, dar pentru care datele a
 io.volatile.emit('uneveniment', {"date": "ceva"});
 ```
 
-### binary
+### 10.2. `binary`
 
 Specifică dacă sunt așteptate date binare în cele care vor fi emise. Atunci când acest eveniment este emis, crește performanța. Valoarea este boolean.
 
@@ -888,7 +895,7 @@ Specifică dacă sunt așteptate date binare în cele care vor fi emise. Atunci 
 io.binary(false).emit('eveniment');
 ```
 
-### local
+### 10.3. `local`
 
 Setează un modificator pentru un `emit` care urmează. Datele vor fi emise doar pe nodul curent (folosit când se utilizează Redis, de exemplu).
 
@@ -896,19 +903,36 @@ Setează un modificator pentru un `emit` care urmează. Datele vor fi emise doar
 io.local.emit('eveniment', {"ceva":"date"});
 ```
 
-## Obiectul socket
+## 11. Obiectul socket
 
-Este utilizat de Socket.io pentru a gestiona clienții care se conectează și trebuie înțeles ca o reprezentare a clientului. Un `socket` ține de un anumit `namespace`, iar cel din oficiu este `/`. Pentru a asigura comunicarea, clasa `Socket` folosește o subclasă numită `Client`. Această clasă nu interacționează cu socket-urile TCP/IP.
+Un `socket` este un obiect instanțiat în baza clasei [`Socket`](https://socket.io/docs/server-api/#Socket), care are rolul să comunice cu browserul clientului. De la bun început, socket-urile aparțin namespace-ului general `/`. Un obiect `socket` nu folosește direct TCP/IP sockets. Acest obiect creat pe baza clasei `Socket` moștenește din clasa `EventEmitter` din Node.js, ceea ce îl transformă într-un obiect care poate emite și reacționa la evenimente. Documentația aduce mențiunea că această clasă suprascrie metoda `emit` a clasei `EventEmitter`, dar restul este păstrat intact.
+
+```javascript
+// server side
+io.on('connection', function(socket){
+  socket.on('salutări', function(){ });
+});
+```
+
+În fragmentul de cod de mai sus, obiectul `socket` pasat callback-ului este un obiect care aparține serverului socket.io din server. Clientul va genera și el pe partea sa un obiect `socket`, dar acesta nu este cel de pe server. Sunt două planuri diferite, care trebuie înțelese distinct în ceea ce privește acest obiect.
+
+```javascript
+socket.on('connection', function(socket){
+    socket.emit('salutări', 'salve prietene!');
+})
+```
+
+Un `socket` este utilizat pentru a gestiona clienții care se conectează și trebuie înțeles ca o reprezentare a clientului. Un `socket` ține de un anumit `namespace`, iar cel din oficiu este `/`. Pentru a asigura comunicarea, clasa `Socket` folosește o subclasă numită `Client`. Această clasă nu interacționează cu socket-urile TCP/IP.
 
 Clasa `Socket` moștenește de la `EventEmiter`, suprascrie metoda `emit`, dar nu modifică restul metodelor `EventEmiter`. Toate metodele sunt ale lui `EventEmiter`.
 
-### Proprietățile lui socket
+### 11.1. Proprietățile lui socket
 
-#### socket.id
+#### 11.1.1.  `socket.id`
 
 Acesta este un identificator al sesiunii de comunicare deschisă. Această informație vine din subclasa `Client`.
 
-#### socket.rooms
+#### 12.1.2.  `socket.rooms`
 
 Acesta este un obiect care ține evidența camerelor (*rooms*) în care se află clientul.
 
@@ -921,47 +945,58 @@ io.on('connection', (socket) => {
 });
 ```
 
-#### socket.client
+#### 11.1.3.  `socket.client`
 
 Aceasta este o referință către obiectul `Client`.
 
-#### socket.conn
+#### 11.1.4.  `socket.conn`
 
 Este o referință către conexiunea `Client` (obiectul `Socket` a lui `engine.io`). Acesta permite accesul direct la nivelul de transport IO, care în mare parte abstractizează socketul TCP/IP real.
 
-#### socket.request
+#### 11.1.5.  `socket.request`
 
-Este un getter cu model de funcționare al unui proxy, care returnează o referință către obiectul `request`, care vine chiar de la subclasa `Client`. Este foarte util pentru a accesa headerele unei cereri cum ar fi `Cookie` sau `User-Agent`.
+Este un getter care are un model de funcționare precum al unui proxy. Returnează o referință către obiectul `request`, care vine chiar de la subclasa `Client`. Este foarte util pentru a accesa headerele unei cereri cum ar fi `Cookie` sau `User-Agent`.
 
-#### socket.handshake
+#### 11.1.6.  `socket.handshake`
 
-Oferă detaliile handshake-ului printr-un obiect.
+Handshack-ul se petrece la momentul în care se stabilește comunicarea între client și server. Acest obiect care este inclus în datele, care vin din client, oferă detaliile de conexiune. 
+
+```javascript
+{
+  headers: /* headerele trimise de client */,
+  time:    /* data creării ca string */,
+  address: /* IP-ul clientului */,
+  xdomain: /* dacă avem o conexiune cross-domain sau nu */,
+  secure:  /* conexiune securizată sau nu */,
+  issued:  /* data emiterii cererii ca unix timestamp */,
+  url:     /* string-ul URL-ului pe care s-a făcut cererea */,
+  query:   /* obiectul query */
+}
+```
+
+Pentru a obține acest obiect, poți apela la un scenariu tipic unui middleware în care parametrul este chiar obiectul socket și callback-ul este un `next` care va trece către următoarea operațiune pe date.
 
 ```javascript
 io.use((socket, next) => {
     let handshake = socket.handshake;
     // fă ceva cu datele.
 });
-io.on('connection', (socket) => {
-    let handshake = socket.handshake;
-});
-/*
-{
-  headers: /* the headers sent as part of the handshake */,
-  time: /* the date of creation (as string) */,
-  address: /* the ip of the client */,
-  xdomain: /* whether the connection is cross-domain */,
-  secure: /* whether the connection is secure */,
-  issued: /* the date of creation (as unix timestamp) */,
-  url: /* the request URL string */,
-  query: /* the query object */
-}
-*/
 ```
 
-#### socket.use(fn)
+Un alt scenariu este cel al momentului conectării clientului - evenimentul `connection`.
 
-În anumite scenarii este nevoie de folosirea unui middleware de fiecare dată când se primește un mesaj. În acest scop se va folosi metoda `use` care va primi drept callback o funcție ce primește drept parametri socketul și o funcție pentru a deferi execuția următorului middleware.
+```javascript
+io.on('connection', (socket) => {
+    let handshake = socket.handshake;
+    // fă ceva cu datele.
+});
+```
+
+Trebuie punctat faptul că în obiectul `query`, care este membru al obiectului `handshake`, poți găsi datele specifice unei anumite cereri către server. De exemplu, id-ul unui utilizator sau al unei resurse.
+
+#### 11.1.7.  `socket.use(fn)`
+
+În anumite scenarii este nevoie de folosirea unui middleware de fiecare dată când se primește un mesaj (un `Packet`). În acest scop se va folosi metoda `use` care va primi drept callback o funcție ce primește drept parametri socketul și o funcție pentru a deferi execuția către următorul middleware.
 
 ```javascript
 io.use(function (socket, next) {
@@ -981,11 +1016,11 @@ io.on('connection', (socket) => {
 });
 ```
 
-#### socket.send([...args][, ack])
+#### 11.1.8.  `socket.send([...args][, ack])`
 
 Trimite un eveniment `message`.
 
-#### socket.emit(eventName[,..args][,ack])
+#### 11.1.9.  `socket.emit(eventName[,..args][,ack])`
 
 Această metodă suprascrie `EventEmitter.emit` și returnează un obiect `socket`. Metoda emite un eveniment în `socket`ul identificat de nume.
 
@@ -994,57 +1029,85 @@ socket.emit('hello', 'world');
 socket.emit('with-binary', 1, '2', { 3: '4', 5: new Buffer(6) });
 ```
 
-#### socket.server
+#### 11.1.10.  `socket.server`
 
-### Evenimentele unui socket
+### 11.2. Evidența socketurilor la conectare
+
+Există scenarii în care se dovedește util să constitui un array cu toate socket-urile care s-au conectat la server.
+
+```javascript
+var io = require('socket.io')(https), sockets = [];
+io.on('connection', function(socket){
+    sockets.push(socket); // hidratăm array-ul
+    // tratarea deconectării
+    socket.on('disconnect', function(){
+        for(let i = 0; i < socket.length; i++){
+            if(sockets[i].id === socket.id){
+                sockets.splice(i, 1);
+            }
+        }
+        console.log(`Socket ${socket.id} s-a deconectat`);
+    });
+});
+```
+
+Socket.io oferă chiar o metodă care generează un array a socketurilor conectate.
+
+```javascript
+io.clients((error, clients) => {
+    console.log(clients); // un array cu toți cei conectați pe rădăcină.    
+});
+```
+
+### 11.3. Evenimentele unui socket
 
 Obiectului `socket`, i se pot adăuga funcții receptor (*listeners*) pentru următoarele evenimente care pot apărea.
 
-#### close
+#### 11.3.1. `close`
 
 Se atașează o funcție receptor pentru eventualitatea în care un utilizator se va deconecta de la server. Funcția receptor poate avea următoarele argumente:
 
 - un șir de caractere (`String`) care să aducă lămuriri asupra cauzei deconectării;
 - un obiect descriptiv, care poate fi pasat opțional.
 
-#### message
+#### 11.3.2. `message`
 
 La apariția unui astfel de eveniment, înseamnă că serverul tocmai a primit un mesaj de la client și receptorul este apelat cu un argument care poate fi:
 
 - un `String` care este Unicode
 - un `Buffer`, fiind un conținut binar.
 
-#### error
+#### 11.3.3. `error`
 
 Declanșează un receptor atunci când a fost semnalată o stare de eroare. Receptorul primește un obiect `Error`.
 
-#### flush
+#### 11.3.4. `flush`
 
 Acest eveniment declanșează un receptor pentru a curăța `write buffer`-ul. Receptorul rpimește chiar bufferul care trebuie curățat.
 
-#### drain
+#### 11.3.5. `drain`
 
 Este un eveniment care semnalează golirea buffer-ului.
 
-#### packet
+#### 11.3.6. `packet`
 
 Acest eveniment va apărea în cazul în care un socket a primit un pachet, fie acesta un `message` sau un `ping`. Argumentele pe care funcția receptor le poate primi sunt:
 
 - `type`, care indică tipul pachetului primit și
 - `data`, fiind un pachet de date dacă tipul este un `message`.
 
-#### packetCreate
+#### 11.3.7. `packetCreate`
 
 Acest eveniment va apela callbackul înainte ca socket să trimită un pachet. Argumentele pe care funcția receptor le poate primi sunt:
 
 - `type`, care indică tipul pachetului primit și
 - `data`, fiind un pachet de date dacă tipul este un `message`.
 
-## Client
+## 12. Client
 
-### Obiectul conexiunii `io`
+### 12.1. Obiectul conexiunii `io`
 
-#### io(\[url][, options])
+#### 12.1.1. `io(\[url][, options])`
 
 Primul pas în stabilirea unei conexiuni cu serverul este să instanțiezi un obiect socket apelând metoda `io` cu câțiva parametri.
 
@@ -1060,7 +1123,7 @@ Conectarea la un namespace specificat, de exemplu `io('/users')` declanșează c
 - prima dată clientul se va conecta pe rădăcină la `http://localhost` sau la rădăcina indicată de valoarea `window.location`;
 - Imediat după, conexiunea Socket.IO se va face la namespace-ul specificat: `/users`.
 
-#### Trimiterea parametrilor
+### 12.2. Trimiterea parametrilor
 
 Dacă ai nevoie să trimiți din client către server parametri, care să fie atașați apelului fără a mai folosi un eveniment dedicat, poți face acest lucru folosindu-te de posibilitatea de a trimite opțiuni la momentul conectării, fie atașând la namespace: `http://localhost/users?token=b10ef34`, fie trimițând în obiectul de opțiuni ca al doilea argument, o proprietate `query`, care să conțină datele necesare.
 
@@ -1082,11 +1145,25 @@ Trimiterea parametrilor este în tandem cu momentul primirii acestora pe server.
 
 Handshake-ul ce întâmplă o singură dată, la momentul conectării clientului cu serverul.
 
+### 12.3. Obiectul `socket`
+
+####12.3.1.  `socket.id`
+
+Este un `String` care identifică sesiunea socket. Această valoare va fi disponibilă doar după ce evenimentul `connect` a fost declanșat. Valoarea va fi actualizată după evenimentul `reconnect`.
+
+```javascript
+const socket = io('http://localhost');
+
+console.log(socket.id); // undefined
+
+socket.on('connect', () => {
+  console.log(socket.id); // 'G5p5...'
+});
+```
 
 
-### Obiectul `socket`
 
-#### socket.emit(eventName\[, …args][, ack])
+#### 12.3.2.  `socket.emit(eventName\[, …args][, ack])`
 
 Clientul poate emite date folosind un anumit eveniment convenit cu serverul. În plus, mai poate trimite ca al treilea argument (`[, ack]`), o funcție callback, dar care este foarte specială pentru că va fi executată, nu local în client, ci va fi trimisă serverului, care o va executa el. Magie curată!
 
@@ -1139,3 +1216,123 @@ namespaces.forEach(function manageNsp (namespace) {
 });
 ```
 
+### 12.4. Evenimente
+
+#### 12.4.1. `connect`
+
+Este un eveniment care se declanșează la momentul când clientul se conectează cu cu succes la un server sau se reconectează.
+
+Callback-urile care vor fi executate ca urmare a evenimentului `connect` trebuie declarate în afară pentru a nu fi redeclarate ori de câte ori clientul se reconectează.
+
+```javascript
+// Server
+io.on('connect', (socket) => {
+    // ZONA PRIVATĂ CLIENT - CONTACT PE ID
+    socket.on(socket.id, (data) => {
+        console.log(data);
+        // Pas1. Require un modul care să ofere o funcție de autentificare
+    });
+    socket.emit(socket.client.id, 'Cam greu, boss');
+});
+
+
+// Client
+function connectHandler () {
+  // trimite token, dacă acesta deja există!
+  if (localStorage.jwt) {
+    socket.emit(socket.id, {
+      token: localStorage.jwt
+    });
+  }
+
+  login(); // trimite datele formularului la server pentru autentificare
+  socket.on(socket.id, (data) => {
+    console.log(data);
+    
+  });
+}
+socket.on('connect', connectHandler);
+
+function login () {
+  // capturează valorile
+  var email = document.getElementById('email').value;
+  var password = document.getElementById('passwd').value;
+  var obiLogin = {
+    email: email,
+    password: password
+  }
+  $('#loginfrm').modal('hide');
+  socket.emit(socket.id, obiLogin);
+}
+```
+
+##13. Sticky load balancing
+
+În cazul unor aplicații de mari dimensiuni, dacă dorești să distribui încărcătura conexiunilor pe mai multe mașini sau folosind mai mulți workeri (procese), trebuie să te asiguri de faptul că o cerere asociată cu anume id de sesiune se conectează cu procesul sau serverul din care sunt originare. Acest mecanism de load balancing, care să identifice cererea cu procesul (să le facă *sticky*) este absolut necesar de etapa de long pooling până la momentul upgradării conexiunii la websockets.
+
+Trebuie să luăm mereu în considerare faptul că anumiți clienți nu au capacitatea de a comunica pe websockets, ceea ce îi va determina să folosească long polling-ul. În acest caz, este posibil ca o conectare să se fi făcut la server, dar nu au apucat să trimită vreo crere către acesta. Documentația oficială indică necesitatea unui instrument cu care să se constituie un tampon în procesul care gestionează conexiunea pe long polling. Datele vor fi scrise într-o etapă intermediară pentru ca alți clienți care au suport pentru websockets, fiind mai rapizi, trebuie să scrie datele pe care ei le emit și celor care folosesc long polling-ul.
+
+În cazul în care nu oferi suport pentru long pooling, poți limita lucrul doar la websockets.
+
+```javascript
+const client = io('https://unsite.ro', {
+    transports: ['websocket']
+});
+```
+
+Varianta de suport din oficiu, oferă și long polling și ar fi echivalentă cu menționarea explictă.
+
+```javascript
+const client = io('https://unsite.ro', {
+    transports: ['websocket', 'polling']
+});
+```
+
+
+
+
+
+
+
+## 14. Debugging
+
+Socket.io folosește în scopuri de depanare (debugging), modulul npm `debug`.
+
+### 14.1. Nivel de client
+
+În codul clientului poți introduce o secvență care va folosi mecanismul de stocare local al browserului.
+
+```javascript
+localStorage.debug = '*';                            // logging-ul arată totul
+localStorage.debug = 'engine.io-client:polling-xhr'; // logging pe anumite segmente
+```
+
+Poți introduce mai multe zone de interes pentru debugging.
+
+```javascript
+localStorage.debug = 'engine.io-client:polling, engine.io-client:socket';
+```
+
+### 14.2. Nivel de server
+
+La nivel de server, pentru a porni debuging-ul, vei porni aplicația folosind variabila de mediu `DEBUG`.
+
+```bash
+DEBUG=* node server
+```
+
+Ca să nu mai menționezi `DEBUG=*`, cel mai bine ar fi să faci un `export DEBUG=*`. Apoi vei putea porni aplicația în mod normal, dar vei beneficia de debugging.
+
+Pentru a întrerupe acest comportament, se va face un `export DEBUG=null`.
+
+Pentru a face logging doar pentru socket.io, vei proceda la un `export DEBUG=socket.io:server node server`.
+
+## Referințe
+
+- [WebSockets - A Conceptual Deep-Dive](https://www.ably.io/concepts/websockets)
+- [Long Polling - Concepts and Considerations](https://www.ably.io/concepts/long-polling)
+- [Known Issues and Best Practices for the Use of Long Polling and Streaming in Bidirectional HTTP: draft-loreto-http-bidirectional-07](https://tools.ietf.org/id/draft-loreto-http-bidirectional-07.html)
+- [HTML5 WebSocket: A Quantum Leap in Scalability for the Web](http://websocket.org/quantum.html)
+- [HTMLLiving Standard — Last Updated 23 February 2019](https://html.spec.whatwg.org/multipage/web-sockets.html)
+- [The Myth of Long Polling](https://blog.baasil.io/why-you-shouldnt-use-long-polling-fallbacks-for-websockets-c1fff32a064a)
+- [Why you don’t need Socket.IO](https://codeburst.io/why-you-don-t-need-socket-io-6848f1c871cd)

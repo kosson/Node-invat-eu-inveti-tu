@@ -38,7 +38,7 @@ queryPers.exec(function (err, rezultat) {
 
 ## Funcția `exec()`
 
-Această funcție trebuie să declanțeze trimiterea interogării către MongoDB. Dar expresia este perfect echivalentă cu `then` a unei promisiuni.
+Această funcție trebuie să declanșeze trimiterea interogării către MongoDB. Dar expresia este perfect echivalentă cu `then` a unei promisiuni.
 
 ```javascript
 queryPers.exec(function (err, rezultat) {
@@ -147,7 +147,7 @@ module.exports = app => {
         res.send(resursa);
     });
     app.get('/api/resurse', cereLogin, async (req, res) => {
-        var resurse = await Resursă.find({ _user: req.user.id}).cache(); // incdică clar preferința pentru caching!!!
+        var resurse = await Resursă.find({ _user: req.user.id}).cache(); // indică clar preferința pentru caching!!!
         res.send(resurse);
     });
 }

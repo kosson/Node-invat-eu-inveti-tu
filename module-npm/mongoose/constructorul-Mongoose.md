@@ -67,7 +67,7 @@ Acest obiect este pasat funcției [`connect`](http://mongodb.github.io/node-mong
 - `autoIndex=true` (Boolean), fiind o opțiune specifică Mongoose. Dacă este setată la `false`, se va dezactiva crearea automată a indexurilor pentru toate modelele asociate cu această conexiune.
 - `bufferCommands=true` (Boolean), fiind o opțiune specifică Mongoose. Dacă este setată la `false`, buffering-ul va fi deazctivat pentru toate modelele asociate cu prezenta conexiune.
 - `useCreateIndex=true` (Boolean), fiind o opțiune specifică Mongoose. Dacă este setată la `true`, această conexiune va folosi `createIndex()` în loc de `ensureIndex` în cazurile în care se construiesc automat indexuri folosind `Model.init()`.
-- `useFindAndModify=true` (Boolean), fiind o opțiune, care în cazul setării la `false`, va forța ca metodele `findOneAndUpdate()` și `findOneAndremove()` să folosească varianta originară `findOneAndUpdate()` în locul lui `findAndModify()`.
+- `useFindAndModify=true` (Boolean), fiind o opțiune, care în cazul setării la `false`, va forța ca metodele `findOneAndUpdate()` și `findOneAndremove()` să folosească varianta originală `findOneAndUpdate()` în locul lui `findAndModify()`.
 - `useNewUrlParser=false` (Boolean), fiind o opțiune, care în cazul setării la `true`, va forța toate conexiunile să-și seteze opțiunea `useNewUrlParser` din oficiu.
 
 #### callback
@@ -169,11 +169,104 @@ db = mongoose.createConnection();
 db.openUri('localhost', 'database', port, [opts]);
 ```
 
-
-
-
-
-
-
 ###Mongoose.prototype.model()
+
+Această metodă acceptă următorii parametri:
+
+#### name
+
+Poate fi un `String` sau chiar o `Function`, care vor da numele modelului sau a clasei care îl extinde pe `Model`.
+
+#### schema
+
+Este schema folosită pentru a crea un model. Acesta este un obiect de tip `Schema`.
+
+#### collection
+
+Acesta este numele colecției pe care se va opera, fiind un `String`, dacă este menționat. Ceea ce este interesant și demn de reținut este faptul că numele colecției cu care se va opera este dedus din numele dat modelului. Adică, așa cum numești modelul, aceea va fi colecția pe care se va opera dacă acest parametru nu este introdus.
+
+```javascript
+var schema = new Schema({ name: String }, { collection: 'actor' });
+
+// sau
+
+schema.set('collection', 'actor');
+
+// sau
+
+var collectionName = 'actor'
+var M = mongoose.model('Actor', schema, collectionName)
+```
+
+#### skipInit
+
+Este `Boolean` și dacă este setat la `true`, inițializarea nu va mai fi făcută.
+
+Metoda returnează o instanță a unui obiect de tip `Model`. Modelele definite pe o instanță de `mongoose`, vor fi disponibile tuturor conexiunilor stabilite de acea instanță.
+
+### Mongoose.prototype.set()
+
+Această metodă poate fi folosită pentru a seta valori în obiectul `mongoose`.
+
+```javascript
+mongoose.set('test', value) // sets the 'test' option to `value`
+
+mongoose.set('debug', true) // enable logging collection methods + arguments to the console
+
+mongoose.set('debug', function(collectionName, methodName, arg1, arg2...) {}); // use custom function to log collection methods + arguments
+```
+
+Opțiunile acceptate de set sunt următoarele:
+
+#### `'debug'`
+
+Afișează în consolă toate operațiunile pe care `mongoose` le trimite către MongoDB.
+
+#### `'bufferCommands'`
+
+Această opțiune activează / dezactivează mecanismul de buffering pentru toate conexiunile și modelele.
+
+#### `'useCreateIndex'`
+
+Această valoare este `false` din oficiu. Pentru a-l forța pe MongoDB să creeze din start indexul folosind `createIndex()` în loc de `ensureIndex()`. Acest lucru îl vei face pentru a evita mesajele *deprecate*, care ar putea apărea de la driverul MongoDB.
+
+#### `'useFindAndModify'`
+
+Are valoarea `true` din oficiu. În cazul setării la `false`, va forța ca metodele `findOneAndUpdate()` și `findOneAndremove()` să folosească varianta originală `findOneAndUpdate()` în locul lui `findAndModify()`. Această opțiune poate fi pasată și în obiectul de configure a conexiunii, dacă este mai ușor așa.
+
+#### `'useNewUrlParser'`
+
+Are valoarea `false` din oficiu. Setarea la valoarea `true` se va face cu intenția ca toate conexiunile să folosească din oficiu această opțiune.
+
+#### `cloneSchemas`
+
+Din oficiu, valoarea este `false`, dar în cazul în care se dorește clonarea tuturor schemelor înainte de a fi compilate în modele, se va seta la `true`.
+
+####`'applyPluginsToDiscriminators'`
+
+Are valoarea `false` din oficiu.
+
+#### `'objectIdGetter'`
+
+Are valoarea `true` din start. Mongoose adaugă un getter pentru *MongoDB ObjectId*-uri numit `_id`, care returnează `this` (poate folosind populate). Pentru a nu folosi getterul, setează-l la `false`.
+
+#### `'runValidators'`
+
+Are valoarea `false` din start. Pentru a activa validatorii la momentul actualizării unor informații din baza de date ( [*update validators*](https://mongoosejs.com/docs/validation.html#update-validators)), setează la `true`.
+
+#### `'toObject'`
+
+Valoarea sa din oficiu este `{ transform: true, flattenDecimals: true }`.
+
+#### `'toJSON'`
+
+Valoarea sa din oficiu este `{ transform: true, flattenDecimals: true }`.
+
+#### `'strict'`
+
+Setează schemele la strict.
+
+#### `'selectPopulatedPaths'`
+
+Are valoarea inițială setată la `true`. În acest caz, Mongoose va adăuga toate câmpurile pe care faci `populate()` în `select()`. Opțiunea `selectPopulatedPaths` pe care o poți seta la nivel de schemă o suprascrie pe aceasta.
 

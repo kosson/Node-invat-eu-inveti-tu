@@ -577,7 +577,40 @@ Același principiu poate fi folosit pentru a comunica direct socket la socket da
 socket.to(altSocketId).emit('unulaunu', date);
 ```
 
-#### 7.3.5. Mesaje tuturor
+#### 7.3.5. Mesaje doar către socketul clientului - privat
+
+În anumite scenarii cum ar fi comunicarea erorilor, a diferitelor alte resurse de la server către client, este necesară stabilirea unui eveniment a cărui nume să fie însuși `socket.id`. În acest mod, vei ști foarte clar faptul că ai la dispoziție un schimb de mesaje țintit doar pe id-ul clientului. Acesta nu este un mijloc securizat de comunicare a datelor pentru că în cazul în care aplicația pune la dispoziție și un chat, id-urile ar putea fi cunoscute. Un utilizator rău intenționat, le-ar putea folosi pentru a trimite mesaje care să imite schimbul de date de la server. Pentru a realiza un model mai sigur, creează o cameră folosind `socket.id`.
+
+```javascript
+/*SERVER*/
+// Mesagerie strict pe client
+socket.on(socket.id, (data) => {
+    // fă ceva cu datele la nivel de server
+});
+
+/*CLIENT*/
+socket.on(socket.id, (data) => {
+    // fă ceva cu datele la nivel de client
+    socket.emit(socket.id, 'merci pentru date');
+});
+```
+
+Modelul folosind o cameră realizează o izolare mai bună și în cazul comunicării de date sensibile cum ar fi autentificarea, este de dorit
+
+```javascript
+/*SERVER*/
+socket.join(socket.id, () => {
+    // let rooms = Object.keys(socket.rooms);
+    // console.log(rooms);        
+    socket.emit('salut', 'salut prietene, lucram in camera');
+});
+```
+
+Asigură-te că de îndată ce ai terminat episodul de autentificare sau ceea ce necesită stabilirea unei camere dedicate, clientul este scos din camera creată pentru el, pentru a nu oferi o suprafață de atac.
+
+Avantajul folosirii camerei private este acela că poți emite evenimente specifice cum ar fi `login`, `signin`, etc.
+
+#### 7.3.6. Mesaje tuturor
 
 Namespace-ul trimite mesaj tuturor indiferent dacă aparține unei camere sau nu.
 
@@ -593,7 +626,7 @@ Pentru a trimite tuturor participanților dintr-o cameră, prefixezi camera cu n
 io.of('/nume_namespace').emit('tuturor', date);
 ```
 
-#### 7.3.6. Cum părăsești o cameră
+#### 7.3.7. Cum părăsești o cameră
 
 Pentru a părăsi o cameră, se folosește metoda `leave` la fel cum ai folosit `join`.
 
@@ -619,7 +652,7 @@ admin.emit('Salutare tuturor administratorilor');
 
 Atunci când se emite dintr-un namespace, nu se vor putea primi confirmări (*acknowledgements*).
 
-#### 7.3.7. Scenariu de conectare la o cameră și comunicare
+#### 7.3.8. Scenariu de conectare la o cameră și comunicare
 
 Să presupunem că am stabilit comunicarea cu browserul clientului și că am stabilit care sunt namespace-urile și camerele lor asociate în obiecte distincte. După cum am menționat deja, clientul nu va ști la momentul conectării pe un namespace în ce cameră va fi. Dar pentru o comunicare cu interfața pe care o realizăm clientului, va trebui să comunicăm de pe server datele privind câte namespace-uri există și camerele arondate acestora. Vom porni de la premisa că avem la dispoziție un array cu obiecte care reprezintă namespace-urile construite. Aceste obiecte vor avea o proprietate care este un array de obiecte care reprezintă camerele fiecărui namespace.
 

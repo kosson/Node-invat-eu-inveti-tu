@@ -14,13 +14,13 @@ Protocolul în baza căruia funcționează și serverul Socket.io este [The WebS
 
 Socket.io este o bibliotecă de cod care permite comunicare bidirecțională în timp real între clienți și un server. Un avantaj este faptul că se vor realiza conexiuni indiferent de layer-ele interpuse (proxy-uri, load balance-re, etc). Reconectarea clientului se va face automat. Socket.io folosește în subsidiar `engine.io` care este un protocol de comunicare ce va folosi tehnologii de conectare care să asigure o legătură stabilă indiferent de tehnologiile interpuse între client și server. 
 
-Pentru interacțiunea cu toți clienții care se conectează, se utilizează clasa `Socket`. Nivelul de transport este asigurat prin XHR/JSONP (numit și [long-polling](https://en.wikipedia.org/wiki/Push_technology#Long_polling)) și acolo unde este posibil, se va folosi WebSocket, dacă legătura stabilită permite. Serverul va *upgrada* conexiunea confirmând cu `*HTTP/1.1 101 Switching Protocols*` în headerul de răspuns. Acest upgrade instruiește clientul să mențină legătura cu serverul și să folosească conexiunea stabilită ca un stream.
+Pentru interacțiunea cu toți clienții care se conectează, se utilizează clasa `Socket`. Nivelul de transport este asigurat prin XHR/JSONP (numit și [long-polling](https://en.wikipedia.org/wiki/Push_technology#Long_polling)) și acolo unde este posibil, se va folosi WebSocket, dacă legătura stabilită permite. Serverul va *upgrada* conexiunea confirmând cu `*HTTP/1.1 101 Switching Protocols*` în headerul de răspuns. Acest upgrade instruiește clientul să mențină legătura cu serverul și să folosească conexiunea stabilită ca un **stream**.
 
-Socket.IO nu este o implementare de WebSocket. Socket.io atașează informații suplimentare fiecărui pachet (tip pachet și namespace, ack id) și din acest motiv nu se poate conecta la servere WebSocket.
+Socket.io nu este o implementare a standardului WebSocket. Socket.io atașează informații suplimentare fiecărui pachet (tip pachet și namespace, ack id) și din acest motiv nu se poate conecta la servere WebSocket.
 
-Un client care a reușit să facă o conexiune, va sta conectat pe termen nedefinit, iar atunci când serverul nu mai este disponibil, va încerca să se conecteze fără a se deconecta. Acest lucru este posibil pentru că socket.io implementează un mecanism de sincronizare prin care cele două părți află despre starea celuilalt. Mecanismul implică setarea de timere în ambele părți, care măsoară intervalele de timp în care răspunsul este primit la momentul când este inițiată comunicarea (etapa de handshake). Aceste timere necesită ca toate cererile ulterioare ale clientului să fie direcționate către același server. În cazul în care sunt folosite mai multe noduri (multiple servere sau un cluster), este necesară folosirea unui mecanism intermediar de gestiune a împerechierii cererii cu serverul sau worker-ul. Acesta se numește *sticky-session*. Pentru mai multe detalii, vezi [*stiky load balancing*](https://socket.io/docs/using-multiple-nodes/).
+Un client care a reușit să facă o conexiune, va sta conectat pe termen nedefinit, iar atunci când serverul nu mai este disponibil, va încerca să se conecteze fără a se deconecta. Acest lucru este posibil pentru că Socket.io implementează un mecanism de sincronizare prin care cele două părți află despre starea celuilalt. Mecanismul implică setarea de timere în ambele părți, care măsoară intervalele de timp în care răspunsul este primit la momentul când este inițiată comunicarea (etapa de handshake). Aceste timere necesită ca toate cererile ulterioare ale clientului să fie direcționate către același server. În cazul în care sunt folosite mai multe noduri (multiple servere sau un cluster), este necesară folosirea unui mecanism intermediar de gestiune a împerechierii cererii cu serverul sau worker-ul. Acesta se numește *sticky-session*. Pentru mai multe detalii, vezi [*stiky load balancing*](https://socket.io/docs/using-multiple-nodes/).
 
-Este posibilă și comunicare a datelor în format binar. Din browser datele pot fi emise ca `ArrayBuffer` sau `Blob`, iar din NodeJS ca `ArrayBuffer` și `Buffer`.
+Este posibilă și o comunicare a datelor în format binar. Din browser datele pot fi emise ca `ArrayBuffer` sau `Blob`, iar din NodeJS ca `ArrayBuffer` și `Buffer`.
 Pentru a separa canalele de comunicare, `Socket.io` permite realizarea de spații separate în funcție de modelul de comunicare sau separația resurselor. Aceste spații sunt numite *namespaces*, acestea comportându-se ca niște canale separate de comunicare. Aceste canale separate, vor folosi aceeași conexiune creată.
 
 În fiecare Namespace, poți crea zone diferite numite rooms (canale arbitrare). Expunerea serverului se face pur și simplu prin cererea modului `socket.io`. Va fi returnat un constructor, care acceptă un argument. Acesta este un server HTTP.
@@ -38,7 +38,7 @@ To clientul va trebui ca în scriptul principal pe care îl va încărca în pag
 
 ### 1.2. Long polling
 
-Traducerea termenului *polling* în limba română este de *apel selectiv*, iar în interacțiunea unui client cu serverul, această activitate ar putea privită ca un dialog permanent cu scopul de a menține o legătură continuă care să permită serverului să trimită un răspuns la un moment dat. Această activitate trebuie privită din perspectiva standardului HTTP, care nu este proiectat să mențină o legătură permanentă, ci doar apeluri la care se răspunde punctual cu o resursă. Polling-ul de bază se realizează cu API-ul `XMLHttpRequest`, iar în cazul în care nu există suport pe server pentru long pooling, acesta poate fi făcut folosind `JSONP`. Marele dezavantaj al acestei tehnici este că are nevoie de resurse considerabile de calcul, memorie și bandă.
+Traducerea termenului *polling* în limba română este de *apel selectiv*, iar în interacțiunea unui client cu serverul, această activitate ar putea privită ca un dialog permanent cu scopul de a menține o legătură continuă care să permită serverului să trimită un răspuns la un moment dat. Această activitate trebuie privită din perspectiva standardului HTTP, care nu este proiectat să mențină o legătură permanentă, ci doar apeluri la care se răspunde punctual cu o resursă. Polling-ul de bază se realizează cu API-ul `XMLHttpRequest` (*Asynchronous JavaScript and XML* - AJAX), iar în cazul în care nu există suport pe server pentru long pooling, acesta poate fi făcut folosind `JSONP`. Marele dezavantaj al acestei tehnici este că are nevoie de resurse considerabile de calcul, memorie și bandă.
 
 Odată cu evoluția Internetului, necesitatea de a dezvolta aplicații în client care să ofere facilitatea de comunicarea în timp real cu serverul, a condus la apariția faimosului API `XMLHttpRequest` în browser în periada *Războiului browserelor*. Acest API a deschis drumul manipulării modelului de comunicare HTTP bazat pe cerere - răspuns într-unul care să pară a fi *real time*. Unul din acest modele se numește **long polling**[^Push technology].
 
@@ -52,7 +52,7 @@ Serverul are o misiune mai delicată pentru că trebuie să gestioneze starea î
 
 Acest mecanism de gestiune a stării conexiunii, va avea în sarcină și rezolvarea problemelor de timeout, care ar putea apărea dată fiind parcurgerea mai multor componente software posibile: servere, balance-re, proxy-uri, etc. Pentru evitarea complexităților pe care le-a angajat *long polling*-ul cu scopul de a oferi o comunicare apropiată de real-time, a fost proiectat un protocol țintit către comunicare bidirecțională: `WebSockets` sau `WebRTC`. Apariția acestui standard este de dată recentă și încă mediul de dezvoltare are nevoie de a maturiza soluții de implementare.
 
-În cazul Socket.IO, este folosită tehnica de long polling pentru a stabili conexiunea și apoi se face un salt, dacă este posibil și suportat la comunicarea pe websockets. Reține faptul că diferite arhitecturi de comunicare (proxy-uri, *balancer*e) vor bloca comunicarea pe Websockets și din acest motiv încă este nevoie de long polling. Un alt motiv este suportul, care în momentul acesta încă nu este uniform.
+În cazul Socket.io, este folosită tehnica de long polling pentru a stabili conexiunea și apoi se face un salt, dacă este posibil și suportat la comunicarea pe websockets. Reține faptul că diferite arhitecturi de comunicare (proxy-uri, *balancer*e) vor bloca comunicarea pe Websockets și din acest motiv încă este nevoie de long polling. Un alt motiv este suportul, care în momentul acesta încă nu este uniform.
 
 Long polling-ul este un artificiu de comunicare peste modelul HTTP, care vine cu un set de probleme. De exemplu, ordonarea mesajelor în cazul în care un client deschide mai multe tab-uri și astfel, mai multe cereri către server fără posibilitatea de a le ordona. În scenariile în care datele sunt păstrate pe client, așa cum pot fi token-uri de autentificare, este posibil ca acestea să fie suprascrise, dacă se folosesc mecanisme de persistență precum `localStorage` sau `IndexDb`.
 
@@ -391,7 +391,7 @@ var adminNsp = io('/admin');
 
 Antenție la faptul că partea de client trebuie să definească și ea conectorul pentru canalul creat pe namespace-ul nou. Acesta este specificat, adăugând calea ca argument lui `io('/calenoua')`.
 
-**Fii avizat**! 
+**Fi avizat**! 
 
 Comunicarea pe namespace-uri este bidirecțională. Acest lucru înseamnă că namespace-urile declarate pe server, trebuie să aibă un corespondent pe client.
 
@@ -476,22 +476,52 @@ dynamicNsp.use((socket, next) => { /* ... */ });
 
 ### 7.3. Crearea de rooms (camere)
 
-Pentru fiecare namespace pot fi definite camere la care socket-ul clientului poate fi adăugat folosind metoda `join` (se alătură). Același socket client poate fi scos dintr-o cameră folosindu-se metoda `leave` (părăsește). Constituirea de camere (*rooms*) este o prerogativă a serverului. Din oficiu, clientul nu știe pe ce camere a fost adăugat pentru că acest lucru se petrece în partea de server. Logica programului de pe server în comunicare cu cea de la client va fi cea care va înștiința clientul despre camerele disponibile.
+Pentru fiecare namespace pot fi definite camere la care socket-ul clientului poate fi adăugat folosind metoda `join` (se alătură). Același socket client poate fi scos dintr-o cameră folosindu-se metoda `leave` (părăsește). 
+
+**Constituirea de camere (*rooms*) este o prerogativă a serverului**. 
+
+Din oficiu, clientul nu știe pe ce camere a fost adăugat pentru că acest lucru se petrece în partea de server. Clintul doar trebuie să știe ce evenimente să asculte, fie că acestea sunt hard codate în client side, fie să sunt trimise de la server spre cunoașterea clientului.
+
+Concluzie: clientul va ști care sunt camerele disponibile doar dacă serverul i le trimite ca date, fiind incorporate în logica client-side. Tot ceea ce trebuie sincronizat de la bun început sunt namespace-urile, care trebuie declarate și într-o parte, și în cealaltă.
 
 Clientul se conectează la un namespace, dar nu știe care sunt camerele disponibile. Tot ceea ce va ști este că primește mesaje unui anume namespace pentru că și el va trebui să se conecteze la acel namespace.
 
 #### 7.3.1. Cum setezi o camera
 
-Gestionarea accesului și ieșirii dintr-o *cameră* se face în partea de server folosind două metode: [`socket.join('nume_camera')`](https://socket.io/docs/server-api/#socket-join-room-callback) și `socket.leave('nume_camera')`. Opțional `socket.join('nume_camera', function() { //gestioneaza conectarea});` poate primi un callback util pentru a gestiona conectarea și ce se petrece cu un client care a intrat într-o cameră.
+Gestionarea accesului și ieșirii dintr-o *cameră* se face în partea de server folosind două metode: [`socket.join('nume_camera')`](https://socket.io/docs/server-api/#socket-join-room-callback) și `socket.leave('nume_camera')`.
+
+Opțional `socket.join('nume_camera', function() { //gestioneaza conectarea});` poate primi un callback util pentru a comunica și primi date în cameră.
 
 ```javascript
 socket.on('connection', function (socket) {
     socket.join('cam01');
+    io.to('cam01').emit('special', `${socket.id} ești membru al cam01`);
+});
+// sau
+socket.on('connection', function (socket) {
+    socket.join('cam01');
     socket.to('cam01').emit('special', `${socket.id} ești membru al cam01`);
+    // mesajele emise cu socket.to vor fi primite de toți cei din camera respectivă
+    // dar nu și de cel care le-a emis!!! Pentru asta emite cu io.to('camera')
+});
+// și cu o funcție callback construind o cameră privată doar a clientului
+socket.on('connect', (socket) => {
+    socket.join(socket.id, () => {
+        socket.emit('salut', 'un spațiu doar al clientului definit prin socket.id');
+    });
+});
+// odată camera setată, poți comunica date și din afara callback-ului
+socket.on('connect', (socket) => {
+    socket.join(socket.id, () => {
+        socket.emit('salut', 'un spațiu doar al clientului definit prin socket.id');
+    });
+    // pentru a comunica din afara callback-ului, folosește obiectul io.
+    io.to(socket.id).emit('salut', 'din alte zone');
+    // mesajele emise astfel, vor fi primite și de emitenți
 });
 ```
 
-Folosind meoda `join` putem spune să introducem clientul reprezentat de obiectul `socket` în cameră.
+Folosind metoda `join` putem spune să introducem clientul reprezentat de obiectul `socket` în cameră.
 
 De îndată ce un socket va fi introdus într-o cameră, poți să emiți către client ce date dorești. Poate fi un mesaj sau un `Buffer`. În momentul în care se va face `emit`-ul toți clienții care erau deja în cameră, vor afla de prezența noului venit.
 
@@ -565,9 +595,9 @@ io.of('/nume_namespace').emit('tuturor', date);
 
 #### 7.3.6. Cum părăsești o cameră
 
-Pentru a părăsi un canal, se folosește metoda `leave` la fel cum ai folosit `join`.
+Pentru a părăsi o cameră, se folosește metoda `leave` la fel cum ai folosit `join`.
 
-> Fiecare `Socket` al lui Socket.IO este identificat printr-un identificator unic generat aleator `Socket#id`. Pentru a simplifica lucrurile, toate socketurile se conectează la o cameră identificată prin acest identificator unic. Acest lucru permite broadcast-ul de mesaje pe toate socketurile conectate.
+> Fiecare `Socket` al lui Socket.io este identificat printr-un identificator unic generat aleator `Socket#id`. Pentru a simplifica lucrurile, toate socketurile se conectează la o cameră identificată prin acest identificator unic. Acest lucru permite broadcast-ul de mesaje pe toate socketurile conectate.
 
 ```javascript
 io.on('connect', function (socket) {

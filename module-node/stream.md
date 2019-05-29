@@ -12,12 +12,12 @@ Stream-urile lucrează cu fragmente - **chunks**. Acestea sunt trimise între do
 
 ## Interfața Stream
 
-În Node, interfața Stream este implementată de modulul `stream`. Acest modul oferă un API care poate fi implementat de mai multe obiecte în Node care doresc să implementeze interfața streams. Exemple de stream-uri în NodeJS:
+În Node, interfața Stream este implementată de modulul `stream`. Acest modul oferă un API care poate fi implementat de mai multe obiecte în Node care doresc să implementeze interfața `stream`. Exemple de `stream`-uri în NodeJS:
 
 -   un apel HTTP,
 -   o proprietate `process.stdout`.
 
-Stream-urile pot fi folosite pentru a citi, pentru a scrie sau ambele operațiuni în același timp.
+Stream-urile pot fi folosite pentru a citi, pentru a scrie sau ambele operațiuni în același timp. Fii foarte atentă la memorie pentru că gestionând streamuri cu `fs`, nu vei putea manipula fișiere de mairi dimensiuni. NodeJS poate ține în memorie doar 1.67Gb. Dacă ai o resursă dincolo de această limitare, o eroare `heap out of memory` va fi emisă. Această limitate poate fi depășită.
 
 Toate stream-urile sunt instanțe ale clasei `EventEmitter` și pot fi accesate direct instanțiind modulul `stream`. Toate obiectele care sunt stream-uri expun o metodă `eventEmitter.on()`. Această metodă permite unei funcții sau mai multora să se atașeze pe evenimente emise de obiect. Funcțiile atașate evenimentelor vor fi executate sincron.
 
@@ -35,7 +35,40 @@ streamR.pipe(process.stdout);
 // execută cu node numeFisier.js
  ```
 
-În practică, se va folosi rar acest modul pentru că deja există implementări. Majoritatea aplicațiilor Node folosesc stream-urile într-un fel sau altul. De exemplu, serverele http folosesc stream-urile.
+Majoritatea aplicațiilor Node folosesc `stream`-urile într-un fel sau altul. Totuși există excepții când dorești să lucrezi cu `Buffer`e, de exemplu. Să presupunem că faci un `Buffer` în care introduci o imagine codată base64. Pentru a o scrie pe hard disk, mai întâi ai nevoie să introduci conținutul `Buffer`-ului într-un stream care să poată fi citit.
+
+```javascript
+var unit = '' || `${process.env.BASE_UNIT}`;
+var user = '' || `${process.env.BASE_USER}`;
+function createRecord (data) {
+    //TODO: urmeaza standardul BagIt
+    var calea = `${__dirname}/${process.env.REPO}/${unit}/${user}/${uuidv1()}`; // numele directorului resurselor va fi un UUID v1
+    var bag = bagit(calea, 'sha256', {'Contact-Name': `${user}`});
+    // separă extensia
+    // var ext = data.split(';')[0].match(/jpeg|png|gif/)[0];
+
+    var b64data = data.replace(/^data:image\/\w+;base64,/, "");
+
+    // creează un buffer specializat
+    var buffy = Buffer.from(b64data, 'base64');
+    // poți scrie datele pe hard direct
+    // fs.writeFile('imagine.png', buffy, 'base64', () => {
+    //     console.log('Am scris fișierul');
+    // });
+
+    // introdu Buffer-ul într-un stream
+    var strm = new Readable();
+    strm.push(buffy);
+    strm.push(null);
+    strm.pipe(bag.createWriteStream('cover.png'));
+
+    bag.finalize(function () {
+        console.log('Am creat bag-ul');
+    });
+}
+```
+
+De exemplu, serverele `http` folosesc stream-urile.
 
 ```javascript
 const http = require('http');
@@ -143,6 +176,7 @@ Stream-urile de transformare sunt acele stream-uri `Duplex` care implementează 
 
 ## Referințe
 
+- [stream, Node.js v12.3.1 Documentation](https://nodejs.org/api/stream.html)
 - [The UNIX Philosophy, Streams and Node.js. Posted on August 29, 2013 by Safari Books Online & filed under Content - Highlights and Reviews, Programming & Development.](https://www.safaribooksonline.com/blog/2013/08/29/the-unix-philosophy-streams-and-node-js/)
 - [stream-handbook](https://github.com/substack/stream-handbook)
 - [Stream Adventure](https://www.npmjs.com/package/stream-adventure)

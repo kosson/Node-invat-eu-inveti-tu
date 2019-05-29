@@ -1,6 +1,6 @@
 # Evenimente în Node
 
-Node.js se bazează pe modelul de comunicare folosind evenimentele. Pe de o parte, avem evenimentele care țin de sistemul de operare, care sunt legate de funcționarea nucleului Node.js (programat în C++), numit `libuv`. Pe de altă parte, avem evenimente specifice nucleului JavaScript al Node.js (implementare `EventEmitter`).
+NodeJS se bazează pe modelul de comunicare folosind evenimentele. Pe de o parte, avem evenimentele care țin de sistemul de operare, care sunt legate de funcționarea nucleului NodeJS (programat în C++), numit `libuv`. Pe de altă parte, avem evenimente specifice nucleului JavaScript al NodeJS (implementare `EventEmitter`).
 
 NodeJS pune la dispoziție obiecte numite `emitters` a căror sarcină este să genereze evenimente la anumite intervale. Evenimentele emise vor declanșa executarea unor funcții care au rol de receptoare (*handlers*). Toate obiectele care emit evenimente implementează clasa `EventEmitter`. Aceste obiecte oferă o metodă `eventEmiter.on()` care permite atașarea unor funcții la evenimentele emise. Aceste funcții vor fi executate sincron la momentul apelării lor. Metoda `eventEmiter.emit()` este folosită pentru a declanșa executarea funcțiilor receptor.
 
@@ -54,7 +54,6 @@ myEmitter.emit('event', 'a', 'b');
 ```
 
 Se poate emite un eveniment care să execute o singură dată funcția sau funcțiile receptor (handler-ele). Acest lucru se poate realiza cu ajutorul metodei `eventEmitter.once()`.
-
 
 ```javascript
 const myEmitter = new MyEmitter();

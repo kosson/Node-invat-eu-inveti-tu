@@ -46,7 +46,3 @@ socket.on('connect', function (socket) {
 ### socket.emit(eventName[, …args][, ack])
 
 Această metodă emite către server date menționând numele evenimentului pentru care serverul ascultă. Al doilea parametru reprezintă datele pe care le trimiți către server. Aceste date pot fi de oricare tip, chiar și `Buffer`.
-
-### socket.on
-
-TODO: completează!

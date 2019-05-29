@@ -105,7 +105,7 @@ Datele de lucru în cazul funcțiilor de citire asincrone, vor returna un `Buffe
 
 Folosirea acestei metode de a citi datele unui fișier, va încărca întreg fișierul în memorie. În cazul în care se va lucra cu fișiere de mari dimensiuni, este indicat să se folosească `fs.createReadStream`.
 
-### Promisificare fs.readFile„
+### Promisificare fs.readFile
 
 În cazul în care ai nevoie să trasformi metoda într-o promisiune, pur și simplu va trebui să creezi o funcție care să fie respectiva promisiune.
 
@@ -138,7 +138,7 @@ Atunci când deja ai un fișier la care dorești să adaugi date, vei folosi met
 ```javascript
 fs.appendFile('fisier.txt', 'datele de adăugat', (err) => {
     if (err) {throw err};
-    console.log('Am terminat de adăugat datele');    
+    console.log('Am terminat de adăugat datele');
 });
 ```
 
@@ -330,19 +330,21 @@ unStreamReadable.on('data', function (fragment) {
 });
 ```
 
-Întreaga resursă de date va fi consumată de stream-ul nostru readable. De fiecare dată când un fragment din buffer este trimis, se declanșează execuția callback-ului. După prelucrarea fragmentului anterior, se va primi un alt fragment, care va fi prelucrat și tot așa până la consumarea întregii resurse.
+Întreaga resursă de date va fi consumată de `stream`-ul nostru *readable*. De fiecare dată când un fragment din `Buffer` este trimis, se declanșează execuția callback-ului. După prelucrarea fragmentului anterior, se va primi un alt fragment, care va fi prelucrat și tot așa până la consumarea întregii resurse.
 
-### fs.createWriteStream
+### fs.createWriteStream(path[,options])
 
-Această metodă oferă posibilitatea de a constitui un stream prin care să trimitem date într-o resursă.
+Această metodă oferă posibilitatea de a constitui un `stream` prin care să trimitem date într-o resursă.
+
+Drept prim parametru trebuie să indicăm o *cale* care poate fi un `string`, un `Buffer` sau un URL. Al doilea parametru poate fi un obiect sau un `string` cu opțiuni.
 
 ```javascript
-var fs = require('fs');
+var fs   = require('fs');
 var date = 'aceste caractere vor fi scrise într-un fișier';
 var wStr = fs.createWriteStream('ceva.txt');
 wStr.write(date, (err) => {
     if (err) {throw err};
-    console.log('datele au fost scrise');    
+    console.log('datele au fost scrise');
 });
 ```
 
@@ -350,4 +352,5 @@ De fiecare dată când scriptul va fi rulat, dacă fișierul deja există, conț
 
 ## Resurse
 
+- [fs, Node.js v12.3.1 Documentation](https://nodejs.org/api/fs.html)
 - [Using Node.js to Read Really, Really Large Datasets & Files (Pt 1)](https://itnext.io/using-node-js-to-read-really-really-large-files-pt-1-d2057fe76b33)

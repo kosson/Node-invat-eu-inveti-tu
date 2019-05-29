@@ -4,7 +4,7 @@
 
 Atunci când un program Node.js rulează pe un procesor multicore, poți folosi mai multe de un nucleu pentru a crește scalabilitatea.
 
-Este recomandabil ca Node.js să fie rulat în modul `cluster` atunci când sunt așteptate sarcini mai grele din partea sa. Ceea ce se va petrece atunci când folosim clustering-ul este că se vor inițializa mai mulți workeri, care vor balansa capacitatea de prelucrare a lui NodeJS. Pornirea lui NodeJS este recomandabilă în cluster mode.
+Este recomandabil ca NodeJS să fie rulat în modul `cluster` atunci când sunt așteptate sarcini mai grele din partea sa. Ceea ce se va petrece atunci când folosim clustering-ul este că se vor inițializa mai mulți workeri, care vor balansa capacitatea de prelucrare a lui NodeJS. Pornirea lui NodeJS este recomandabilă în cluster mode.
 
 Fiecare worker va avea propriul mediu lexical separat de al celorlalți.
 
@@ -53,7 +53,7 @@ if (cluster.isMaster) {
 };
 ```
 
-Ceea ce se petrece la momentul în care `index.js` este parcurs de Node.js este că se va instanția un manager care va gestiona cluster-ul: `console.log(cluster.isMaster); // true`. Acest manager de cluster este responsabil pentru pornirea de instațe ale worker-ilor. Nu depăși numărul de workeri peste numărul de nuclee ale procesorului. În acest caz, nucleele existente vor încerca să facă câte puțin din toate sarcinile.
+Ceea ce se petrece la momentul în care `index.js` este parcurs de NodeJS este că se va instanția un manager care va gestiona cluster-ul: `console.log(cluster.isMaster); // true`. Acest manager de cluster este responsabil pentru pornirea de instațe ale worker-ilor. Nu depăși numărul de workeri peste numărul de nuclee ale procesorului. În acest caz, nucleele existente vor încerca să facă câte puțin din toate sarcinile.
 
 Dacă `index.js` va fi executat în modul master, se va apela `cluster.fork()`. Abia acest proces, va executa pentru a doua oară `index.js`, dar de data aceasta în modul *slave* sau *child* setând `cluster.isMaster` la `false`, ceea ce permite executarea ramurii `else`, care instanțiază copiii. Fii foarte atent că fiecare child va avea la dispoziție câte un pool cu patru thread-uri.
 
@@ -73,7 +73,6 @@ ab -c 50 -n 500 http://localhost:3000/rutarapida
 
 În producție vei folosi un cluster manager precum PM2.
 
-
 ## Resurse
 
-https://nodejs.org/api/cluster.html
+- https://nodejs.org/api/cluster.html

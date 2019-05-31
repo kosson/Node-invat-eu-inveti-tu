@@ -147,3 +147,29 @@ Este dimensiunea în bytes a instanțelor interne pre-alocate `Buffer`-ului, car
 ## Lucrul cu buffere
 
 ### `buf[index]`
+
+Folosind această sintaxă, poți seta și obține valoarea octetului de la poziția indexului menționat drept parametru. Pentru că vorbim de bytes luați la nivel individual, indexul nu poate fi mai mare de `255` (`0xFF` în hexa).
+Acest operator este preluat de la `Uint8Array`.
+
+```javascript
+// Copy an ASCII string into a `Buffer` one byte at a time.
+const str = 'Node.js';
+const buf = Buffer.allocUnsafe(str.length);
+
+for (let i = 0; i < str.length; i++) {
+  buf[i] = str.charCodeAt(i);
+}
+
+console.log(buf.toString('ascii')); // afișează Node.js
+```
+
+### `buff.buffer`
+
+Este o referință către obiectul `ArrayBuffer` în baza căruia obiectul `Buffer` este creat.
+
+```javascript
+const arrayBuffer = new ArrayBuffer(16);
+const buffer = Buffer.from(arrayBuffer);
+
+console.log(buffer.buffer === arrayBuffer); // true
+```

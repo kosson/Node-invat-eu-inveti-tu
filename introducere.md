@@ -1,5 +1,7 @@
 # Introducere
 
+Node.js este un model de programare în JavaScript bazat pe evenimente, fiind folosit un model asincron.
+
 Node.js este o platformă de comunicare IN / OUT cu orice tip de sursă, fie un fișier, un stream, etc. Ceea ce permite Node.js este scrierea aplicațiilor care folosesc protocoalele web-ului, dar și aplicații care folosesc resurse locale. Mai mult, NodeJS poate interacționa cu baze de date, API-uri și conexiuni WebSocket.
 
 Proiectul Node reflectă legăturile care se stabilesc între codul JavaScript scris de noi, motorul V8, care asigură interpretarea codului și biblioteca de cod `libuv`, care asigură puntea de acces către sistemul de operare și resursele sale. Node este folosit pentru a construi o interacțiune asincronă care economisește timp, fiind permise și alte interacțiuni în timp ce sunt aduse resurse de pe web sau hard disk. Node prezintă o structură modularizată având în nucleu câteva module peste care se poate construi și extinde nelimitat.

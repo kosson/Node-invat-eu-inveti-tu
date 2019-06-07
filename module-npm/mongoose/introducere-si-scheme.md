@@ -29,11 +29,7 @@ Schema indică numele câmpurilor și tipurile datelor. Un exemplu tipic este ce
   });
 ```
 
-
-
 ### Definirea unei scheme
-
-
 
 ## Creează un model de date
 
@@ -58,4 +54,4 @@ Atenție, `module.exports` este obiectul returnat ca rezultat al unui apel `requ
 var Resursa = require('./app/models/resursă'); //ai acces la obiectul de tip model Bear
 ```
 
-Atenție, când faci cererea cu require folosește notație `./` pentru ca NodeJS să știe că este vorba despre un modul local.
+Atenție, când faci cererea cu `require` folosește notație `./` pentru ca NodeJS să știe că este vorba despre un modul local.

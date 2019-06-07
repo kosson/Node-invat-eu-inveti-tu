@@ -57,7 +57,7 @@ fs.readFileSync(fileUrl);
 
 Obiectele URL vor fi întotdeauna căi absolute.
 
-## Deschiderea unui fișier
+## Deschiderea unui fișier - `fs.open(cale[,options],cb)`
 
 Metoda `fs.open()` este folosită pentru a aloca un nou `file descriptor`, care va fi folosit pentru a obține informații despre fișier.
 

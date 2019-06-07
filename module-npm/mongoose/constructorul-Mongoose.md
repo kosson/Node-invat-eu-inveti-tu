@@ -13,8 +13,6 @@ var mongoose = require('mongoose');
 var mongoose2 = new mongoose.Mongoose();
 ```
 
-
-
 ### Mongoose.prototype.Document()
 
 Acesta este constructorul pentru generarea documentelor.
@@ -269,4 +267,3 @@ Setează schemele la strict.
 #### `'selectPopulatedPaths'`
 
 Are valoarea inițială setată la `true`. În acest caz, Mongoose va adăuga toate câmpurile pe care faci `populate()` în `select()`. Opțiunea `selectPopulatedPaths` pe care o poți seta la nivel de schemă o suprascrie pe aceasta.
-

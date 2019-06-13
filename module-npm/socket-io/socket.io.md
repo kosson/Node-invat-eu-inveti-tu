@@ -10,9 +10,9 @@ Socketurile sunt baza tuturor conexiunilor pe web. La nivelul cel mai de jos al 
 
 Protocolul în baza căruia funcționează și serverul Socket.io este [The WebSocket Protocol (RFC 6455)](https://tools.ietf.org/html/rfc6455). Trebuie menționat din capul locului că acest protocol nu sunt socket-urile TCP descrise mai sus.
 
-###1.1. Privire generală Socket.IO 
+###1.1. Privire generală Socket.IO
 
-Socket.io este o bibliotecă de cod care permite comunicare bidirecțională în timp real între clienți și un server. Un avantaj este faptul că se vor realiza conexiuni indiferent de layer-ele interpuse (proxy-uri, load balance-re, etc). Reconectarea clientului se va face automat. Socket.io folosește în subsidiar `engine.io` care este un protocol de comunicare ce va folosi tehnologii de conectare care să asigure o legătură stabilă indiferent de tehnologiile interpuse între client și server. 
+Socket.io este o bibliotecă de cod care permite comunicare bidirecțională în timp real între clienți și un server. Un avantaj este faptul că se vor realiza conexiuni indiferent de layer-ele interpuse (proxy-uri, load balance-re, etc). Reconectarea clientului se va face automat. Socket.io folosește în subsidiar `engine.io` care este un protocol de comunicare ce va folosi tehnologii de conectare care să asigure o legătură stabilă indiferent de tehnologiile interpuse între client și server.
 
 Pentru interacțiunea cu toți clienții care se conectează, se utilizează clasa `Socket`. Nivelul de transport este asigurat prin XHR/JSONP (numit și [long-polling](https://en.wikipedia.org/wiki/Push_technology#Long_polling)) și acolo unde este posibil, se va folosi WebSocket, dacă legătura stabilită permite. Serverul va *upgrada* conexiunea confirmând cu `*HTTP/1.1 101 Switching Protocols*` în headerul de răspuns. Acest upgrade instruiește clientul să mențină legătura cu serverul și să folosească conexiunea stabilită ca un **stream**.
 
@@ -21,9 +21,9 @@ Socket.io nu este o implementare a standardului WebSocket. Socket.io atașează 
 Un client care a reușit să facă o conexiune, va sta conectat pe termen nedefinit, iar atunci când serverul nu mai este disponibil, va încerca să se conecteze fără a se deconecta. Acest lucru este posibil pentru că Socket.io implementează un mecanism de sincronizare prin care cele două părți află despre starea celuilalt. Mecanismul implică setarea de timere în ambele părți, care măsoară intervalele de timp în care răspunsul este primit la momentul când este inițiată comunicarea (etapa de handshake). Aceste timere necesită ca toate cererile ulterioare ale clientului să fie direcționate către același server. În cazul în care sunt folosite mai multe noduri (multiple servere sau un cluster), este necesară folosirea unui mecanism intermediar de gestiune a împerechierii cererii cu serverul sau worker-ul. Acesta se numește *sticky-session*. Pentru mai multe detalii, vezi [*stiky load balancing*](https://socket.io/docs/using-multiple-nodes/).
 
 Este posibilă și o comunicare a datelor în format binar. Din browser datele pot fi emise ca `ArrayBuffer` sau `Blob`, iar din NodeJS ca `ArrayBuffer` și `Buffer`.
-Pentru a separa canalele de comunicare, `Socket.io` permite realizarea de spații separate în funcție de modelul de comunicare sau separația resurselor. Aceste spații sunt numite *namespaces*, acestea comportându-se ca niște canale separate de comunicare. Aceste canale separate, vor folosi aceeași conexiune creată.
+Pentru a separa canalele de comunicare, `Socket.io` permite realizarea de zone separate în funcție de modelul de comunicare sau separația resurselor. Aceste spații sunt numite *namespaces*. Acestea se comportă precum canale separate de comunicare. Aceste canale separate, vor folosi aceeași conexiune creată în baza multiplexării.
 
-În fiecare Namespace, poți crea zone diferite numite rooms (canale arbitrare). Expunerea serverului se face pur și simplu prin cererea modului `socket.io`. Va fi returnat un constructor, care acceptă un argument. Acesta este un server HTTP.
+În fiecare namespace, poți crea zone diferite numite *rooms* (canale arbitrare). Expunerea serverului se face pur și simplu prin cererea modului `socket.io`. Va fi returnat un constructor, care acceptă un argument. Acesta este un server HTTP.
 
 ```javascript
 var io = require('socket.io')();
@@ -48,7 +48,7 @@ Spre deosebire de celelalte tehnici, long polling-ul va încerca să mențină d
 
 Implementarea unui astfel de model implică sprijinul serverului, care să accepte astfel de conexiuni specializate. Din partea clientului se așteaptă ca acesta să fie capabil de a gestiona o singură conexiune, cea către server. Atunci când clientul primește date, va mai iniția o conexiune după și așa mai departe, legătura cu serverul părând a fi neîntreruptă. De fapt, există mici pauze, care sunt gândite pentru a degreva serverul de încărcare. Aceste pauze pot parametrizabile prin setarea header-ului `Keep-Alive` în momentul în care clientul așteaptă un răspuns.
 
-Serverul are o misiune mai delicată pentru că trebuie să gestioneze starea în care se află conexiunile. În cazul în care avem de a face cu o arhitectură mai complexă (multiple servere cu balans), care necesită constituirea unui adevărat mecanism care să țină evidența stării conexiunii. Atributul folosit pentru managementul stării în arhitecturi complexe este **stickiness**, **session stickiness**. 
+Serverul are o misiune mai delicată pentru că trebuie să gestioneze starea în care se află conexiunile. În cazul în care avem de a face cu o arhitectură mai complexă (multiple servere cu balans), care necesită constituirea unui adevărat mecanism care să țină evidența stării conexiunii. Atributul folosit pentru managementul stării în arhitecturi complexe este **stickiness**, **session stickiness**.
 
 Acest mecanism de gestiune a stării conexiunii, va avea în sarcină și rezolvarea problemelor de timeout, care ar putea apărea dată fiind parcurgerea mai multor componente software posibile: servere, balance-re, proxy-uri, etc. Pentru evitarea complexităților pe care le-a angajat *long polling*-ul cu scopul de a oferi o comunicare apropiată de real-time, a fost proiectat un protocol țintit către comunicare bidirecțională: `WebSockets` sau `WebRTC`. Apariția acestui standard este de dată recentă și încă mediul de dezvoltare are nevoie de a maturiza soluții de implementare.
 
@@ -69,12 +69,12 @@ Pentru a nu gestiona deficiențele pe care long polling-ul le aduce, este de dor
 Socket-ul are nevoie să se atașeze la un server `http` pentru a funcționa așa cum este cel pe care-l oferă NodeJS din oficiu `httpServer`. Pe lângă serverul HTTP, constructorul `Socket.io` acceptă suplimentar și un obiect cu opțiuni de configurare.
 
 ```javascript
-var http = require('http');
+var http   = require('http');
 var server = http.createServer();
-var io = require('socket.io')(server, {opțiune: valoare});
+var io     = require('socket.io')(server, {opțiune: valoare});
 ```
 
-În cele mai multe scenarii, serverul socket, va folosi un server creat cu ajutorul lui `Express`.
+În cele mai multe scenarii, serverul socket va folosi un server creat cu ajutorul lui `Express.js`.
 
 Opțiuni de configurare posibile:
 
@@ -93,23 +93,19 @@ const io = require('socket.io')({
   path: '/test',
   serveClient: false,
 });
-
 // fie
 const server = require('http').createServer();
-
 io.attach(server, {
   pingInterval: 10000,
-  pingTimeout: 5000,
-  cookie: false
+  pingTimeout:  5000,
+  cookie:       false
 });
-
 server.listen(3000);
-
 // sau
 io.attach(3000, {
   pingInterval: 10000,
-  pingTimeout: 5000,
-  cookie: false
+  pingTimeout:  5000,
+  cookie:       false
 });
 ```
 
@@ -319,7 +315,7 @@ const socket = io({
 
 ## 7. Namespace-uri / multiplexare
 
-Namespace-urile reprezintă seturi de socketuri conectate ca o zonă identificabilă distinct, care este specificată de numele unei căi. Această cale identifică namespace-ul. Orice client se va conecta automat la rădăcină (`/` - namespace-ul principal) și abia după aceea la alte namespace-uri. 
+Namespace-urile reprezintă seturi de socketuri conectate ca o zonă identificabilă distinct, care este specificată de numele unei căi. Această cale identifică namespace-ul. Orice client se va conecta automat la rădăcină (`/` - namespace-ul principal) și abia după aceea la alte namespace-uri.
 
 Indiferent de namespace-urile la care se conectează, toți clienții vor folosi aceeași conexiune. Nu se va genera o conexiune separată pentru fiecare namespace în parte. Namespace-urile pot fi considerate endpoint-uri sau rute.
 
@@ -382,7 +378,7 @@ Socket.io pune la dispoziție metoda `of` pentru a crea un spațiu separat în c
 ```javascript
 var adminNsp = io.of('/admin');
 adminNsp.on('connection', function (socket) {
-    console.log('S-a conectat cineva');    
+    console.log('S-a conectat cineva');
 });
 adminNsp.emit('general', 'salut');
 // client
@@ -391,7 +387,7 @@ var adminNsp = io('/admin');
 
 Antenție la faptul că partea de client trebuie să definească și ea conectorul pentru canalul creat pe namespace-ul nou. Acesta este specificat, adăugând calea ca argument lui `io('/calenoua')`.
 
-**Fi avizat**! 
+**Fi avizat**!
 
 Comunicarea pe namespace-uri este bidirecțională. Acest lucru înseamnă că namespace-urile declarate pe server, trebuie să aibă un corespondent pe client.
 
@@ -438,11 +434,11 @@ socket.on('data', (nsData) => {
 
   // ATAȘEAZĂ RECEPTORI PE FIECARE ROL
   Array.from(document.getElementsByClassName('namespace')).forEach((element) => {
-    // console.log(element);    
+    // console.log(element);
     element.addEventListener('click', (e) => {
       // console.log(e.target);
       let endpoint = element.getAttribute('data-ns');
-      console.log(endpoint);      
+      console.log(endpoint);
     });
   });
 });
@@ -476,9 +472,9 @@ dynamicNsp.use((socket, next) => { /* ... */ });
 
 ### 7.3. Crearea de rooms (camere)
 
-Pentru fiecare namespace pot fi definite camere la care socket-ul clientului poate fi adăugat folosind metoda `join` (se alătură). Același socket client poate fi scos dintr-o cameră folosindu-se metoda `leave` (părăsește). 
+Pentru fiecare namespace pot fi definite camere la care socket-ul clientului poate fi adăugat folosind metoda `join` (se alătură). Același socket client poate fi scos dintr-o cameră folosindu-se metoda `leave` (părăsește).
 
-**Constituirea de camere (*rooms*) este o prerogativă a serverului**. 
+**Constituirea de camere (*rooms*) este o prerogativă a serverului**.
 
 Din oficiu, clientul nu știe pe ce camere a fost adăugat pentru că acest lucru se petrece în partea de server. Clintul doar trebuie să știe ce evenimente să asculte, fie că acestea sunt hard codate în client side, fie să sunt trimise de la server spre cunoașterea clientului.
 
@@ -565,7 +561,7 @@ nameSpSeparat.to('spatiul01').emit('salutare', date);
 
 #### 7.3.4. Camera proprie și conectare socket la socket
 
-Te poți conecta la propria cameră pentru că id-ul de socket poate fi folosit drept identificator. 
+Te poți conecta la propria cameră pentru că id-ul de socket poate fi folosit drept identificator.
 
 ```javascript
 socket.to(socket.id).emit('auth', token);
@@ -601,7 +597,7 @@ Modelul folosind o cameră realizează o izolare mai bună și în cazul comunic
 /*SERVER*/
 socket.join(socket.id, () => {
     // let rooms = Object.keys(socket.rooms);
-    // console.log(rooms);        
+    // console.log(rooms);
     socket.emit('salut', 'salut prietene, lucram in camera');
 });
 ```
@@ -701,7 +697,7 @@ socket.on('data', (data) => {
     namespaces.innerHTML += `<span class="namespace" data-ns="${ns.endpoint}"><img src="${ns.img}" />${ns.endpoint.slice(1)}</span>`;
   });
   // ATAȘEAZĂ RECEPTORI PE FIECARE ROL
-  Array.from(document.getElementsByClassName('namespace')).forEach((element) => {  
+  Array.from(document.getElementsByClassName('namespace')).forEach((element) => {
     element.addEventListener('click', (e) => {
       let endpoint = element.getAttribute('data-ns');
       // apelează funcția de conectare la namespace
@@ -721,8 +717,8 @@ namespaces.forEach(function manageNsp (namespace) {
     // pentru fiecare endpoint, la conectarea clientului
     io.of(namespace.endpoint).on('connection', (nsSocket) => {
         console.log(`User ${nsSocket.id} joined ${namespace.endpoint}`); // vezi cine s-a conectat
-        nsSocket.emit('nsRoomLoad', namespace.rooms); 
-        // pentru toate namespace-urile primise, clientul trebuie să 
+        nsSocket.emit('nsRoomLoad', namespace.rooms);
+        // pentru toate namespace-urile primise, clientul trebuie să
         // aterizeze undeva. Va ateriza în primul namespace din toate trimise
         // care va avea atașat toate camerele disponibile pentru acel ns
 
@@ -745,13 +741,13 @@ namespaces.forEach(function manageNsp (namespace) {
                 return room.roomTitle === roomToJoin;
                 // căutăm în obiectele room colectate prin instanțierea clasei Namespace
                 // dacă există vreo cameră precum cea obținută mai sus.
-                // va returna chiar obiectul de cameră, 
+                // va returna chiar obiectul de cameră,
                 // dacă aceasta a fost găsită între cele asociate namespace-ului
             });
 
             /* #3 Îi trimitem istoria */
             nsSocket.emit('historyUpdate', nsRoom.history); // ori de câte ori cineva se va conecta, va primi și istoricul
-            
+
             /* #4 trimitem numărul membrilor actualizat cu fiecare sosire */
             updateUsersInRooms(namespace, roomToJoin);
         });
@@ -777,7 +773,7 @@ namespaces.forEach(function manageNsp (namespace) {
                 return room.roomTitle === roomTitle;
                 // căutăm în obiectele room colectate prin instanțierea clasei Namespace
                 // dacă există vreo cameră precum cea obținută mai sus.
-                // va returna chiar obiectul de cameră, 
+                // va returna chiar obiectul de cameră,
                 // dacă aceasta a fost găsită între cele asociate namespace-ului
             });
             nsRoom.addMessage(dataPlus); // ori de câte ori vine un mesaj, va fi băgat în history
@@ -825,7 +821,7 @@ function joinNamespace(endpoint) {
     console.log(nsRooms);
   });
 
-  /*POSIBIL MODEL DE PRELUARE DATE DIN FORM*/ 
+  /*POSIBIL MODEL DE PRELUARE DATE DIN FORM*/
   // TODO: Explorează integrarea cu aplicația
   nsSocket.on('comPeRoom', (msg) => {
     console.log(msg);
@@ -855,7 +851,7 @@ function joinRoom(roomName) {
     // FIXME: Actualizează DOM-ul să aibă un element care să afișeze numărul de useri.
     document.querySelector('.numar-curent-de-useri').innerHTML = `${newNumberOfMembers}`;
   });
-    
+
   // Adaugă funcții receptor pentru toate camerele
   let roomNodes = document.getElementsByClassName('room');
   Array.from(roomNodes).forEach((elem) => {
@@ -863,7 +859,7 @@ function joinRoom(roomName) {
       joinRoom(e.target.innerText);
     });
   });
-    
+
   /* #2 Actualizează istoricul mesajelor */
   nsSocket.on('historyUpdate', (history) => {
     // afișează istoricul modificând DOM-ul
@@ -897,7 +893,7 @@ Pentru a obține o metodă de a se ține evidența clienților conectați. Fieca
 var io = require('socket.io')(https);
 io.of('/admin').clients( (error, clients) => {
     if (error) throw error;
-    console.log(clients); // este un array cu toți cei conectați    
+    console.log(clients); // este un array cu toți cei conectați
 });
 ```
 
@@ -914,7 +910,7 @@ Pentru a obține o colecție cu toți clienții conectați pe rădăcină `/`, p
 
 ```javascript
 io.clients((error, clients) => {
-    console.log(clients); // un array cu toți cei conectați pe rădăcină.    
+    console.log(clients); // un array cu toți cei conectați pe rădăcină.
 });
 ```
 
@@ -1003,7 +999,7 @@ Acesta este un obiect care ține evidența camerelor (*rooms*) în care se află
 io.on('connection', (socket) => {
     socket.join('camera 007', () => {
         let rooms = Object.keys(socket.rooms);
-        console.log(rooms);       
+        console.log(rooms);
     });
 });
 ```
@@ -1022,7 +1018,7 @@ Este un getter care are un model de funcționare precum al unui proxy. Returneaz
 
 #### 11.1.6.  `socket.handshake`
 
-Handshack-ul se petrece la momentul în care se stabilește comunicarea între client și server. Acest obiect care este inclus în datele, care vin din client, oferă detaliile de conexiune. 
+Handshack-ul se petrece la momentul în care se stabilește comunicarea între client și server. Acest obiect care este inclus în datele, care vin din client, oferă detaliile de conexiune.
 
 ```javascript
 {
@@ -1118,7 +1114,7 @@ Socket.io oferă chiar o metodă care generează un array a socketurilor conecta
 
 ```javascript
 io.clients((error, clients) => {
-    console.log(clients); // un array cu toți cei conectați pe rădăcină.    
+    console.log(clients); // un array cu toți cei conectați pe rădăcină.
 });
 ```
 
@@ -1240,7 +1236,7 @@ function joinRoom(roomName) {
     document.querySelector('.numar-curent-de-useri').innerHTML = `${newNumberOfMembers}`;
   });
 }
- 
+
 /* SERVERUL */
 var {io,namespaces} = require('./server');
 
@@ -1264,8 +1260,8 @@ io.on('connection', (socket) => {
 namespaces.forEach(function manageNsp (namespace) {
     io.of(namespace.endpoint).on('connection', (nsSocket) => {
         console.log(`User ${nsSocket.id} joined ${namespace.endpoint}`); // vezi cine s-a conectat
-        nsSocket.emit('nsRoomLoad', namespaces[0].rooms); 
-        // pentru toate namespace-urire primise, clientul trebuie să 
+        nsSocket.emit('nsRoomLoad', namespaces[0].rooms);
+        // pentru toate namespace-urire primise, clientul trebuie să
         // aterizeze undeva. Va ateriza în primul namespace din toate trimise
         // care va avea atașat toate camerele disponibile pentru acel ns
 
@@ -1311,7 +1307,7 @@ function connectHandler () {
   login(); // trimite datele formularului la server pentru autentificare
   socket.on(socket.id, (data) => {
     console.log(data);
-    
+
   });
 }
 socket.on('connect', connectHandler);

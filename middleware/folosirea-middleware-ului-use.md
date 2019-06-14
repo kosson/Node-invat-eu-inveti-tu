@@ -1,62 +1,63 @@
-# Ce este `use()`
+# Middleware-ul `use()`
+
+Semnătura acestui middleware este următoarea:
 
 > app.use([path], [function...], function)
 
-Acest middleware are ca efect montarea funcțiilor sale la calea specificată. Dacă nu este specificată calea, este considerat automat că este folosit `/`. Aceste funcții vor fi executate ori de câte ori va fi făcută o cerere pe acea cale. De vreme ce calea va fi default `/` dacă nu este specificată, middleware-ul va fi executat pentru fiecare cerere la `app`. De exemplu:
+Acest middleware are ca efect montarea funcțiilor sale la calea specificată. Dacă nu este specificată calea, este considerat automat că este folosit `/`. Aceste funcții vor fi executate ori de câte ori va fi făcută o cerere pe acea cale. De vreme ce calea va fi default `/` dacă nu este specificată, middleware-ul va fi executat pentru fiecare cerere la `app`.
 
-```js
-// this middleware will be executed for every request to the app
-app.use(function (req, res, next) {
+```javascript
+// middleware-ul va fi executat pentru fiecare cerere pe app
+app.use( function (req, res, next) {
   console.log('Time: %d', Date.now());
   next();
 })
 ```
 
-## Starea unui middleware lovit de toate cererile la momentul 0:
+## Primirea cererilor pe middleware
 
-```js
-router.use(function(req, res, next) {
-	// do logging
-	console.log('Something is happening.');
-	next(); // make sure we go to the next routes and don't stop here
+În cazul folosirii bibliotecii specializate `Express.js`, de regulă se va constitui un router pentru gestionarea căilor. La conectarea inițială, care se face pe rădăcină, deja poate fi utilizat `use` pentru a introduce componente pe lanțul de prelucrare a cererii.
+
+```javascript
+router.use( function (req, res, next) {
+	console.log('Aici se face o prelucrare inițială a cererii');
+	next(); // după prelucrare, pasează datele cererii următorului middleware
 });
 ```
 
-Utilizarea middleware-ului în acest mod este foarte potentă. Se pot face validări pentru a vedea dacă ceea ce vine de la cerere este corect. Putem arunca erori în caz de probleme. Putem face jurnalizare pentru analize statistice care pot fi oferite sau pentru interes de administrare. Aici sunt o grămadă de posibilități.
+Utilizarea middleware-ului în acest mod este foarte utilă. Se pot face validări pentru a vedea dacă ceea ce vine de la cerere este corect. Putem semnala erori în caz de probleme. Putem face jurnalizare pentru analize statistice, care pot fi oferite sau în interes de administrare. Aici sunt o grămadă de posibilități.
 
 Testarea rutei pentru a vedea că totul funcționează bine:
 
-```js
-router.get('/', function(req, res) {
-	res.json({ message: 'hooray! welcome to our api!' });
+```javascript
+router.get('/', function (req, res) {
+	res.json({ message: 'Bine ai venit la API!' }); // trimite mesaj la client
+});
+// începe prelucrarea cererii
+router.use( function (req, res, next) {
+  console.log('Aici se face o prelucrare inițială a cererii');
+  next(); // după prelucrare, pasează datele cererii următorului middleware
 });
 
-router.use(function(req, res, next) {
-  // do logging
-  console.log('Something is happening.');
-  next(); // make sure we go to the next routes and don't stop here
-});
-
-// REGISTER OUR ROUTES -------------------------------
-// all of our routes will be prefixed with /api
+// Înregistrarea posibilelor rute
+// în cazul de mai jos, toate rutele vor fi prefixate de /api
 app.use('/api', router);
+// motivul este că întreg obiectul router este înregistrat pe namespace-ul /api
 ```
 
 ## Execuția funcțiilor middleware-ului și ordinea
 
-ATENȚIE! Funcțiile middleware-ului vor fi executate una după cealaltă așa că ordinea includerii middleware-ului este foarte importantă
+Atenție, funcțiile middleware-ului vor fi executate una după cealaltă așa că ordinea includerii middleware-ului este foarte importantă. De exemplu, dacă pui middleware-ul `use` înaintea tratării căilor pe care vin cererile, acestea nu vor mai trece.
 
-De exemplu:
-
-```js
-// this middleware will not allow the request to go beyond it
+```javascript
+// use înainte de punctul de intrare a cererii
 app.use(function(req, res, next) {
-  res.send('Hello World');
+  res.send('de aici cererea nu pleacă mai departe');
 })
 
-// requests will never reach this route
+// cererile nu vor mai ajunge la punctul de intrare
 app.get('/', function (req, res) {
-  res.send('Welcome');
+  res.send('Bine ai venit pe rădăcina site-ului.');
 })
 
 ```
@@ -65,40 +66,40 @@ Calea este un string reprezentând:
 
 1.	o cale scrisă explicit:
 
-  ```js
-    // will match paths starting with /abcd
+  ```javascript
+    // va răspunde la căi care încep cu /abcd
   app.use('/abcd', function (req, res, next) {
     next();
   })
   ```
 
-2.	un pattern care reprezintă o cale:
+2.	un șablon regex care reprezintă o cale:
 
-  ```js
-  // will match paths starting with /abcd and /abd
+  ```javascript
+  // va răspunde la căi care încep cu /abcd și /abd
   app.use('/abc?d', function (req, res, next) {
     next();
   })
 
-  // will match paths starting with /abcd, /abbcd, /abbbbbcd and so on
+  // va răspunde la căi care încep cu /abcd, /abbcd, /abbbbbcd ș.a.m.d.
   app.use('/ab+cd', function (req, res, next) {
     next();
   })
 
-  // will match paths starting with /abcd, /abxcd, /abFOOcd, /abbArcd and so on
+  // va răspunde la căi care încep cu /abcd, /abxcd, /abFOOcd, /abbArcd ș.a.m.d.
   app.use('/ab*cd', function (req, res, next) {
     next();
   })
 
-  // will match paths starting with /ad and /abcd
+  // va răspunde la căi care încep cu /ad și /abcd
   app.use('/a(bc)?d', function (req, res, next) {
     next();
   })
   ```
-3.	o expresie regulată
+3.	o expresie regulată RegExp
 
-```js
-// will match paths starting with /abc and /xyz
+```javascript
+// va răspunde la căi care încep cu /abc și /xyz
 app.use(/\/abc|\/xyz/, function (req, res, next) {
   next();
 })
@@ -106,8 +107,8 @@ app.use(/\/abc|\/xyz/, function (req, res, next) {
 
 4.	un array de combinații a variantelor menționate anterior
 
-```js
-// will match paths starting with /abcd, /xyza, /lmn, and /pqr
+```javascript
+// va răspunde la căi care încep cu /abcd, /xyza, /lmn, și /pqr
 app.use(['/abcd', '/xyza', /\/lmn|\/pqr/], function (req, res, next) {
   next();
 })
@@ -117,25 +118,29 @@ app.use(['/abcd', '/xyza', /\/lmn|\/pqr/], function (req, res, next) {
 
 1. Funcție de middleware care poate fi definită și montată local.
 
-  ```js
-  // A middleware function can be defined and mounted locally.
+  ```javascript
+  // Funcție definită și atașată pe loc
   app.use(function (req, res, next) {
     next();
   })
   ```
+  Routerul este și el un middleware care trebuie atașat aplicației Express.
 
-  ```js
-  // A router is a valid middleware.
+  ```javascript
+  // definire router
   var router = express.Router();
+  // tratarea cererilor pe rădăcină
   router.get('/', function (req, res, next) {
     next();
-  })
+  });
+  // atașarea routerului la aplicația Express
   app.use(router);
 
   ```
+  Cu Express.js poți crea oricâte aplicații dorești. Acestea pot fi atașate unei alteia cu rol *central* folosind `use`.
 
-  ```js
-  //  An Express app is a valid middleware.
+  ```javascript
+  //  inițierea altei aplicații Express
   var subApp = express();
   subApp.get('/', function (req, res, next) {
     next();
@@ -145,9 +150,9 @@ app.use(['/abcd', '/xyza', /\/lmn|\/pqr/], function (req, res, next) {
 
 2. Poate fi constituit un array
 
-  ```js
-  // Clubbing middleware in arrays is a good way to logically group them. The mount path has to be specified, if an array of middleware is passed as the first or the only set of middleware
+  Unul din modelele posibile este gruparea middleware-ului folosit pentru o cale într-un array. Ceea ce se obține este o grupare logică a lanțului de prelucrare pe o anumită cale. Ceea ce trebuie ținut în vedere este ca array-ul să fie pasat primul sau să fie singurul lucru care este pasat.
 
+  ```javascript
   var r1 = express.Router();
   r1.get('/', function (req, res, next) {
     next();
@@ -163,29 +168,30 @@ app.use(['/abcd', '/xyza', /\/lmn|\/pqr/], function (req, res, next) {
   ```
 3. Combinatii
 
-  ```js
-  //  All the above ways of mounting middleware can be combined.
-  function mw1(req, res, next) { next(); }
-  function mw2(req, res, next) { next(); }
+  Toate modalitățile de lucru menționate anterior pot combinate.
+
+  ```javascript
+  function mw1(req, res, next) { next() };
+  function mw2(req, res, next) { next() };
 
   var r1 = express.Router();
-  r1.get('/', function (req, res, next) { next(); });
+  r1.get('/', function (req, res, next) { next() });
 
   var r2 = express.Router();
-  r2.get('/', function (req, res, next) { next(); });
+  r2.get('/', function (req, res, next) { next() });
 
   var subApp = express();
-  subApp.get('/', function (req, res, next) { next(); });
+  subApp.get('/', function (req, res, next) { next() });
 
   app.use(mw1, [mw2, r1, r2], subApp)
   ```
 
-## app.use()
+## `app.use()`
 
-exemplu de compartimentare:
+Exemplu de compartimentare:
 
-```js
-app.use('/', basicRoutes);
+```javascript
+app.use('/',      basicRoutes);
 app.use('/admin', adminRoutes);
-app.use('/api', apiRoutes);
+app.use('/api',   apiRoutes);
 ```

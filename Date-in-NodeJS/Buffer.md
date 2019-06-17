@@ -2,7 +2,7 @@
 
 NodeJS oferă posibilitatea de a lucra cu datele prin intermediul stream-urilor. Dar pentru a putea face acest lucru, a fost introdus un nou API specific. JavaScript a dobândit mecanisme specifice lucrului cu streamurile și datele binare abia odată cu noile versiuni ale standardului, care au introdus `TypedArray` și `ArrayBuffer`.
 
-`Buffer` a fost intrudusă de NodeJS pentru a se asigura un nivel de interacțiune cu stream-urile de octeți din stream-urile TCP, operațiunile cu sistemul de fișiere al sistemului, etc. Această clasă implementează cu particularități de optimizare API-ul `Uint8Array` din JavaScript.
+Clasa `Buffer` a fost introdus de NodeJS pentru a se asigura un nivel de interacțiune cu stream-urile de octeți din stream-urile TCP, operațiunile cu sistemul de fișiere al sistemului, etc. Această clasă implementează cu particularități de optimizare API-ul `Uint8Array` din JavaScript.
 
 Clasa este disponibilă la nivel global fără a mai fi nevoie să o ceri explicit. Instanțele clasei `Buffer` sunt similare array-urilor de numere întregi de la `0` la `255`. Aceste alocări fixe de memorie stau în afara heap-ului V8. Dimensiunea unui `Buffer` este stabilită de la bun început și nu poate fi schimbată ulterior.
 
@@ -12,6 +12,11 @@ const buf1 = Buffer.alloc(10);
 // Creează un Buffer cu dimnsiunea de 10 având doar valoarea 0x1.
 const buf2 = Buffer.alloc(10, 1);
 ```
+
+Un `Buffer` se poate crea prin pasarea în constructor:
+- a unui array de octeți,
+- a unui alt buffer,
+- a unui string.
 
 ## Metode și proprietăți
 
@@ -29,6 +34,22 @@ Motoda a fost adăugată în versiunea 5.10.0 a lui NodeJS. Cu ajutorul metodei 
 // crearea unui Buffer cu octeți UTF-8 ai șirului de caractere „buffer”
 const buf = Buffer.from([0x62, 0x75, 0x66, 0x66, 0x65, 0x72]);
 console.log(buf); // <Buffer 62 75 66 66 65 72>
+```
+
+Propriu-zis ceea ce se petrece este o copiere a conținutului din array-ul pasat.
+
+```javascript
+var arr = [1, 2, 3, 4];
+var buff = Buffer.from(arr);
+console.log(buff); // <Buffer 01 02 03 04>
+```
+
+În cazul în care folosim un TyppedArray așa cum este `Uint8Array`, se va petrece același lucru.
+
+```javascript
+var arr = new Uint8Array([1, 2, 3, 4]);
+var buff = Buffer.from(arr);
+console.log(buff);  // <Buffer 01 02 03 04>
 ```
 
 #### `Buffer.from(arrayBuffer[, byteOffset[, length]])`
@@ -126,11 +147,15 @@ Este un șir care menționează standardul de codare. Valoarea din oficiu este `
 const buf1 = Buffer.from('șir de test');
 console.log(buf1); //<Buffer c8 99 69 72 20 64 65 20 74 65 73 74>
 console.log(buf1.toString()); // șir de test
-console.log(buf1.toString('ascii'));  // Hir de test
+console.log(buf1.toString('ascii'));  // Șir de test
 const buf2 = Buffer.from('yJlpciBkZSB0ZXN0', 'base64');
 console.log(buf2); //<Buffer c8 99 69 72 20 64 65 20 74 65 73 74>
 console.log(buf2.toString()); // șir de test
 ```
+
+### `Buffer.alloc()`
+
+Metoda alocă un 
 
 ### `Buffer.isBuffer(obj)`
 

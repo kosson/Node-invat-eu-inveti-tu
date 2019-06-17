@@ -40,6 +40,24 @@ Douglas McIlroy, unul dintre autorii UNIX-ului, a scris o notă în care surprin
 
 Stream-urile lucrează cu fragmente - **chunks**. Acestea sunt trimise între două puncte de comunicare. Streamurile sunt emitere de evenimente. Acest lucru înseamnă că se poate gestiona lucrul cu acestea atașându-se callback-uri pe diferitele evenimente.
 
+## Date de lucru în Node
+
+În afară de datele pe care le cunoaștem din JavaScript, datele primare de lucru în NodeJS sunt de tip `Buffer` cu un echivalent în JavaScript `Uint8Array`, un TypedArray. Datele brute în NodeJS sunt numite *octet streams*. Octeții sunt secvențe de 8 biți numite și **bytes**. NodeJS alocă memorie pentru buffere în afara heap memory-ului V8.
+
+**Moment Zen**: Bufferele odată diensionate nu mai pot fi modificate.
+
+Bufferele joacă un rol central în operațiunile de scriere și citire. Datele fișierelor vor fi citite și scrise folosind un buffer.
+
+```javascript
+let buf = new Buffer(24);
+```
+
+Buffer-ele din NodeJS sunt diferite de ArrayBuffer-ele din JavaScript pentru că în Node, Buffer-ul nu va încărca și conținutul. Inițializarea buffer-ului se face cu ajutorul metodei `fill()`.
+
+```javascript
+buf.fill(1); // încarcă buffer-ul cu valoarea 1
+```
+
 ## Resurse
 
 - [The Art of Node](https://github.com/maxogden/art-of-node)

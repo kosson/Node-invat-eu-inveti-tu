@@ -66,6 +66,15 @@ Pentru a nu gestiona deficiențele pe care long polling-ul le aduce, este de dor
 
 ## 2. Instanțierea obiectului server
 
+Obiectul `Server` este disponibil în momentul în care este cerut modulul `socket.io`.
+
+```javascript
+var io = require('socket.io');
+// poți instanția și prin invocarea constructorului
+var Server = require('socket.io');
+var io = new Server();
+```
+
 Socket-ul are nevoie să se atașeze la un server `http` pentru a funcționa așa cum este cel pe care-l oferă NodeJS din oficiu `httpServer`. Pe lângă serverul HTTP, constructorul `Socket.io` acceptă suplimentar și un obiect cu opțiuni de configurare.
 
 ```javascript
@@ -76,15 +85,52 @@ var io     = require('socket.io')(server, {opțiune: valoare});
 
 În cele mai multe scenarii, serverul socket va folosi un server creat cu ajutorul lui `Express.js`.
 
+### Instanțierea constructorului
+
+Obiectul `Socket` devine disponibil la cererea modului sau la instanțierea cu `new`.
+
+```javascript
+const server = require('http').createServer();
+
+const io = require('socket.io')(server, {
+  path: '/test',
+  serveClient: false,
+  // below are engine.IO options
+  pingInterval: 10000,
+  pingTimeout: 5000,
+  cookie: false
+});
+
+server.listen(3000);
+```
+
 Opțiuni de configurare posibile:
 
-| Nume opțiune | Valoare | Descriere |
+| Nume opțiune | Din oficiu | Descriere |
 |:-- |:-- |:-- |
 | `path` | `/socket.io` | calea pe care se va face captura datagramelor |
 | `serveClient` | `true` | indică dacă vor fi servite fișierele corespondente clientului |
 | `adapter` | | Indică care `Adapter` trebuie folosit. Cel folosit din oficiu este unul bazat pe folosirea memoriei. Vezi [socket.io-adapter](https://github.com/socketio/socket.io-adapter) |
 | `origins` | `*` | originile permise de unde se acceptă datagramele |
 | `parser` | | Este parserul folosit. Socket.io oferă un `Parser` din oficiu. vezi [socket.io-parser](https://github.com/socketio/socket.io-parser)|
+
+Opțiuni de configurare ale serverului intern `Engine.IO`.
+
+| Nume opțiune | Din oficiu | Descriere |
+|:-- |:-- |:-- |
+| `pingTimeout` | `5000` | indică timpul în milisecunde fără un pachet pong după care conexiunea este considerată închisă|
+|`pingInterval`|`25000`|timpul așteptat până când se va trimite un nou pachet ping|
+|`upgradeTimeout`|`10000`|câte milisecunde până când un upgrade de rețea este anulat|
+|`maxHttpBufferSize`|`10e7`|câte caractere sau bytes poate avea un mesaj înainte de a închide sesiunea (evitarea DoS)|
+|`allowRequest`||Este o funcție care primește un handshake sau o cerere de upgrade a rețelei drept prim parametru cu ajutorul cărora se poate decide continuarea operațiunilor sau nu. Cel de-al doilea argument este o funcție care trebuie apelată cu datele deciziei luate (`fn(error, succes)`), unde `succes` este o valoare boolean pentru care `false` înseamnă că cererea este respinsă, iar `error` este un cod de eroare|
+|`transports`|`['polling', 'websocket']`|niveluri de transport permise pentru conexiune|
+|`allowUpgrades`|`true`|permite upradarea nivelului de transport de la polling la websocket|
+|`perMessageDeflate`|`true`|parametrii extensiei `permessage-deflate` a lui WebSocket (vezi modulul `ws`). Pentru dezactivare, setează la `false`|
+|`httpCompression`|`true`|parametrii de compresie a conexiunii în cazul polling-ului (vezi api-ul `zlib`)|
+|`cookie`|`io`|este numele cookie-ului HTTP care conține id-ul clientului pentru a fi transmis ca parte a headerelor la momentul handshake-ului. Dacă setezi la `false`, nu a fi trimis vreunul.|
+|`cookiePath`|`/`|calea pentru cookie. Dacă opțiunea cookie este la `false`, nu se va trimite nicio cale, ceea ce înseamnă că browserele vor trimite cookie-uri doar în calea `/engine.io`. Setează `false` ca să nu salvezi io cookie la toate cererile|
+|`cookieHttpOnly`|`true`|dacă este setat la `true`, cookie-ul `HttpOnly` nu poate fi accesat de API-urile clientului așa cum este chiat JavaScript-ul. Această opțiune nu are niciun efect dacă `cookie` sau `cookiePath` este setat la `false`.|
+|`wsEngine`|`ws`|Indică care implementare de websocket va fi folosită. Modulul specificat trebuie să fie conform interfeței `ws` (vezi modulul `ws`). Valoarea din oficiu este `ws`. Este disponibilă și o versiune C++ prin instalarea modulului `uws`.|
 
 Modele de atașare a serverului și opțiunilor.
 
@@ -94,8 +140,11 @@ const io = require('socket.io')({
   serveClient: false,
 });
 // fie
-const server = require('http').createServer();
+const server = require('http').createServer(); // socket.io are nevoie de un server http
 io.attach(server, {
+  path: '/test',
+  serveClient: false,
+  // setări caracteristice engine.IO
   pingInterval: 10000,
   pingTimeout:  5000,
   cookie:       false
@@ -109,11 +158,38 @@ io.attach(3000, {
 });
 ```
 
+Serverul mai poate fi creat prin apelarea metodei `attach()` odată ce a fost cerut modulul. Mai întâi instanțiezi obiectul socket, eventual parametrizându-l. Apoi, atașezi serverul http.
+
+```javascript
+const io = require('socket.io')({
+  path: '/test',
+  serveClient: false,
+});
+
+// poți instanția serverul și cu attach
+const server = require('http').createServer();
+
+io.attach(server, {
+  pingInterval: 10000,
+  pingTimeout:  5000,
+  cookie:       false
+});
+
+server.listen(3000);
+
+// sau:
+io.attach(3000, {
+  pingInterval: 10000,
+  pingTimeout:  5000,
+  cookie:       false
+});
+```
+
 ### 2.1. Proprietăți și metode ale obiectului `io` (server)
 
 Odată instanțiat obiectul server, acesta expune câteva proprietăți și metode.
 
-#### 2.1.1. Proprietatea `on`
+#### 2.1.1. Metoda `on()`
 
 Serverul odată instanțiat poate interacționa prin gestionarea evenimentelor la care răspunde prin callback-uri.
 
@@ -156,7 +232,7 @@ const adminNamespace = io.of('/admin');
 
 Metoda va returna un namespace.
 
-#### 2.1.3. Proprietatea  `sockets`
+#### 2.1.3. Proprietatea  `server.sockets`
 
 Acesta este un alias pentru namespace-ul rădăcină: `/`.
 
@@ -916,7 +992,7 @@ io.clients((error, clients) => {
 
 ## 9. Evenimente predefinite (server)
 
-### 9.1. connect
+### 9.1. `connect`
 
 Acest eveniment apare instantaneu la momentul conectării unui client.
 
@@ -1088,6 +1164,58 @@ socket.emit('hello', 'world');
 socket.emit('with-binary', 1, '2', { 3: '4', 5: new Buffer(6) });
 ```
 
+Manualul Socket.io pune la dispoziție și o paletă de cazuri pentru metoda `emit`.
+
+```javascript
+io.on('connect', onConnect);
+
+function onConnect(socket){
+
+  // trimite clientului diverse informații pe un eveniment personalizat
+  socket.emit('salutare', 'mă vezi?', 1, 2, 'abc');
+
+  // trimite tuturor clienților, mai puțin celui care a emis mesajul
+  socket.broadcast.emit('broadcast', 'salut tuturor! Eu nu-mi văd mesajul.');
+
+  // trimit tuturor clienților din camera 'game', mai puțin mie însumi
+  socket.to('game').emit('Salutare tuturor!', "facem un joc?");
+
+  // trimit tuturor clienților din camera 'game1' și/sau 'game2', mai puțin mie însumi
+  socket.to('game1').to('game2').emit('Salutare tuturor!', "facem un joc?");
+
+  // trimit tuturor clienților din camera 'game', plus mie însumi
+  io.in('game').emit('start', 'vom iniția o altă partidă imediat');
+
+  // trimit tuturor clienților din namespace-ul 'myNamespace', plus mie însumi
+  io.of('myNamespace').emit('pehol', 'începem campionatul imediat');
+
+  // trimit mesaj unei anumite camere dintr-un namespace anume, plus mie însumi
+  io.of('myNamespace').to('marte').emit('simulare', 'incepem simularile pedologice');
+
+  // trimitere mesaj unui anume socketid (mesaj privat)
+  io.to(<socketid>).emit('contact', 'Salut, te-am văzut la cinema.');
+
+  // trimite mesaj cu mesaj de confirmare
+  socket.emit('pingpong', 'ce crezi despre socket?', function (răspuns) {});
+
+  // trimitere de mesaje fără a folosi compresia
+  socket.compress(false).emit('fara', "nu fă asta mai ales în polling");
+
+  // trimiterea de mesaje care ar putea fi ignorate decă avem un client indisponibil
+  socket.volatile.emit('poateprimesti', 'Este posibil să primești acest mesaj');
+
+  // specifică dacă datele trimise sunt binare
+  socket.binary(false).emit('simple', 'Pe simple, nu trimit binare');
+
+  // trimite mesaje tuturor clienților din acest nod (cazul folosirii mai multora)
+  io.local.emit('salut', 'trimit pe acest nod');
+
+  // trimite tuturor clienților conectați
+  io.emit('acesta va ajunge la toți clienții conectați pe acest server');
+
+};
+```
+
 #### 11.1.10.  `socket.server`
 
 ### 11.2. Evidența socketurilor la conectare
@@ -1121,6 +1249,54 @@ io.clients((error, clients) => {
 ### 11.3. Evenimentele unui socket
 
 Obiectului `socket`, i se pot adăuga funcții receptor (*listeners*) pentru următoarele evenimente care pot apărea.
+
+#### `connect`
+
+Este un eveniment declanșat când clientul se conectează cu succes la un server sau se reconectează.
+
+Callback-urile care vor fi executate ca urmare a evenimentului `connect` trebuie declarate în afară pentru a nu fi redeclarate ori de câte ori clientul se reconectează.
+
+```javascript
+// Server
+io.on('connect', (socket) => {
+    // ZONA PRIVATĂ CLIENT - CONTACT PE ID
+    socket.on(socket.id, (data) => {
+        console.log(data);
+        // Pas1. Require un modul care să ofere o funcție de autentificare
+    });
+    socket.emit(socket.client.id, 'Cam greu, boss');
+});
+
+
+// Client
+function connectHandler () {
+  // trimite token, dacă acesta deja există!
+  if (localStorage.jwt) {
+    socket.emit(socket.id, {
+      token: localStorage.jwt
+    });
+  }
+
+  login(); // trimite datele formularului la server pentru autentificare
+  socket.on(socket.id, (data) => {
+    console.log(data);
+
+  });
+}
+socket.on('connect', connectHandler);
+
+function login () {
+  // capturează valorile
+  var email = document.getElementById('email').value;
+  var password = document.getElementById('passwd').value;
+  var obiLogin = {
+    email: email,
+    password: password
+  }
+  $('#loginfrm').modal('hide');
+  socket.emit(socket.id, obiLogin);
+}
+```
 
 #### 11.3.1. `close`
 
@@ -1274,57 +1450,6 @@ namespaces.forEach(function manageNsp (namespace) {
     });
 });
 ```
-
-### 12.4. Evenimente
-
-#### 12.4.1. `connect`
-
-Este un eveniment care se declanșează la momentul când clientul se conectează cu cu succes la un server sau se reconectează.
-
-Callback-urile care vor fi executate ca urmare a evenimentului `connect` trebuie declarate în afară pentru a nu fi redeclarate ori de câte ori clientul se reconectează.
-
-```javascript
-// Server
-io.on('connect', (socket) => {
-    // ZONA PRIVATĂ CLIENT - CONTACT PE ID
-    socket.on(socket.id, (data) => {
-        console.log(data);
-        // Pas1. Require un modul care să ofere o funcție de autentificare
-    });
-    socket.emit(socket.client.id, 'Cam greu, boss');
-});
-
-
-// Client
-function connectHandler () {
-  // trimite token, dacă acesta deja există!
-  if (localStorage.jwt) {
-    socket.emit(socket.id, {
-      token: localStorage.jwt
-    });
-  }
-
-  login(); // trimite datele formularului la server pentru autentificare
-  socket.on(socket.id, (data) => {
-    console.log(data);
-
-  });
-}
-socket.on('connect', connectHandler);
-
-function login () {
-  // capturează valorile
-  var email = document.getElementById('email').value;
-  var password = document.getElementById('passwd').value;
-  var obiLogin = {
-    email: email,
-    password: password
-  }
-  $('#loginfrm').modal('hide');
-  socket.emit(socket.id, obiLogin);
-}
-```
-
 ##13. Sticky load balancing
 
 În cazul unor aplicații de mari dimensiuni, dacă dorești să distribui încărcătura conexiunilor pe mai multe mașini sau folosind mai mulți workeri (procese), trebuie să te asiguri de faptul că o cerere asociată cu anume id de sesiune se conectează cu procesul sau serverul din care sunt originare. Acest mecanism de load balancing, care să identifice cererea cu procesul (să le facă *sticky*) este absolut necesar de etapa de long pooling până la momentul upgradării conexiunii la websockets.

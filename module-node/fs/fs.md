@@ -91,9 +91,9 @@ path.parse(caleaCatreFisier).ext === `.json`; // true
 
 Vezi documentația de la https://nodejs.org/api/path.html#path_path_parse_path.
 
-## fs.readFile(path[, options], callback)
+## `fs.readFile(path[, options], callback)`
 
-A lucra cu un fișier în Node.js folosind modulul `fs`, implică crearea automată a unui obiect `Buffer` în care este trimis conținutul fișierului. Ferește-te de citirea unor fișiere în mod sincron (`fs.readFileSync(__dirname + '/nume_fisier.txt', 'utf8')`) pentru că acest lucru va bloca firul de execuție. Făcând același lucru, vei creaa obiecte `Buffer` de mari dimensiuni.
+A lucra cu un fișier în Node.js folosind modulul `fs`, implică crearea automată a unui obiect `Buffer` în care este trimis conținutul fișierului. Ferește-te de citirea unor fișiere în mod sincron (`fs.readFileSync(__dirname + '/nume_fisier.txt', 'utf8')`) pentru că acest lucru va bloca firul de execuție. Un argument în plus pentru a nu lucra cu varianta sincronă este acela că se vor crea obiecte `Buffer` de mari dimensiuni.
 
 ```javascript
 var resursă = fs.readFile(__dirname + 'fisier.txt', function (error, date) {
@@ -105,8 +105,9 @@ Datele de lucru în cazul funcțiilor de citire asincrone, vor returna un `Buffe
 
 Folosirea acestei metode de a citi datele unui fișier, va încărca întreg fișierul în memorie. În cazul în care se va lucra cu fișiere de mari dimensiuni, este indicat să se folosească `fs.createReadStream`.
 
-### Promisificare fs.readFile
+### Promisificare `fs.readFile`
 
+Promisiunile au fost introduse de ES6 în anul 2015, dar API-urile Node.js nu implementează pe deplin promisiunile. Mare parte din operațiunile asincrone se desfășoară folosind callback-uri. Acest lucru nu ne împiedică totuși să implementăm promisiunile, care sunt compatibile cu mecanismele callback ale Node.js.
 În cazul în care ai nevoie să trasformi metoda într-o promisiune, pur și simplu va trebui să creezi o funcție care să fie respectiva promisiune.
 
 ```javascript
@@ -122,9 +123,14 @@ function readFilePromise (caleFisier) {
     });
   });
 };
+readFilePromise('/biblioteci-judetene.json').then( biblioteci => {
+  console.log(biblioteci.nume);
+}).catch(eroare => {
+  throw new Error('A apărut: ', eroare.message);
+});
 ```
 
-Funcția creată este un ambalaj pentru fișierul care se va încărca asincron în promisiune.
+Funcția creată este un ambalaj pentru fișierul care se va încărca asincron în promisiune. Ceea ce s-a realizat este constituirea unei promisiuni prin evaluarea expresiei `readFilePromise('/biblioteci-judetene.json')`. Astfel, se vor putea înlănțui metodele specifice.
 
 ## Adăugarea datelor într-un fișier
 
@@ -171,7 +177,7 @@ const​ fs = require(​'fs'​);
 
 ## Lucrul cu streamurile
 
-Modulul `fs` este modulul cu ajutorul căruia putem lucra cu stream-urile în NodeJS. Stream-urile în NodeJS se bazează pe lucrul cu evenimente pentru că stream-urile implementează clasa `EventEmitter`. Pe cale de consecință, atunci când apar datele, poți atașa un listener, un callback care să facă ceva cu acele date. Pentru a exemplifica, cel mai bine ar fi să creăm un stream folosind metoda dedicată a modulului `fs` : `fs.createWriteStream`. Mai întâi de a porni este necesar să trecem prin descrierea metodei `fs.createWriteStream`. Această metodă primește următoarele argumente posibile:
+Modulul `fs` este modulul cu ajutorul căruia putem lucra cu stream-urile în NodeJS. Stream-urile în Node.js se bazează pe lucrul cu evenimente pentru că stream-urile implementează clasa `EventEmitter`. Pe cale de consecință, atunci când apar datele, poți atașa un listener, un callback care să facă ceva cu acele date. Pentru a exemplifica, cel mai bine ar fi să creăm un stream folosind metoda dedicată a modulului `fs` : `fs.createWriteStream`. Mai întâi de a porni este necesar să trecem prin descrierea metodei `fs.createWriteStream`. Această metodă primește următoarele argumente posibile:
 
 - o **cale** care specifică resursa. Această cale poate fi un șir, un buffer sau un obiect url;
 - o opțiune din mai multe posibile sau un obiect în cazul în care dorești mai multe opțiuni să influențeze crearea acestui stream.

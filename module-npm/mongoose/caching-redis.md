@@ -114,9 +114,9 @@ mongoose.Query.prototype.exec = async function () {
         // this.model poate aduce un array de documente, caz în care va trebui să tratăm această eventualitate
         // tratarea ambelor cazuri: soluția finală
         const documentM = JSON.parse(cacheValue);
-        return Array.isArray(documentM) 
+        return Array.isArray(documentM)
             ? documentM.map(doc => this.model(doc))
-            : new this.model(documentM);        
+            : new this.model(documentM);
     }
     /* Pas3 - Dacă nu există acea cheie, dă drumul la query către MongoDB și stochează rezultatele în Redis */
 
@@ -138,7 +138,6 @@ Funcția `exec` returnează instanțe ale modelelor de mongoose - documente mong
 
 ```javascript
 // fișierul de rute.js
-
 module.exports = app => {
     app.get('/api/resurse/:id', cereLogin, async (req, res) => {
         var resursa = await Resursă.findOne({

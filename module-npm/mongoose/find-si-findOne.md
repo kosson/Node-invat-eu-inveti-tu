@@ -1,3 +1,9 @@
+# Metodele `find` și `findOne`
+
+De îndată ce va fi instanțiat obiectul model, ai acces la mai multe metode printre care de mare folos atunci când ai nevoie să cauți înregistrări în baza de date sunt `find(criteriiDeCăutare)` și `findOne(criteriiDeCăutare)`.
+
+Metoda `find()` va aduce un `Array` de înregistrări din baza de date, în vreme ce `findOne()` va aduce doar una singură.
+
 ```javascript
 // TODO: verifica dacă utilizatorul este în baza de date
 var User = require('./app/models/users'),
@@ -45,7 +51,7 @@ User.findOne({email: data.email})
     .on('end', function(){console.log('am terminat cautarea');});
 ```
 
-În codul de mai sus `query` este de tip `Query`, ceea ce permite construirea interogării și trimiterea către sistemul de interogări al MongoDB folosind chainingul. Ceea ce construiește mogoose este un obiect de interogare.
+În codul de mai sus `query` este de tip `Query`, ceea ce permite elaborarea interogării și trimiterea către MongoDB folosind chainingul. Ceea ce construiește Mogoose este un obiect de interogare.
 
 ```javascript
 // With a JSON doc

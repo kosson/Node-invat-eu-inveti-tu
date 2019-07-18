@@ -6,7 +6,7 @@ UserSchema.pre();
 
 [Schema#pre(method, callback)](http://mongoosejs.com/docs/api.html#schema_Schema-pre)
 
-Definește un pre hook pentru document. Pe scurt, fă ceva înainte de a salva cu metoda `save`.
+Definește un **pre hook** pentru document. Pe scurt, fă ceva înainte de a salva cu metoda `save`.
 
 ```js
 UserSchema.pre('save', function(next){});

@@ -10,4 +10,3 @@ var Tree = mongoose.model('Tree', schema);
 // setting schema options
 new Schema({ name: String }, { _id: false, autoIndex: false })
 ```
-

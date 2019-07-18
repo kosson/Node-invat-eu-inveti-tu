@@ -4,24 +4,25 @@ Obiectul generat prin `exports` este o instanță a acestei clase.
 
 ## Obiectul prototipal
 
-### Mongoose.prototype.Mongoose()
+### `Mongoose.prototype.Mongoose()`
 
 Este constructorul în baza căruia este instanțiat obiectul.
 
 ```javascript
 var mongoose = require('mongoose');
+// sau
 var mongoose2 = new mongoose.Mongoose();
 ```
 
-### Mongoose.prototype.Document()
+### `Mongoose.prototype.Document()`
 
 Acesta este constructorul pentru generarea documentelor.
 
-### Mongoose.prototype.Model()
+### `Mongoose.prototype.Model()`
 
 Constructor pentru crearea modelelor.
 
-### Mongoose.prototype.Number
+### `Mongoose.prototype.Number`
 
 Este o proprietate folosită pentru a defini tipuri de date în Schemă. Este folosit pentru căile pentru care ar trebui făcut casting la number.
 
@@ -31,11 +32,11 @@ const schema = new Schema({ num: mongoose.Number });
 const schema = new Schema({ num: 'number' });
 ```
 
-### Mongoose.prototype.ObjectId
+### `Mongoose.prototype.ObjectId`
 
 Este o proprietate care este folosită pentru a marca corespondentul [`ObjectId`](https://docs.mongodb.com/manual/reference/method/ObjectId/) din MongoDB. Nu folosi această proprietate pentru a instanția un nou `ObjectID`. Pentru a face aceasta, te vei folosi de `mongoose.Types.ObjectID`.
 
-### Mongoose.prototype.Schema()
+### `Mongoose.prototype.Schema()`
 
 Acesta este constructorul folosit pentru a cerea schemele cu ajutorul cărora instanțiezi modelele.
 
@@ -47,15 +48,15 @@ var NouaSchema = new Schema({
 })
 ```
 
-### Mongoose.prototype.connect()
+### `Mongoose.prototype.connect()`
 
 Deschide o conexiune cu MongoDB. Această metodă primește trei parametri.
 
-#### uri
+#### `uri`
 
 Este un șir de caractere care indică adresa la care se face conectarea pe MongoDB. Pentru a se conecta la o bază de date MongoDB, mongoose folosește [driverul](http://mongodb.github.io/node-mongodb-native/) pentru Node.js pus la dispoziție de creatorii Mongo.
 
-#### obiect
+#### `obiect`
 
 Acest obiect este pasat funcției [`connect`](http://mongodb.github.io/node-mongodb-native/3.1/api/MongoClient.html) a driverului MongoDB, care acceptă un [string de conectare](https://docs.mongodb.com/manual/reference/connection-string/).
 
@@ -68,7 +69,7 @@ Acest obiect este pasat funcției [`connect`](http://mongodb.github.io/node-mong
 - `useFindAndModify=true` (Boolean), fiind o opțiune, care în cazul setării la `false`, va forța ca metodele `findOneAndUpdate()` și `findOneAndremove()` să folosească varianta originală `findOneAndUpdate()` în locul lui `findAndModify()`.
 - `useNewUrlParser=false` (Boolean), fiind o opțiune, care în cazul setării la `true`, va forța toate conexiunile să-și seteze opțiunea `useNewUrlParser` din oficiu.
 
-#### callback
+#### `callback`
 
 Funcția declanșată ca răspuns.
 
@@ -91,7 +92,7 @@ mongoose.connect(uri, function(error) {
 })
 ```
 
-### Mongoose.prototype.connection
+### `Mongoose.prototype.connection`
 
 Este un obiect de conexiune, care reprezintă conexiunea primară a lui mongoose la MongoDB. Acest obiect este folosit de toate modelele create.
 
@@ -101,7 +102,7 @@ mongoose.connect(...);
 mongoose.connection.on('error', cb);
 ```
 
-### Mongoose.prototype.connections
+### `Mongoose.prototype.connections`
 
 Este un array în care sunt toate obiectele conexiune asociate instanței de mongoose. Din start vei avea cel puțin o conexiune.
 
@@ -114,15 +115,15 @@ mongoose.createConnection('mongodb://localhost:27017/test');
 mongoose.connections.length; // 2
 ```
 
-### Mongoose.prototype.createConnection()
+### `Mongoose.prototype.createConnection()`
 
 Această metodă acceptă doi parametri:
 
-#### uri
+#### `uri`
 
 Este un șir de caractere care indică adresa la care se face conectarea pe MongoDB. Pentru a se conecta la o bază de date MongoDB, mongoose folosește [driverul](http://mongodb.github.io/node-mongodb-native/) pentru Node.js pus la dispoziție de creatorii Mongo.
 
-#### obiect
+#### `obiect`
 
 Acest obiect este pasat funcției [`connect`](http://mongodb.github.io/node-mongodb-native/3.1/api/MongoClient.html) a driverului MongoDB, care acceptă un [string de conectare](https://docs.mongodb.com/manual/reference/connection-string/).
 
@@ -167,19 +168,19 @@ db = mongoose.createConnection();
 db.openUri('localhost', 'database', port, [opts]);
 ```
 
-###Mongoose.prototype.model()
+### `Mongoose.prototype.model()`
 
 Această metodă acceptă următorii parametri:
 
-#### name
+#### `name`
 
 Poate fi un `String` sau chiar o `Function`, care vor da numele modelului sau a clasei care îl extinde pe `Model`.
 
-#### schema
+#### `schema`
 
 Este schema folosită pentru a crea un model. Acesta este un obiect de tip `Schema`.
 
-#### collection
+#### `collection`
 
 Acesta este numele colecției pe care se va opera, fiind un `String`, dacă este menționat. Ceea ce este interesant și demn de reținut este faptul că numele colecției cu care se va opera este dedus din numele dat modelului. Adică, așa cum numești modelul, aceea va fi colecția pe care se va opera dacă acest parametru nu este introdus.
 
@@ -187,30 +188,26 @@ Acesta este numele colecției pe care se va opera, fiind un `String`, dacă este
 var schema = new Schema({ name: String }, { collection: 'actor' });
 
 // sau
-
 schema.set('collection', 'actor');
 
 // sau
-
 var collectionName = 'actor'
 var M = mongoose.model('Actor', schema, collectionName)
 ```
 
-#### skipInit
+#### `skipInit`
 
 Este `Boolean` și dacă este setat la `true`, inițializarea nu va mai fi făcută.
 
 Metoda returnează o instanță a unui obiect de tip `Model`. Modelele definite pe o instanță de `mongoose`, vor fi disponibile tuturor conexiunilor stabilite de acea instanță.
 
-### Mongoose.prototype.set()
+### `Mongoose.prototype.set()`
 
 Această metodă poate fi folosită pentru a seta valori în obiectul `mongoose`.
 
 ```javascript
 mongoose.set('test', value) // sets the 'test' option to `value`
-
 mongoose.set('debug', true) // enable logging collection methods + arguments to the console
-
 mongoose.set('debug', function(collectionName, methodName, arg1, arg2...) {}); // use custom function to log collection methods + arguments
 ```
 

@@ -1,4 +1,4 @@
-# Modulul fs
+# Modulul `fs`
 
 Acest modul oferă un adevărat API prin care se realizează interacțiunea cu sistemul de fișiere al mașinii gazdă. Operațiunile de lucru cu sistemul de fișiere pot avea un aspect sincron și unul asincron, privind la modul în care se pot desfășura operațiunile. Ceea ce face NodeJS este un ambalaj al funcțiilor POSIX.
 
@@ -107,7 +107,7 @@ Folosirea acestei metode de a citi datele unui fișier, va încărca întreg fi�
 
 ### Promisificare `fs.readFile`
 
-Promisiunile au fost introduse de ES6 în anul 2015, dar API-urile Node.js nu implementează pe deplin promisiunile. Mare parte din operațiunile asincrone se desfășoară folosind callback-uri. Acest lucru nu ne împiedică totuși să implementăm promisiunile, care sunt compatibile cu mecanismele callback ale Node.js.
+Promisiunile au fost introduse de ES6 în anul 2015, dar nu toate API-urile Node.js implementează pe deplin promisiunile. Mare parte din operațiunile asincrone se desfășoară folosind callback-uri. Acest lucru nu ne împiedică totuși să implementăm promisiunile, care sunt compatibile cu mecanismele callback ale Node.js.
 În cazul în care ai nevoie să trasformi metoda într-o promisiune, pur și simplu va trebui să creezi o funcție care să fie respectiva promisiune.
 
 ```javascript
@@ -131,6 +131,8 @@ readFilePromise('/biblioteci-judetene.json').then( biblioteci => {
 ```
 
 Funcția creată este un ambalaj pentru fișierul care se va încărca asincron în promisiune. Ceea ce s-a realizat este constituirea unei promisiuni prin evaluarea expresiei `readFilePromise('/biblioteci-judetene.json')`. Astfel, se vor putea înlănțui metodele specifice.
+
+În cazul în care este necesară o soluție de-a gata, există un pachet în depozitul `npm` numit `fs-extra`.
 
 ## Adăugarea datelor într-un fișier
 

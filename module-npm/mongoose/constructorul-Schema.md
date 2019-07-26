@@ -1,5 +1,7 @@
 # Schema - constructor
 
+O schemă - `Schema` - este un obiect de configurare pentru un viitor model de date în Mongoose.
+
 Drept parametri primește un obiect, care descrie părțile constitutive ale schemei și un al doilea obiect, care sunt opțiunile pe care le poți pasa.
 
 ```javascript

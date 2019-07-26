@@ -48,7 +48,7 @@ module.exports = mongoose.model('Resursa', ResursaSchema);
 
 Atenție, `module.exports` este obiectul returnat ca rezultat al unui apel `require` în NodeJS. Se folosește `module.exports` pentru cazul în care dorești să accesezi o funcție care să fie utilă și nu doar un simplu obiect cu proprietăți. Este și cazul nostru.
 
-## Cere modelul bazei de date în scriptul de server:
+#### Cere modelul bazei de date în scriptul de server:
 
 ```js
 var Resursa = require('./app/models/resursă'); //ai acces la obiectul de tip model Bear

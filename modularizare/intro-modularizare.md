@@ -202,6 +202,16 @@ require('./modul.js');
 
 Acest mod de a expune funcționalitățile modulelor este de evitat.
 
+## Exportul unor valori punctuale
+
+În node putem exporta valori punctuale adăugând proprietăți obiectului `exports` folosind `exports.valoare`.
+
+```javascript
+exports.valoare = function adauga (a, b) {
+    return a + b; // returnează valoarea calculată
+};
+```
+
 ### Exportul unei funcții anonime
 
 Pentru a evita poluarea mediului global, ai putea împacheta serviciile într-o funcție, pe care să o exportăm.
@@ -234,6 +244,16 @@ var faceCeva = require('./modul.js').faceCeva;
 Popularea obiectului `exports` cu proprietăți va necesita la momentul `require` să fie specificată care proprietate se dorește a fi atribuită identificatorului. Dacă nu am fi precizat numele cheii (`require('./modul.js').faceCeva`), în cazul `faceCeva` am atribui întregul obiect `exports` acestuia.
 
 ### Exportul unui obiect
+
+Pentru a pune la dispoziție un obiect complex, care oferă mai multe funcționalități, se va folosi obiectul `module`, atribuind obiectul proprietății `exports`.
+
+```javascript
+module.exports = function obiectComplex () {
+    this.ceva = 'un fragment de text';
+};
+```
+
+Obiectul `module` reprezintă chiar modulul curent, iar valoarea lui `modul.exports` reprezintă chiar obiectul care va fi returnat celor ce vor folosi acest modul.
 
 Poți exporta un obiect simplu instanțiat dintr-un constructor.
 
@@ -270,7 +290,7 @@ module.exports = new Obiect(); // înlocuiește obiectul exports cu cel nou crea
 // app.js
 var obi1 = require('./modul');
 var obi2 = require('./modul');
-// obi2 nu va fi un obiect nou, ci o referință către obi1.
+// obi2 nu va fi un obiect nou, ci o referință către `obi1`.
 ```
 
 Vei obține două obiecte separate doar dacă exporți constructorul.

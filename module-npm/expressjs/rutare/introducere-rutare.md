@@ -22,7 +22,7 @@ app.get('/test/:nume', function (req, res) {
 });
 ```
 
-## Rutarea folosind express.Router()
+## Rutarea folosind `express.Router()`
 
 Middleware-ul la nivelul rutării lucrează în același fel precum cel folosit în aplicație, dar toate solicitările vor fi direcționate către o instanță `Router`.
 
@@ -30,7 +30,7 @@ Middleware-ul la nivelul rutării lucrează în același fel precum cel folosit 
 var router = express.Router();
 ```
 
-În acest moment, tot middleware-ul va fi utilizat trecându-l în instanța router.
+În acest moment, tot middleware-ul va fi utilizat trecându-l în instanța `router`.
 
 ```javascript
 router.use(function (req, res, next) {

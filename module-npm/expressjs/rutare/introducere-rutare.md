@@ -39,6 +39,26 @@ router.use(function (req, res, next) {
 });
 ```
 
+Router-ul strălucește atunci când este folosit pentru a gestiona rutele pe o anumită rădăcină. Să presupunem că dorim să gestionăm toate căile care încep cu o anumită rădăcină. Pentru a face acest lucru, vom seta un fișier de gestiune a căilor pe care îl vom exporta și apoi instanția în locul în care le vom atașa rădăcinii.
+
+```javascript
+// gestionarea rutelor de autentificare - ./routes/auth-routes.js
+const router = require('express').Router();
+router.get('/login', (req, res) => {
+  // gestionează autentificarea cu un server specializat
+})
+module.exports = router;
+
+// atașarea rutelor pentru o anumită rădăcină - app.js
+const express = require('express');
+const authRoutes = require('./routes/auth-routes'); // aduci instanța router configurată
+const app = express();
+
+app.use('/auth', authRoutes); // Aici se face atașarea rutelor definite cu router.
+
+app.listen('3000', () => {console.log('Am pornit OK!')});
+```
+
 ## Referințe
 
 - [Express. Using middleware](https://expressjs.com/en/guide/using-middleware.html)

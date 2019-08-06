@@ -16,30 +16,6 @@ Responsabil de conectarea JS-ului cu funcțiile C++ este `process.binding()` par
 
 NodeJS rulează un singur fir de execuție pentru codul JavaScript și controlează execuția folosind un event loop. Pentru orice altceva Node nu va ezita să folosească multiple fire de execuție.
 
-## Un concept central: stream-uri
-
-Streamurile sunt date care *curg* ca urmare a unui eveniment `EventEmitter` între diferitele părți funcționale ale unui program.
-
-Subiectul `stream`-urilor este legat intim de cel al funcționării sistemelor de operare UNIX. Una din cele mai apreciate facilități ale acestui sistem de operare este capacitatea de a folosi programe mai mici pentru a dezvolta programe mai elaborate. Dar așa cum rândurile de cărămizi sunt legate unele de celelalte prin mortar, așa există și în UNIX un liant foarte puternic numit `pipes`. În română ar fi tradus ca `racorduri`. În folosirea de zi cu zi, aceste racorduri sunt identificabile prin utilizarea caracterului *pipe* <code>&#124;</code>. Pentru a face utiliza racordurile în Node.js, vom folosi `.pipe()`. Datele de input ale unui program sau componentă software sunt datele de output ale alteia. În UNIX, două sau mai multe programe sunt conectate prin caracterul `|`, care în limba engleză se numește `pipe`, iar în română *țeavă*.
-
-Chiar dacă nu suntem programatori de UNIX, vom explora un exemplu de funcționare a mai multor progrămele mici folosite în mod curent într-un terminal, de data aceasta de GNU/Linux.
-
-```bash
-ls -l | grep "nicolaie" | sort -n
-```
-
-Secvența de mai sus listează numele de fișiere (`ls`) în a căror denumire se găsește fragmentul de text `nicolaie`, după care sortează ceea ce a găsit. Cele trei programe: `ls`, `grep` și `sort` au stabilit un flux de prelucrare, de fapt. Ceea ce a găsit comanda `ls` va fi pasat prin `pipe` (`|`) către următoarea comandă `grep`, care are misiunea de a detecta în toate denumirile tuturor fișierelor din directorul în care se execută fluxul de comenzi, fragmentul de text `nicolaie` și în final, rezultatul va fi pasat prin pipe din nou către ultima comandă `sort`, care va returna spre afișare rezultatul la care s-a ajuns.
-
-Ceea ce merită remarcat este faptul că, fiecare componentă din lanțul de prelucrare, poate fi perceput ca un adevărat filtru.
-
-Douglas McIlroy, unul dintre autorii UNIX-ului, a scris o notă în care surprinde cel mai exact rolul acestor „racorduri” (pipes):
-
-> Ar trebui să avem modalități de a conecta programele precum furtunele din grădină - înfiletezi alt segment atunci când este necesar să masezi datele în alt fel. Aceasta este și calea IO. (Douglas McIlroy, 1964)
-
-**IO** înseamnă In/Out - o paradigmă a intrărilor și a ieșirilor. Întrările și ieșirile în NodeJS au un comportament asincron, ceea ce înseamnă că va trebui pasat un callback care va acționa asupra datelor.
-
-Stream-urile lucrează cu fragmente - **chunks**. Acestea sunt trimise între două puncte de comunicare. Streamurile sunt emitere de evenimente. Acest lucru înseamnă că se poate gestiona lucrul cu acestea atașându-se callback-uri pe diferitele evenimente.
-
 ## Date de lucru în Node
 
 În afară de datele pe care le cunoaștem din JavaScript, datele primare de lucru în NodeJS sunt de tip `Buffer` cu un echivalent în JavaScript `Uint8Array`, un TypedArray. Datele brute în NodeJS sunt numite *octet streams*. Octeții sunt secvențe de 8 biți numite și **bytes**. NodeJS alocă memorie pentru buffere în afara heap memory-ului V8.

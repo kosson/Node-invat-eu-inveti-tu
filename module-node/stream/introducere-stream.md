@@ -11,7 +11,7 @@ Stream-urile pot fi folosite pentru a citi, pentru a scrie sau ambele operațiun
 
 Toate stream-urile în Node.js lucrează exclusiv cu șiruri de caractere și obiecte `Buffer` constituite cu ajutorul array-ului specializat `Uint8Array`.
 
-### Legătura cu EventEmitter
+### Legătura cu `EventEmitter`
 
 **Toate stream-urile sunt instanțe ale clasei `EventEmitter`**.
 
@@ -31,7 +31,31 @@ streamR.pipe(process.stdout);
 // execută cu node numeFisier.js
  ```
 
-### Concepte și clase
+## Detalii de API
+
+Modulul `stream` a fost gândit să respecte modelul de moștenire prototipal din JavaScript. Acest lucru permite posibile extensii ale celor patru clase de bază: `stream.Writable`, `stream.Readable`, `stream.Duplex` și `stream.Transform`.
+
+```javascript
+const { Writable } = require('stream');
+
+class MyWritable extends Writable {
+  constructor(options) {
+    super(options);
+    // ...
+  }
+}
+```
+
+Pentru a face orice extensie a unei clase de bază, este nevoie ca noile clase să implementeze câteva metode specifice:
+
+| Utilizare | Clasa de bază | Metodele care trebuie implementate|
+|-|-|-|
+| Citirea unui stream | `Readable` | `_read()`|
+| Scrierea unui stream | `Writable` | `_write()`, `_writev()`, `_final()`|
+| Scrierea și citirea | `Duplex` | `_read()`, `_write()`, `_writev()`, `_final()`|
+| Lucru cu date scrise, urmată de citirea rezultatului | `Transform` | `_transform()`, `_flush()`, `_final()`|
+
+## Concepte și clase
 
 Streams lucrează cu trei concepte:
 
@@ -39,7 +63,7 @@ Streams lucrează cu trei concepte:
 -   *pipeline* (*conductă*), fiind locul pe unde trec datele, fiind permise aici filtrarea și orice modificări ale datelor;
 -   *sink* (*destinație*), fiind locul unde ajung datele.
 
-### Tipuri de stream-uri
+## Tipuri de stream-uri
 
 Node.js oferă patru tipuri de stream-uri:
 
@@ -52,27 +76,27 @@ Mai mult, acest modul include câteva funcții cu rol de utilitare: `pipeline`, 
 
 ### Object Mode
 
-Unele implementări de stream pot folosi și `null`, care va avea o semnificație specială. Astfel de streamuri operează într-un mod special numit *object mode* (au opțiunea `objectMode` la momentul creării stream-ului).
+Unele implementări de `stream` pot folosi și `null`, care va avea o semnificație specială. Astfel de streamuri operează într-un mod special numit *object mode* (au opțiunea `objectMode` la momentul creării stream-ului).
 
 Node.js poate ține în memorie doar 1.67Gb. Dacă ai o resursă dincolo de această limitare, o eroare `heap out of memory` va fi emisă. Această limitate poate fi depășită.
 
 ### Buffering
 
-Streamurile `Readable` și cele `Writable` vor stoca datele într-un buffer (o zonă tampon) intern, care poate fi accesat folosind `writable.writableBuffer` sau cu `readable.readableBuffer`.
+Streamurile `Readable` și cele `Writable` vor stoca datele într-un **buffer** intern (o zonă tampon în memorie), care poate fi accesat folosind `writable.writableBuffer` sau cu `readable.readableBuffer`.
 
 Dimensiunea datelor care sunt *prinse* în buffer depinde de opțiunea `highWaterMark` pasată constructorului de stream. Pentru stream-urile normale, opțiunea `highWaterMark` specifică numărul total de bytes.
 
 Pentru stream-urile care operează în **object mode**, opțiunea `highWaterMark` specifică numărul total de obiecte.
 
-Datele sunt introduse într-un stream `Readable` atunci când implementarea apelează `stream.push(chunk)`. În cazul în care consumatorul stream-ului nu apelează `stream.read()`, datele vor aștepta într-o coadă de așteptare internă de unde vor aștepta să fie consumate.
+Datele sunt introduse într-un stream `Readable` atunci când implementarea apelează `stream.push(chunk)`. În cazul în care consumatorul stream-ului nu apelează `stream.read()`, datele vor aștepta într-o coadă de așteptare internă.
 
 În momentul în care dimensiunea buffer-ului intern atinge pragul specificat prin `highWaterMark`, stream-ul va opri temporar citirea datelor din resursa internă până când toate datele pot fi consumate. Acest lucru înseamnă că `stream` se va opri în a mai apela metoda `readable._read()`, care este folosită pentru a umple buffer-ul read.
 
 Datele vor alimenta stream-urile `Writable` în momentul în care metoda `writable.write(chunk)` este apelată în mod repetat. Câtă vreme dimensiunea buffer-ului intern de scriere este sub pragul impus de `highWaterMark`, toate apelurile la `writable.write()` vor returna valoarea `true`. În momentul în care buffer-ul intern va atinge sau chiar depăși pragul, va fi returnată valoarea `false`.
 
-Una din caracteristicile API-ului `stream` și în special metoda `stream.pipe()` este necesitatea de a limita nivelul datelor din procesul de buffering la un nivel acceptabil pentru o bună funcționare atât al furnizorilor de date ca surse, cât și a consumatorilor fără a depăși limitele de memorie disponibile.
+Una din specificitățile API-ului `stream` și în special metoda `stream.pipe()` este necesitatea de a limita nivelul datelor din procesul de buffering la unul acceptabil pentru o bună funcționare, atât al furnizorilor de date ca surse, cât și a consumatorilor, fără a depăși limitele de memorie disponibile.
 
-Deoarece stream-urile `Duplex` și `Transform` sunt deopotrivă `Readable` și `Writable`, fiecare păstrând separat buffere interne folosite pentru scriere și citire. Deci, cele două operează independent ceea ce permite o curgere eficientă a datelor.
+Deoarece stream-urile `Duplex` și `Transform` sunt deopotrivă `Readable` și `Writable`, fiecare păstează separat buffere interne folosite pentru scriere și citire. Deci, cele două operează independent ceea ce permite o curgere eficientă a datelor.
 
 ### Streamuri care citesc - `stream.Readable`
 
@@ -111,7 +135,7 @@ Dacă este necesar, stream-ul `Readable` poate fi pus în modul pauză folosind 
 - apelarea metodei `pause()` dacă nu există pipe-uri,
 - dacă există pipe-uri și sunt eliminate toate acestea prin folosirea metodei `unpipe()`.
 
-### Streamurile Writable
+### Streamurile `Writable`
 
 Sunt o abstractizare a ceea ce putem înțelege a fi o *destinație*.
 
@@ -226,17 +250,17 @@ file.write('salutare, ');
 file.end('popor!');// nu mai poți scrie nimic
 ```
 
-### Clasa stream.Writable
+### Clasa `stream.Writable`
 
 Sunt stream-urile în care se pot scrie date.
 
-### Clasa stream.Readable
+### Clasa `stream.Readable`
 
-### Clasa stream.Duplex
+### Clasa `stream.Duplex`
 
-Sunt acele stream-uri în care se poate scrie și citi deopotrivă.
+Sunt acele stream-uri bidirecționale în care se poate scrie și citi deopotrivă. Are nevoie să fie *writable* pentru a se putea face **pipe** datelor de input pe care le putem introduce. Trebuie să fie *readable* pentru a se putea face **pipe** datelor transformate către următorul bloc de transformare din lanț, dacă acesta există.
 
-### Clasa stream.Transform
+### Clasa `stream.Transform`
 
 Stream-urile de transformare sunt acele stream-uri `Duplex` care implementează interfețele `Readable` și `Writable`. De exemplu, streamurile `zlib` și `crypto` sunt de tip `Transform`.
 

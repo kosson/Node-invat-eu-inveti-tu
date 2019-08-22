@@ -168,7 +168,7 @@ fs.open('fisier.txt', 'a', (err, fd) => {
 
 Metoda `fs.chmod` modifică în mod asincron permisiunile unui fișier.
 
-## fs.watch
+## `fs.watch()`
 
 În anumite scenarii este necesară urmărirea unui fișier pentru a detecta modificări care pot apărea. În acest sens, `fs` are metoda `watch()`, care are drept sarcină semnalarea oricărei modificări care apare.
 
@@ -177,7 +177,7 @@ const​ fs = require(​'fs'​);
 ​fs.watch(​'fisier.txt'​, () => console.log(​'S-a modificat!'​));
 ```
 
-## fs.createReadStream
+## `fs.createReadStream()`
 
 Este o metodă a modului `fs` care *consumă* o resursă folosind bufferul. Metoda acceptă drept prim parametru o cale către resursă, care poate fi un șir de caractere, un obiect URL sau chiar un buffer.
 
@@ -212,7 +212,7 @@ unStreamReadable.on('data', function (fragment) {
 
 Întreaga resursă de date va fi consumată de `stream`-ul nostru *readable*. De fiecare dată când un fragment din `Buffer` este trimis, se declanșează execuția callback-ului. După prelucrarea fragmentului anterior, se va primi un alt fragment, care va fi prelucrat și tot așa până la consumarea întregii resurse.
 
-## fs.createWriteStream(path[,options])
+## `fs.createWriteStream(path[,options])`
 
 Această metodă oferă posibilitatea de a constitui un `stream` prin care să trimitem date într-o resursă.
 

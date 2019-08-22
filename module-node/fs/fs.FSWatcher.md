@@ -32,3 +32,4 @@ Acest eveniment este emis atunci când apare o eroare cât timp fișierul este *
 ## Metoda `watcher.close()`
 
 Această metodă încheie *supravegherea* fișierului când este invocată pe un obiect instanțiat cu `fs.FSWatcher`. Din momentul în care această metodă este invocată, obiectul instanțiat cu `fs.FSWatcher` nu mai este utilizabil.
+  }

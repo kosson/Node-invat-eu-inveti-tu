@@ -1,8 +1,10 @@
 # Modulul `fs`
 
-Acest modul oferă un adevărat API prin care se realizează interacțiunea cu sistemul de fișiere al mașinii gazdă. Operațiunile de lucru cu sistemul de fișiere pot avea un aspect sincron și unul asincron, privind la modul în care se pot desfășura operațiunile. Ceea ce face NodeJS este un ambalaj al funcțiilor POSIX.
+Acest modul oferă un adevărat API prin care se realizează interacțiunea cu sistemul de fișiere al mașinii gazdă. Operațiunile de lucru cu sistemul de fișiere pot avea un aspect sincron și unul asincron, privind la modul în care se pot desfășura operațiunile. Ceea ce face Node.js este un ambalaj al funcțiilor POSIX.
 
-Pentru a folosi acest modul, trebuie să-l ceri cu `require('fs')`. Pentru a nu bloca *event loop*, este recomandată folosirea variantei asincrone întotdeauna. În cazul utilizării asincrone, va trebui introdus un callback, care să acompanieze acțiunea. Ca exemplu, avem o acțiune de ștergere a unui director.
+Pentru a folosi acest modul, trebuie să-l ceri cu `require('fs')`.
+
+Node.js oferă două variante pentru majoritatea operațiunilor cu sistemul de operare. Una este sincronă și alternativa fiind asincronă. Pentru a nu bloca *event loop*, este recomandată folosirea variantei asincrone întotdeauna. În cazul utilizării asincrone, va trebui introdus un callback, care să acompanieze acțiunea. Ca exemplu, avem o acțiune de ștergere a unui director.
 
 ```javascript
 const fs = require('fs');
@@ -15,15 +17,51 @@ fs.unlink('/cale/director', (err) => {
 });
 ```
 
-Pentru a ține evidența fișierelor de lucru, kernelul sistemelor POSIX ține evidența fișierelor și resurselor deschise. Fiecărui fișier deschis îi este asignat un identificator numit `file descriptor`.
+În cazul operațiunilor asinrone, primul argument pasat funcțiilor cu rol de callback, este unul rezervat semnalării cazurilor de excepție. Dacă operațiunea s-a încheiat cu succes, valoarea primului argument va fi `null` sau `undefined`. Aceasta este chiar o marcă a modului în care lucrează Node.js.
 
-Modulul `fs` pune la dispoziție și metodele necesare lucrului cu stream-uri. Pentru a dezvolta acest aspect foarte important, vezi materialele dedicate stream-urilor.
+În cazul operațiunilor sincrone, pentru a *prinde* erorile, se poate folosi constructul `try...catch`.
+
+```javascript
+const fs = require('fs');
+
+try {
+  fs.unlinkSync('/tmp/hello');
+  console.log('Gata, l-am șters!');
+} catch (err) {
+  // handle the error
+}
+```
+
+Documentația atrage atenția asupra ordinii operațiunilor asicrone în cazul în care am avea situații în care ar trebui să fie urmat un algoritm de lucru. Prin natura operațiunilor asincrone, nu poți ști care operațiune se va încheia mai repede decât alta. Pentru a putea fi asigurat un anumit nivel de predictibilitate, se recomandă ca operațiunile care urmează uneia, să fie puse în callback-ul primei.
+
+```javascript
+fs.rename('/tmp/hello', '/tmp/world', (err) => {
+  if (err) throw err;
+  fs.stat('/tmp/world', (err, stats) => {
+    if (err) throw err;
+    console.log(`stats: ${JSON.stringify(stats)}`);
+  });
+});
+```
 
 ## Lucrul pe căile sistemului
 
 Căile sistemului de operare sunt necesare pentru a accesa resursele. Acestea sunt oferite metodelor modulului `fs` drept parametru și pot fi un șir de caractere (secvențe de caractere codate UTF8), un obiect `Buffer` sau un obiect URL care folosește protocolul `file:`.
 
-## Căi relative
+### Procesarea căilor pentru a extrage datele relevante
+
+Procedura de a extrage informațiile utile despre fișiere.
+
+```javascript
+let caleaCatreFisier = `/director/fisier.json`;
+path.parse(caleaCatreFisier).base === `fisier.json`; // true
+path.parse(caleaCatreFisier).name === `fisier`; // true
+path.parse(caleaCatreFisier).ext === `.json`; // true
+```
+
+Vezi documentația de la https://nodejs.org/api/path.html#path_path_parse_path.
+
+### Căi relative
 
 Căile pe care le pasezi lui `fs` pot fi relative. Pentru simplificarea activităților, de cele mai multe ori vei întâlni situațiile în care se folosește în paralel modulul `path`.
 
@@ -44,9 +82,30 @@ fs.readFile(`./calea/catre/fisier.txt`, (err, data) => {
 
 Prin funcția cu rol de callback care este pasată metodei `readFile` avem acces la un obiect `Buffer` care ține conținutul fișierului.
 
-## Protocolul file
+## Fișiere
 
-Calea de acces la o resursă pe disc se poate face și utilizând un obiect url WHATWG. Suportul este oferit doar pentru obiectele care folosesc protocolul `file:`.
+În cazul sistemelor de operare care respectă standardul POSIX, pentru fiecare proces, sistemul ține o tabelă cu toate fișierele deschise și toate resursele accesate. Fiecărui fișier deschis îi este atribuit un identificator numit **file descriptor**. Pentru a rezolva problemele de compatibilitate între sistemele POSIX și Windows, Node.js abstractizează operațiunile cu resursele atribuind tuturor fișierelor deschise câte un descriptor numeric. Acest lucru se petrece ori de câte ori este folosită metoda `fs.open()`. Din momentul în care un fișier este deschis cu `fs.open()`, vom putea citi fișierul, vom putea scrie date în el și vom avea acces la informații despre acesta.
+
+```javascript
+fs.open('/open/some/fisier.txt', 'r', (err, fd) => {
+  if (err) throw err;
+  fs.fstat(fd, (err, stat) => {
+    if (err) throw err;
+    // operațiuni
+
+    // Închide întotdeauna file descriptor-ul
+    fs.close(fd, (err) => {
+      if (err) throw err;
+    });
+  });
+});
+```
+
+Modulul `fs` pune la dispoziție și metodele necesare lucrului cu stream-uri. Pentru a dezvolta acest aspect foarte important, vezi materialele dedicate stream-urilor.
+
+### Protocolul file
+
+Calea de acces la o resursă pe disc se poate face și utilizând un obiect URL de tipul WHATWG. Suportul este oferit doar pentru obiectele care folosesc protocolul `file:`.
 
 ```javascript
 const fs = require('fs');
@@ -56,40 +115,6 @@ fs.readFileSync(fileUrl);
 ```
 
 Obiectele URL vor fi întotdeauna căi absolute.
-
-## Deschiderea unui fișier - `fs.open(cale[,options],cb)`
-
-Metoda `fs.open()` este folosită pentru a aloca un nou `file descriptor`, care va fi folosit pentru a obține informații despre fișier.
-
-```javascript
-fs.open('/director/subdirector/fisier.txt', 'r', (err, fisierDescr) => {
-    if (err) {throw err};
-    fs.fstat(fisierDescr, (err, stare) => {
-        if (err) {throw err};
-        // fă interogările necesare despre starea fișierului
-
-        // întotdeauna închide fișierul
-        fs.close(fisierDescr, (err) => {
-            if (err) {throw err};
-        });
-    });
-});
-```
-
-Documentația Node.js spune că este absolut necesară închiderea fișierului pentru că orice sistem de operare permite un anumit număr să fie deschis și se pot întâmpla chiar scurgeri de memorie.
-
-## Procesarea căilor pentru a extrage datele relevante
-
-Procedura de a extrage informațiile utile despre fișiere.
-
-```javascript
-let caleaCatreFisier = `/director/fisier.json`;
-path.parse(caleaCatreFisier).base === `fisier.json`; // true
-path.parse(caleaCatreFisier).name === `fisier`; // true
-path.parse(caleaCatreFisier).ext === `.json`; // true
-```
-
-Vezi documentația de la https://nodejs.org/api/path.html#path_path_parse_path.
 
 ## `fs.readFile(path[, options], callback)`
 
@@ -133,6 +158,31 @@ readFilePromise('/biblioteci-judetene.json').then( biblioteci => {
 Funcția creată este un ambalaj pentru fișierul care se va încărca asincron în promisiune. Ceea ce s-a realizat este constituirea unei promisiuni prin evaluarea expresiei `readFilePromise('/biblioteci-judetene.json')`. Astfel, se vor putea înlănțui metodele specifice.
 
 În cazul în care este necesară o soluție de-a gata, există un pachet în depozitul `npm` numit `fs-extra`.
+
+## Obținerea datelor despre un fișier
+
+Pentru a proiecta o succesiune de oprațiuni cu un anumit fișier, mai întâi trebuie să culegem îndeajuns de multe informații despre acesta.
+
+### `fs.open(cale[,options],cb)`
+
+Metoda `fs.open()` este folosită pentru a aloca un nou `file descriptor`, care va fi folosit pentru a obține informații despre fișier.
+
+```javascript
+fs.open('/director/subdirector/fisier.txt', 'r', (err, fisierDescr) => {
+    if (err) {throw err};
+    fs.fstat(fisierDescr, (err, stare) => {
+        if (err) {throw err};
+        // fă interogările necesare despre starea fișierului
+
+        // întotdeauna închide fișierul
+        fs.close(fisierDescr, (err) => {
+            if (err) {throw err};
+        });
+    });
+});
+```
+
+Documentația Node.js spune că este absolut necesară închiderea fișierului pentru că orice sistem de operare permite un anumit număr să fie deschis și se pot întâmpla chiar scurgeri de memorie.
 
 ## Adăugarea datelor într-un fișier
 

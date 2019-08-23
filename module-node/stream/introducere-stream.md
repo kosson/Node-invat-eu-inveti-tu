@@ -311,6 +311,8 @@ Stream-urile de transformare sunt acele stream-uri `Duplex` care implementează 
 
 ### Cazuistică
 
+#### Preluare de imagine
+
 Majoritatea aplicațiilor Node.js folosesc `stream`-urile într-un fel sau altul. Totuși există excepții când dorești să lucrezi cu `Buffer`e, de exemplu. Să presupunem că faci un `Buffer` în care introduci o imagine codată base64. Pentru a o scrie pe hard disk, mai întâi ai nevoie să introduci conținutul `Buffer`-ului într-un stream care să poată fi citit.
 
 ```javascript
@@ -343,6 +345,8 @@ function createRecord (data) {
     });
 }
 ```
+
+#### Servere web
 
 De exemplu, serverele `http` folosesc stream-urile.
 

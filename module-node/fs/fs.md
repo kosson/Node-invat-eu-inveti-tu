@@ -159,11 +159,11 @@ Funcția creată este un ambalaj pentru fișierul care se va încărca asincron 
 
 În cazul în care este necesară o soluție de-a gata, există un pachet în depozitul `npm` numit `fs-extra`.
 
-## Obținerea datelor despre un fișier
+## Obținerea datelor despre un fișier folosind un descriptor
 
 Pentru a proiecta o succesiune de oprațiuni cu un anumit fișier, mai întâi trebuie să culegem îndeajuns de multe informații despre acesta.
 
-### `fs.open(cale[,options],cb)`
+### Crearea unui descriptor folosind `fs.open(cale[,options],cb)`
 
 Metoda `fs.open()` este folosită pentru a aloca un nou `file descriptor`, care va fi folosit pentru a obține informații despre fișier.
 
@@ -183,6 +183,10 @@ fs.open('/director/subdirector/fisier.txt', 'r', (err, fisierDescr) => {
 ```
 
 Documentația Node.js spune că este absolut necesară închiderea fișierului pentru că orice sistem de operare permite un anumit număr să fie deschis și se pot întâmpla chiar scurgeri de memorie.
+
+### Închiderea unui descriptor `fs.close(fd, callback)`
+
+După lucrul cu file descriptorul trebuie neapărat să-l închizi.
 
 ## Adăugarea datelor într-un fișier
 
@@ -214,11 +218,9 @@ fs.open('fisier.txt', 'a', (err, fd) => {
 });
 ```
 
-## Modificarea permisiunilor unui fișier
+## Supravegherea unui fișier cu `fs.watch()`
 
 Metoda `fs.chmod` modifică în mod asincron permisiunile unui fișier.
-
-## `fs.watch()`
 
 În anumite scenarii este necesară urmărirea unui fișier pentru a detecta modificări care pot apărea. În acest sens, `fs` are metoda `watch()`, care are drept sarcină semnalarea oricărei modificări care apare.
 
@@ -227,7 +229,257 @@ const​ fs = require(​'fs'​);
 ​fs.watch(​'fisier.txt'​, () => console.log(​'S-a modificat!'​));
 ```
 
-## `fs.createReadStream()`
+## Testarea permisiunii de acces - `fs.access(path[, mode], callback)`
+
+Metoda va testa dacă utilizatorul are permisiunea de a accesa fișierul sau directorul specificat de cale.
+
+Această metodă primește drept argumente:
+- calea către fișier (string, Buffer sau URL),
+- modul (număr întreg) în care se face accesul. Valoarea din oficiu este `fs.constants.F_OK`
+- o funcție cu rol de callback care primește un obiect de eroare.
+
+Modul specifică care verificări vor trebui făcute pentru a evalua nivelul de accesibilitate. Aceste valori sunt specificate în secțiunea dedicată constantelor, mai jos *File Access Constants*. Folosindu-te de aceste constate, vei putea crea adevărate măști de acces folosind bitwise OR-ul pe două sau mai multe valori (`fs.constants.W_OK | fs.constants.R_OK`).
+
+### Verifică dacă fișierul există în directorul curent
+
+```javascript
+const file = 'package.json';
+fs.access(file, fs.constants.F_OK, (err) => {
+  console.log(`${file} ${err ? 'Fișierul nu există' : 'există'}`);
+});
+```
+
+### Verifică dacă fișierul poate fi citit
+
+```javascript
+fs.access(file, fs.constants.R_OK, (err) => {
+  console.log(`${file} ${err ? 'Nu poate fi citit' : 'poate fi citit'}`);
+});
+```
+
+### Verifică dacă fișierul poate fi scris
+
+```javascript
+fs.access(file, fs.constants.W_OK, (err) => {
+  console.log(`${file} ${err ? 'nu poate fi scris' : 'poate fi scris'}`);
+});
+```
+
+### Verifică dacă fișierul folosind o mască
+
+Folosind constantele poți crea un adevărat filtru - o *mască* - după care poți investiga un fișier.
+
+```javascript
+fs.access(file, fs.constants.F_OK | fs.constants.W_OK, (err) => {
+  if (err) {
+    console.error(
+      `${file} ${err.code === 'ENOENT' ? 'nu există' : 'este doar read-only'}`);
+  } else {
+    console.log(`${file} există și poate fi scris.`);
+  }
+});
+```
+
+### Precizări la folosirea lui `fs.access()`
+
+Folosirea metodei `fs.access()` înaintea apelării metodelor `fs.open()`, `fs.readFile` sau `fs.writeFile()` nu este recomandată pentru că introduce condiții de concurență cu alte procese ale sistemului de operare, care ar avea nevoie să lucreze cu acel fișier. Algoritmul de lucrul cu fișierele pe care documentația îl recomandă este cel al deschiderii, citirii și scrierii fișierului în mod direct. Erorile se vor trata în funcție de cele apărute în aceste etape.
+
+#### Model de scriere recomandat
+
+```javascript
+fs.open('fișierul', 'wx', (err, fd) => {
+  if (err) {
+    if (err.code === 'EEXIST') {
+      console.error('fișierul există deja');
+      return;
+    }
+
+    throw err;
+  }
+
+  scrieDatele(fd);
+});
+```
+
+#### Model de citire recomandat
+
+```javascript
+fs.open('fișierul', 'r', (err, fd) => {
+  if (err) {
+    if (err.code === 'ENOENT') {
+      console.error('fișierul nu există');
+      return;
+    }
+
+    throw err;
+  }
+
+  citeșteDatele(fd);
+});
+```
+
+Este recomandată folosirea directă a fișierelor și tratarea erorilor provenite din aceste operațiuni.
+
+Verificarea accesibilității unui fișier se va face dacă nu se va lucra cu acesta în aceiași pași algoritmici.
+
+### Varianta sincronă este `fs.accessSync(path[, mode])`
+
+```javascript
+try {
+  fs.accessSync('etc/passwd', fs.constants.R_OK | fs.constants.W_OK);
+  console.log('pot citi/scrie');
+} catch (err) {
+  console.error('nu am acces');
+}
+```
+
+## Adăugarea datelor într-un fișier - `fs.appendFile(path, data[, options], callback)`
+
+Această metodă permite adăugarea asincronă a datelor într-un fișier. În cazul în care fișierul nu există, acesta va fi creat. Datele pot fi string sau Buffer.
+
+```javascript
+fs.appendFile('datele.csv', '1, nume, prenume', 'utf8', (err) => {
+  if (err) throw err;
+  console.log('Am adăugat în fișier următoarea linie: "1, nume, prenume"');
+});
+```
+
+### Analiza argumentelor
+
+#### `path`
+
+Calea poate fi un *șir de caractere*, poate fi un *Buffer*, un *URL* sau un *număr* al unui file descriptor. În cazul în care folosești un file descriptor, acesta poate fi generat folosind metoda `fs.open()`. Fii foarte atentă pentru că acest file descriptor va trebui închis manual.
+
+```javascript
+fs.open('date.csv', 'a', (err, fd) => {
+  if (err) throw err;
+  fs.appendFile(fd, '1, nume, prenume', 'utf8', (err) => {
+  	// faci operațiunile necesare și apoi închizi file descriptorul (fd)
+    fs.close(fd, (err) => {
+      if (err) throw err;
+    });
+    if (err) throw err;
+  });
+});
+```
+
+#### `data`
+
+Sunt datele care vor fi scrise în fișier. Aceste pot fi string sau Buffer.
+
+#### `options`
+
+Acestea sunt câteva posibile opțiuni, care pot fi specificate ca obiect sau ca string.
+
+- `encoding` este menționat ca string, iar valoarea din oficiu este `utf8`. Poți introduce și `null`, dacă nu vrei să precizezi encoding-ul;
+- `mode` este o valoare de număr întreg. Valoarea din oficiu find `0o666`.
+- `flag` este de tip string, având valoarea din oficiu `a`.
+
+#### funcția callback
+
+Această funcție primește obiectul de eroare ca prim argument.
+
+## Modificarea permisiunilor cu `fs.chmod(path, mode, callback)`
+
+Această metodă poate schimba în mod asincron permisiunile unui fișier.
+
+Drept argumente primește:
+- o cale, care poate fi string, Buffer sau URL;
+- modul, care este un număr întreg - masca de permisiuni;
+- o funcție callback, care primește primul argument un obiect de eroare.
+
+```javascript
+fs.chmod('datele.csv', 0o775, (err) => {
+  if (err) throw err;
+  console.log('Permisiunile pentru fișierul "datele.csv" au fost schimbate');
+});
+```
+
+### Modurile în care se poate afla un fișier
+
+Modul este o mască care indică permisiunile unui fișier.
+
+| Constantă              | Reprezentare octală | Descriere                                                    |
+| ---------------------- | ------------------- | ------------------------------------------------------------ |
+| `fs.constants.S_IRUSR` | `0o400`             | poate fi citit de posesor                                    |
+| `fs.constants.S_IWUSR` | `0o200`             | poate fi scris de posesor                                    |
+| `fs.constants.S_IXUSR` | `0o100`             | poate fi executat sau se poate face o căutare în el de către posesor. |
+| `fs.constants.S_IRGRP` | `0o40`              | poate fi citit de grup                                       |
+| `fs.constants.S_IWGRP` | `0o20`              | poate fi scris de grup                                       |
+| `fs.constants.S_IXGRP` | `0o10`              | poate fi executat sau se poate face o căutare în el de către grup. |
+| `fs.constants.S_IROTH` | `0o4`               | poate fi citit de alții                                      |
+| `fs.constants.S_IWOTH` | `0o2`               | poate fi scris de alții                                      |
+| `fs.constants.S_IXOTH` | `0o1`               | poate fi executat sau se poate face o căutare în el de alții. |
+
+Mai simplu, se poate folosi trei digiți cu valori octale. Cel mai din stânga digit indică permisiunile celui care posedă fișierul. Cel din mijloc specifică permisiunile pentru grup, iar cel mai din dreapta indică permisiunile tuturor celorlalți.
+
+| Număr | Descriere              |
+| ----- | ---------------------- |
+| 7     | read, write și execute |
+| 6     | read și write          |
+| 5     | read și execute        |
+| 4     | read only              |
+| 3     | write și execute       |
+| 2     | write only             |
+| 1     | execute only           |
+| 0     | fără permisiuni        |
+
+De exemplu, prin valoarea octală `0o765`:
+
+- posesorul fișierului poate scrie, citi și executa;
+- grupul poate citi și scrie;
+- ceilalți pot citi și executa fișierul.
+
+În cazul sitemelor Windows, se poate modifica doar permisiunea de scriere.
+
+## Modificarea celui care deține fișierele prin `fs.chown(path, uid, gid, callback)`
+
+Această metodă este folosită pentru a modifica cine deține fișierele și grupul.
+
+Calea - `path` poate fi un `string`, un `Buffer` sau un `URL`.
+
+`uid` - ul este un număr întreg și la fel este și `gid`-ul.
+
+## Copierea fișierelor cu `fs.copyFile(src, dest[, flags], callback)`
+
+Această metodă copiază într-un mod asincron un fișier sursă. Dacă fișierul destinație deja există, acesta va fi suprascris.
+
+```javascript
+const fs = require('fs');
+// destinație.txt va fi creat sau suprascris din oficiu.
+fs.copyFile('sursă.txt', 'destinație.txt', (err) => {
+  if (err) throw err;
+  console.log('sursă.txta fost copiat în destinație.txt');
+});
+```
+
+Argumentele pe care metoda le acceptă sunt:
+
+- `src` fiind numele fișierului sursă care va fi copiat. Acesta poate fi un string, un Buffer sau un URL;
+- `dest` fiind numele fișierului destinație. Acesta poate fi un string, un Buffer sau un URL;
+- `flags` este un număr care modifică regimul drepturilor în caz că acest lucru este necesar. Valoarea din oficiu, fiind `0`.
+- funcția cu rol de callback.
+
+În cazul în care a apărut o eroare după ce a fost deschis pentru scriere fișierul destinație, Node.js va șterge destinația.
+
+Pentru flags se mai pot folosi câteva valori opționale cu ajutorul cărora poți modela comportamentul la momentul copierii:
+
+- `fs.constants.COPYFILE_EXCL` indică faptul că operațiunea de copiere va eșua dacă fișierul destinație deja există;
+- `fs.constants.COPYFILE_FICLONE` indică încercarea de a implementa un mecanism *copy-on-write reflink*. Dacă platforma nu are suport pentru *copy-on-write*, va fi folosit un subsistem.
+- `fs.constants.COPYFILE_FICLONE_FORCE` indică încercarea de a implementa un mecanism *copy-on-write reflink*. Dacă platforma nu are suport pentru *copy-on-write*, operațiunea de copiere va eșua.
+
+```javascript
+const fs = require('fs');
+const { COPYFILE_EXCL } = fs.constants;
+
+// Prin folosirea COPYFILE_EXCL, operațiunea va eșua dacă destinație.txt există
+fs.copyFile('sursă.txt', 'destinație.txt', COPYFILE_EXCL, callback);
+```
+
+## Streamuri cu fs
+
+
+### Crearea unui stream dintr-un fișier cu `fs.createReadStream()`
 
 Este o metodă a modului `fs` care *consumă* o resursă folosind bufferul. Metoda acceptă drept prim parametru o cale către resursă, care poate fi un șir de caractere, un obiect URL sau chiar un buffer.
 
@@ -244,7 +496,7 @@ Al doilea parametru poate fi un obiect care poate avea următorii membri pentru 
 
 Dacă al doilea parametru este un șir, acesta va specifica schema de codare a caracterelor. Cel mai uzual este `utf8`.
 
-Metoda `fs.createReadStream()` oferă posibilitatea de a citi un stream de date.
+Metoda `fs.createReadStream()` oferă posibilitatea de a citi un stream de date dintr-un fișier.
 
 ```javascript
 var fs = require('fs');
@@ -262,7 +514,7 @@ unStreamReadable.on('data', function (fragment) {
 
 Întreaga resursă de date va fi consumată de `stream`-ul nostru *readable*. De fiecare dată când un fragment din `Buffer` este trimis, se declanșează execuția callback-ului. După prelucrarea fragmentului anterior, se va primi un alt fragment, care va fi prelucrat și tot așa până la consumarea întregii resurse.
 
-## `fs.createWriteStream(path[,options])`
+### Stream către un fișier - `fs.createWriteStream(path[,options])`
 
 Această metodă oferă posibilitatea de a constitui un `stream` prin care să trimitem date într-o resursă.
 
@@ -279,6 +531,39 @@ wStr.write(date, (err) => {
 ```
 
 De fiecare dată când scriptul va fi rulat, dacă fișierul deja există, conținutul acestuia va fi suprascris. Dacă fișierul nu există, acesta va fi creat.
+
+
+## Constantele Sistemului de Fișiere
+
+Contantele sunt exportate ca `fs.constants`. Aceste constante diferă în funcție de sistemul de fișiere. 
+
+### File Access Constants
+
+| Constantă | Descriere                                                    |
+| --------- | ------------------------------------------------------------ |
+| `F_OK`    | Indică faptul că fișierul este disponibil procesului care are nevoie de el. Acesta indică că fișierul există, dar nu spune absolut nimic despre permisiuni `rwx`. Este modul din oficiu. |
+| `R_OK`    | Indică faptul că fișierul poate fi citit de procesul care îl apelează. |
+| `W_OK`    | Indică faptul că fișierul poate fi scris de procesul care îl apelează. |
+| `X_OK`    | Indică faptul că fișierul poate fi executat de procesul care îl apelează. Nu are efect pe Windows (același comportament precum cel al lui `F_OK`). |
+
+### File System Flags
+
+Flag-urile disponibile, care pot fi pasate ca string:
+
+- `a` - deschide fișierul pentru a-i fi adăugate date. Fișierul este creat dacă nu există;
+- `ax` - are același comportament precum `a`, dar eșuează dacă acea cale există;
+- `a+` - deschide fișierul pentru citire și appending. Acest fișier este creat dacă nu există;
+- `ax+` - are același comportament precum `a+`, dar eșuează dacă acea cale există;
+- `as` - deschide fișierul pentru a i se adăuga date în mod sincron. Fișierul este creat dacă nu există;
+- `as+` - deschide fișierul pentru a se citi și adăuga date în mod sincron. Fișierul este creat dacă nu există;
+- `r` - deschide fișierul pentru a fi citit. Apare o excepție dacă fișierul nu există;
+- `r+` - deschide fișierul pentru a citi și a scrie în el. Apare o excepție dacă fișierul nu există;
+- `rs+` - deschide fișierul pentru citire și scriere în mod sincron. Instruiește sistemul de operare să treacă peste sistemul de caching local. Este folositor pentru sisteme NFS și are un impact privind performanțele I/O. Se va folosi doar dacă este neapărată nevoie.
+- `w` - deschide fișierul pentru a se putea scrie. Fișierul poate fi creat (dacă nu există) sau poate fi trunchiat (dacă există).
+- `wx` - același comportament precum `w`, dar nu va acționa dacă deja calea există;
+- `w+` - deschide un fișier pentru citire/scriere. Fișierul este creat dacă nu există sau trunchiat dacă există.
+- `wx+` - același comportament precum `w+`, dar eșuează dacă există calea.
+
 
 ## Cazuistică
 

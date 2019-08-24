@@ -116,7 +116,7 @@ fs.readFileSync(fileUrl);
 
 Obiectele URL vor fi întotdeauna căi absolute.
 
-## `fs.readFile(path[, options], callback)`
+## Citirea unui fișier cu `fs.readFile(path[, options], callback)`
 
 A lucra cu un fișier în Node.js folosind modulul `fs`, implică crearea automată a unui obiect `Buffer` în care este trimis conținutul fișierului. Ferește-te de citirea unor fișiere în mod sincron (`fs.readFileSync(__dirname + '/nume_fisier.txt', 'utf8')`) pentru că acest lucru va bloca firul de execuție. Un argument în plus pentru a nu lucra cu varianta sincronă este acela că se vor crea obiecte `Buffer` de mari dimensiuni.
 
@@ -159,11 +159,9 @@ Funcția creată este un ambalaj pentru fișierul care se va încărca asincron 
 
 În cazul în care este necesară o soluție de-a gata, există un pachet în depozitul `npm` numit `fs-extra`.
 
-## Obținerea datelor despre un fișier
+## Obținerea datelor despre un fișier cu `fs.open(cale[,options],cb)`
 
 Pentru a proiecta o succesiune de oprațiuni cu un anumit fișier, mai întâi trebuie să culegem îndeajuns de multe informații despre acesta.
-
-### `fs.open(cale[,options],cb)`
 
 Metoda `fs.open()` este folosită pentru a aloca un nou `file descriptor`, care va fi folosit pentru a obține informații despre fișier.
 
@@ -184,7 +182,7 @@ fs.open('/director/subdirector/fisier.txt', 'r', (err, fisierDescr) => {
 
 Documentația Node.js spune că este absolut necesară închiderea fișierului pentru că orice sistem de operare permite un anumit număr să fie deschis și se pot întâmpla chiar scurgeri de memorie.
 
-## Adăugarea datelor într-un fișier
+## Adăugarea datelor într-un fișier cu `fs.appendFile(path, data[, options], callback)[src]`
 
 Atunci când deja ai un fișier la care dorești să adaugi date, vei folosi metoda `fs.appendFile`. Această metodă funcționează *asincron*. Dacă fișierul țintă nu există, acesta va fi creat. Datele pot fi un șir de caractere sau un obiect `Buffer`. Metoda primește patru argumente posibile, ultimul fiind un callback. Dacă nu este trimis un callback va fi ridicată o stare de eroare.
 
@@ -214,11 +212,9 @@ fs.open('fisier.txt', 'a', (err, fd) => {
 });
 ```
 
-## Modificarea permisiunilor unui fișier
+## Modificarea permisiunilor unui fișier `fs.watch(filename[, options][, listener])`
 
 Metoda `fs.chmod` modifică în mod asincron permisiunile unui fișier.
-
-## `fs.watch()`
 
 În anumite scenarii este necesară urmărirea unui fișier pentru a detecta modificări care pot apărea. În acest sens, `fs` are metoda `watch()`, care are drept sarcină semnalarea oricărei modificări care apare.
 
@@ -226,6 +222,8 @@ Metoda `fs.chmod` modifică în mod asincron permisiunile unui fișier.
 const​ fs = require(​'fs'​);
 ​fs.watch(​'fisier.txt'​, () => console.log(​'S-a modificat!'​));
 ```
+
+## Lucru cu streamuri
 
 ## `fs.createReadStream()`
 
@@ -279,6 +277,47 @@ wStr.write(date, (err) => {
 ```
 
 De fiecare dată când scriptul va fi rulat, dacă fișierul deja există, conținutul acestuia va fi suprascris. Dacă fișierul nu există, acesta va fi creat.
+
+## Lucrul cu file descriptorii
+
+### Flashing a datelor pe disc cu `fs.fdatasync(fd, callback)`
+
+Această metodă este un wrapper pentru comanda corespondentă din sistemele UNIX. Scopul folosirii acesteia este de a reduce activitatea discului pentru aplicațiile care nu au nevoie de toate metadatele sincronizate cu discul.
+
+Referința și datele care prezintă modul de funcționare, pot fi accesate de la manualul funcției cu rol similar [`fdatasync()`](http://man7.org/linux/man-pages/man2/fdatasync.2.html) a sistemelor de operare UNIX. Această comandă va transfera *flushing* toate datele care au fost modificate *in-core* (adică cele în cache-urile bufferelor) în fișierul referit de fd (file descriptor) de pe mediul de stocare. Acest lucru se face în situațiile în care informația trebuie salvată în caz că sistemul suferă o întrerupere sau o stare de eroare, care ar conduce la pierderea lor. În fapt este un flushing al cache-ului discului, dacă acesta există. În cazul operațiunii `fsync()` în cazul sistemelor UNIX, la momentul în care se face flushing-ul, se vor trimite pe disc și metadatele actualizate. În cazul lui `fdatasync()`, nu trimite metadatele modificate cu excepția cazului în care acestea sunt necesare unei accesări subsecvente a datelor pentru a asigura corecta gestionare a acestora.
+
+### Obținerea de informații despre un fișier cu `fs.fstat(fd[, options], callback)`
+
+Această metodă oferă informații despre un fișier în baza file descriptorului acestuia. Funcția cu rol de callback primește un al doilea argument, care este un obiect `fs.Stats`.  Pentru mai multe detalii, consultă și informațiile despre comanda UNIX [`fstat()`](http://man7.org/linux/man-pages/man2/fstat.2.html).
+
+Obiectul la care are acces callback-ul are proprietăți explicate în informațiile privind clasa `fs.Stats`.
+
+### Trunchierea dimensiunii unui fișier la o anumită dimensiune cu `fs.ftruncate(fd[, len], callback)`
+
+Această metodă este un wrapper pentru funcția UNIX [`ftruncate()`](http://man7.org/linux/man-pages/man2/ftruncate.2.html). Dimensiunea `len` este precizată ca număr întreg și valoarea sa din oficiu este `0`.
+
+Dacă fișierul referit de `fd` este mai mare de numărul bytes-ilor specificați prin `len`, doar cei specificați prin `len` vor fi reținuți și astfel se va redimensiona fișierul.
+
+```javascript
+console.log(fs.readFileSync('temp.txt', 'utf8'));
+// Conținutul fișierului text este: „Node.js”
+
+// Obține file descriptor pentru fișierul care va fi trunchiat
+const fd = fs.openSync('temp.txt', 'r+');
+
+// Trunchiezi fișierul să conțină doar primii 4 bytes ai celui original
+fs.ftruncate(fd, 4, (err) => {
+  assert.ifError(err);
+  console.log(fs.readFileSync('temp.txt', 'utf8'));
+});
+// Conținutul fișierului text va fi acum „Node”
+```
+
+În cazul în care fișierul este mai scurt decât dimensiunea în bytes specificată, conținutului existent în bytes i se va adăuga  null bytes `\0`.
+
+### Modificarea timestamp-ului prin `fs.futimes(fd, atime, mtime, callback)`
+
+Această metodă va schimba timestamp-urile fișierului referit prin obiectul referit de file descriptor. Vezi și metoda `fs.utimes()`. 
 
 ## Cazuistică
 

@@ -430,7 +430,11 @@ De exemplu, prin valoarea octală `0o765`:
 - grupul poate citi și scrie;
 - ceilalți pot citi și executa fișierul.
 
-În cazul sitemelor Windows, se poate modifica doar permisiunea de scriere.
+În cazul sistemelor Windows, se poate modifica doar permisiunea de scriere.
+
+### `fs.fchmod(fd, mode, callback)`
+
+Este o metodă care modifică permisiuni în cazul în care este folosit un file descriptor.
 
 ## Modificarea celui care deține fișierele prin `fs.chown(path, uid, gid, callback)`
 
@@ -439,6 +443,27 @@ Această metodă este folosită pentru a modifica cine deține fișierele și gr
 Calea - `path` poate fi un `string`, un `Buffer` sau un `URL`.
 
 `uid` - ul este un număr întreg și la fel este și `gid`-ul.
+
+### `fs.fchown(fd, uid, gid, callback)`
+
+Este o metodă care modifică owneship-ul în cazul în care este folosit un file descriptor.
+
+## Crearea unui director cu `fs.mkdir(path[, options], callback)[src]`
+
+Această metodă creează un director într-o manieră asincronă. Apelarea metodei atunci când ai un `path` care indică un director care există, rezultă într-o eroare doar atunci când `recursive` este `false`.
+
+```javascript
+// Crearea unui director /tmp/a/apple indiferent dacă `/tmp` sau /tmp/a există.
+fs.mkdir('/tmp/a/apple', { recursive: true }, (err) => {
+  if (err) throw err;
+});
+```
+
+Executarea acestei operațiuni pe sistemul de operare Windows folosind `/` la cale, va rezulta într-o eroare.
+
+## Crearea unui director temporar cu `fs.mkdtemp(prefix[, options], callback)`
+
+Metoda creează un director temporar unic. Metoda generează șase caractere aleatorii care să fie adăugate prefixului specificat pentru a crea un director temporar. Calea formată este pasată ca al doilea parametru funcției cu rol de callback. 
 
 ## Copierea fișierelor cu `fs.copyFile(src, dest[, flags], callback)`
 
@@ -476,25 +501,31 @@ const { COPYFILE_EXCL } = fs.constants;
 fs.copyFile('sursă.txt', 'destinație.txt', COPYFILE_EXCL, callback);
 ```
 
-## Streamuri cu fs
+## Streamuri cu `fs`
 
+Modulul `fs` oferă posibilitatea de a lucra cu stream-uri. Astfel, pot fi create streamuri read și write.
 
 ### Crearea unui stream dintr-un fișier cu `fs.createReadStream()`
 
 Este o metodă a modului `fs` care *consumă* o resursă folosind bufferul. Metoda acceptă drept prim parametru o cale către resursă, care poate fi un șir de caractere, un obiect URL sau chiar un buffer.
 
-Al doilea parametru poate fi un obiect care poate avea următorii membri pentru setarea stream-ului:
+Al doilea parametru poate fi un string sau un obiect care poate avea următorii membri pentru setarea stream-ului:
 
--   *flags* - default: `r`,
--   *encoding* - default: `null`,
--   *fd* - default: `null`,
--   *mode* - default: `0o666`,
--   *autoClose* - default: `true`,
--   *start* - default: număr întreg,
--   *end* - default: `Infinity`,
+-   *flags* (string) - default: `r`,
+-   *encoding* (string) - default: `null`,
+-   *fd* (număr întreg) - default: `null`,
+-   *mode* (număr întreg) - default: `0o666`,
+-   *autoClose* (boolean) - default: `true`,
+-   *start* (număr întreg),
+-   *end* (număr întreg) - default: `Infinity`,
 -   *highWaterMark*, fiind un număr întreg cu un default: 64 * 1024.
 
-Dacă al doilea parametru este un șir, acesta va specifica schema de codare a caracterelor. Cel mai uzual este `utf8`.
+Dacă al doilea parametru este un șir, acesta va specifica schema de codare a caracterelor. Cel mai uzual este `utf8`. Spre deosebire de un stream clasic, cel returnat de această metodă are un `hightWaterMark` de 64 de kb.
+
+Dacă în opțiuni sunt menționate limitele de bytes de la care să pornească citirea și la care să se oprească (`start` și `end`). Ambele limite includ valoarea de la care pornesc și încep numărătoarea de la `0`.
+În cazul în care este menționat în opțiuni un file descriptor (`fd`), dar este omisă valorarea `start` sau are valoarea `undefined`, se va citi secvențial de la poziția curentă în care se află fișierul.
+
+În cazul în care este prezent un file descriptor, metoda va ignora argumentul `path` folosind file descriptorul. Acest lucru implică faptul că nu va fi emis niciun eveniment `open`, iar `fd` ar trebui să fie blocking (de ex. tastatură sau placa de sunet). Cele non blocking ar trebui pasate lui `net.Socket`.
 
 Metoda `fs.createReadStream()` oferă posibilitatea de a citi un stream de date dintr-un fișier.
 
@@ -532,10 +563,9 @@ wStr.write(date, (err) => {
 
 De fiecare dată când scriptul va fi rulat, dacă fișierul deja există, conținutul acestuia va fi suprascris. Dacă fișierul nu există, acesta va fi creat.
 
-
 ## Constantele Sistemului de Fișiere
 
-Contantele sunt exportate ca `fs.constants`. Aceste constante diferă în funcție de sistemul de fișiere. 
+Contantele sunt exportate ca `fs.constants`. Aceste constante diferă în funcție de sistemul de fișiere.
 
 ### File Access Constants
 

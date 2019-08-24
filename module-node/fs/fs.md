@@ -159,19 +159,12 @@ Funcția creată este un ambalaj pentru fișierul care se va încărca asincron 
 
 În cazul în care este necesară o soluție de-a gata, există un pachet în depozitul `npm` numit `fs-extra`.
 
-<<<<<<< HEAD
-## Obținerea datelor despre un fișier cu `fs.open(cale[,options],cb)`
-
-Pentru a proiecta o succesiune de oprațiuni cu un anumit fișier, mai întâi trebuie să culegem îndeajuns de multe informații despre acesta.
-
-=======
 ## Obținerea datelor despre un fișier folosind un descriptor
 
 Pentru a proiecta o succesiune de oprațiuni cu un anumit fișier, mai întâi trebuie să culegem îndeajuns de multe informații despre acesta.
 
 ### Crearea unui descriptor folosind `fs.open(cale[,options],cb)`
 
->>>>>>> master
 Metoda `fs.open()` este folosită pentru a aloca un nou `file descriptor`, care va fi folosit pentru a obține informații despre fișier.
 
 ```javascript
@@ -191,15 +184,11 @@ fs.open('/director/subdirector/fisier.txt', 'r', (err, fisierDescr) => {
 
 Documentația Node.js spune că este absolut necesară închiderea fișierului pentru că orice sistem de operare permite un anumit număr să fie deschis și se pot întâmpla chiar scurgeri de memorie.
 
-<<<<<<< HEAD
-## Adăugarea datelor într-un fișier cu `fs.appendFile(path, data[, options], callback)[src]`
-=======
 ### Închiderea unui descriptor `fs.close(fd, callback)`
 
 După lucrul cu file descriptorul trebuie neapărat să-l închizi.
 
 ## Adăugarea datelor într-un fișier
->>>>>>> master
 
 Atunci când deja ai un fișier la care dorești să adaugi date, vei folosi metoda `fs.appendFile`. Această metodă funcționează *asincron*. Dacă fișierul țintă nu există, acesta va fi creat. Datele pot fi un șir de caractere sau un obiect `Buffer`. Metoda primește patru argumente posibile, ultimul fiind un callback. Dacă nu este trimis un callback va fi ridicată o stare de eroare.
 
@@ -229,11 +218,7 @@ fs.open('fisier.txt', 'a', (err, fd) => {
 });
 ```
 
-<<<<<<< HEAD
 ## Modificarea permisiunilor unui fișier `fs.watch(filename[, options][, listener])`
-=======
-## Supravegherea unui fișier cu `fs.watch()`
->>>>>>> master
 
 Metoda `fs.chmod` modifică în mod asincron permisiunile unui fișier.
 
@@ -244,11 +229,6 @@ const​ fs = require(​'fs'​);
 ​fs.watch(​'fisier.txt'​, () => console.log(​'S-a modificat!'​));
 ```
 
-<<<<<<< HEAD
-## Lucru cu streamuri
-
-## `fs.createReadStream()`
-=======
 ## Testarea permisiunii de acces - `fs.access(path[, mode], callback)`
 
 Metoda va testa dacă utilizatorul are permisiunea de a accesa fișierul sau directorul specificat de cale.
@@ -526,7 +506,6 @@ fs.copyFile('sursă.txt', 'destinație.txt', COPYFILE_EXCL, callback);
 Modulul `fs` oferă posibilitatea de a lucra cu stream-uri. Astfel, pot fi create streamuri read și write.
 
 ### Crearea unui stream dintr-un fișier cu `fs.createReadStream()`
->>>>>>> master
 
 Este o metodă a modului `fs` care *consumă* o resursă folosind bufferul. Metoda acceptă drept prim parametru o cale către resursă, care poate fi un șir de caractere, un obiect URL sau chiar un buffer.
 
@@ -584,7 +563,6 @@ wStr.write(date, (err) => {
 
 De fiecare dată când scriptul va fi rulat, dacă fișierul deja există, conținutul acestuia va fi suprascris. Dacă fișierul nu există, acesta va fi creat.
 
-<<<<<<< HEAD
 ## Lucrul cu file descriptorii
 
 ### Flashing a datelor pe disc cu `fs.fdatasync(fd, callback)`
@@ -624,8 +602,8 @@ fs.ftruncate(fd, 4, (err) => {
 
 ### Modificarea timestamp-ului prin `fs.futimes(fd, atime, mtime, callback)`
 
-Această metodă va schimba timestamp-urile fișierului referit prin obiectul referit de file descriptor. Vezi și metoda `fs.utimes()`. 
-=======
+Această metodă va schimba timestamp-urile fișierului referit prin obiectul referit de file descriptor. Vezi și metoda `fs.utimes()`.
+
 ## Constantele Sistemului de Fișiere
 
 Contantele sunt exportate ca `fs.constants`. Aceste constante diferă în funcție de sistemul de fișiere.
@@ -657,7 +635,6 @@ Flag-urile disponibile, care pot fi pasate ca string:
 - `w+` - deschide un fișier pentru citire/scriere. Fișierul este creat dacă nu există sau trunchiat dacă există.
 - `wx+` - același comportament precum `w+`, dar eșuează dacă există calea.
 
->>>>>>> master
 
 ## Cazuistică
 

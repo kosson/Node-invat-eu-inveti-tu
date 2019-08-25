@@ -186,7 +186,64 @@ Documentația Node.js spune că este absolut necesară închiderea fișierului p
 
 ### Închiderea unui descriptor `fs.close(fd, callback)`
 
-După lucrul cu file descriptorul trebuie neapărat să-l închizi.
+După lucrul cu *file descriptor*ul trebuie neapărat să-l închizi.
+
+## Scrierea datelor într-un fișier
+
+### Metoda `fs.write(fd, buffer[, offset[, length[, position]]], callback)`
+
+Această metodă va scrie un buffer în fișierul pe care-l indică `fd` (file descriptorul).
+
+Argumentul `offset` indică partea de buffer care va fi scrisă, iar `length` este numărul întreg care specifică numărul de bytes care vor fi scriși.
+Argumentul `possition` indică de unde să se înceapă scrierea datelor relativ cu începutul fișierului.
+
+Funcția cu rol de callback primește următoarele argumente:
+- err, 
+- bytesWritten, specifică câți bytes au fost scriși din buffer.
+- buffer
+
+### Metoda `fs.write(fd, string[, position[, encoding]], callback)[src]`
+
+Această metodă va scrie un string în fișierul specificat de fd.
+
+### Metoda `fs.writev(fd, buffers[, position], callback)`
+
+Va scrie un array de `ArrayBufferView`-uri în fișierul indicat de file descriptor.
+
+### Metoda `fs.writeFile(file, data[, options], callback)`
+
+Metoda este folosită pentru a scrie un fișier.
+
+Primul argument pasat metodei este un string, un Buffer, un URL sau un număr întreg, care este cel al unui file descriptor.
+Al doilea argument pasat sunt chiar datele care vor fi scrise în fișier. Acestea pot fi un șir de caractere, un Buffer, un TypedArray sau un DataView.
+
+Opțional poate fi pasat un șir de caractere ce menționează standardul de codar al caracterelor.
+
+```javascript
+fs.writeFile('ceva.txt', 'Salut Node.js', 'utf8', callback);
+```
+
+Poate fi chiar un obiect de configurare care poate avea următoarele proprietăți:
+
+- `encoding`, care menționează standardul de codare a caracterelor. Valoarea sa poate fi un string ce menționează standardul sau poate fi `null`. Valoarea din oficiu este `utf8`;
+- `mode`, fiind un număr întreg. Valoarea sa din oficiu este `0o666`.
+- `flag`, fiind un string, care are va valoare din oficiu `w`.
+
+Funcția cu rol de callback primește drept prim argument un obiect de eroare.
+
+În cazul în care fișierul deja există, iar `file` este numele unui fișier, datele vor fi scrise asincron în fișier. Dacă fișierul deja există, acesta va fi înlocuit. Datele scrise pot fi ori stringuri, ori buffere.
+
+În cazul în care `file` este un file descriptor, comportamentul este similar lui `fs.write()`. În acest caz, documentația recomandă folosirea lui `fs.write()`.
+
+În cazul în care datele sunt un buffer, encoding-ul este ignorat.
+
+```javascript
+const data = new Uint8Array(Buffer.from('Salut Node.js'));
+fs.writeFile('ceva.txt', data, (err) => {
+  if (err) throw err;
+  console.log('Am salvat fișierul');
+});
+```
 
 ## Adăugarea datelor într-un fișier
 
@@ -218,16 +275,63 @@ fs.open('fisier.txt', 'a', (err, fd) => {
 });
 ```
 
-## Modificarea permisiunilor unui fișier `fs.watch(filename[, options][, listener])`
+## Observarea fișierelor
 
-Metoda `fs.chmod` modifică în mod asincron permisiunile unui fișier.
+### `fs.watch(filename[, options][, listener])`
 
-În anumite scenarii este necesară urmărirea unui fișier pentru a detecta modificări care pot apărea. În acest sens, `fs` are metoda `watch()`, care are drept sarcină semnalarea oricărei modificări care apare.
+În anumite scenarii este necesară urmărirea unui fișier sau a unui director pentru a detecta modificări care pot apărea. În acest sens, `fs` are metoda `watch()`, care are drept sarcină semnalarea oricărei modificări care apare.
 
 ```javascript
 const​ fs = require(​'fs'​);
 ​fs.watch(​'fisier.txt'​, () => console.log(​'S-a modificat!'​));
 ```
+
+Descrierea argumentelor:
+
+- `filename` - acest prim argument este calea către un fișier specificată ca un string, un Buffer sau un URL.
+- `options` - poate fi un sting sau un obiect. Dacă este un string, acesta specifică encoding-ul:
+  - `persistent` este un boolean care indică dacă procesul ar trebui să continue câtă vreme fișierul este observat. Valoarea din oficiu este `true`.
+  - `recursive` este un boolean care indică dacă ar trebui observate toate subdirectoarele sau directorul curent. Valoarea din oficiu este `false`.
+  - `encoding` specifică codarea caracterelor care va fi pasat funcției cu rol de listener. Valoarea din oficiu este `false`.
+- `listener` este funcția cu rol de listener. Valoarea din oficiu este `undefined`. Aceast listener primește două argumente:
+ - `eventType` care este un string. Aceste evenimente pot fi `rename` sau `change`. Pe majoritatea platformelor, evenimentul `rename` este emis atunci când filename-ul apare sau dispare din director, iar `filename` este numele fișierului care a declanșat evenimentul. Funcția listener este atașată pe evenimentul `change` declanșat de `fs.FSWatcher`, dar nu este același lucru precum `change` al lui `eventType`.
+ - `filename` care este numele fișierului sau a directorului.
+
+ Metoda returnează un obiect instanță a lui `fs.FSWatcher`.
+
+ Recursivitatea funcționează doar pe macOS și Windows. Pe Linux și macOS, metoda rezolvă calea către un inode și observă acest inode. Va fi emis un eveniment în cazul în care se face un delete, dar va fi observat în continuare inode-ul original.
+
+ ```javascript
+ fs.watch('somedir', (eventType, filename) => {
+  console.log(`event type is: ${eventType}`);
+  if (filename) {
+    console.log(`numele fișierului dat: ${filename}`);
+  } else {
+    console.log('nu este oferit un filename');
+  }
+});
+```
+
+### `fs.watchFile(filename[, options], listener)`
+
+Observă modificările apărute pe un anumit `filename`. Funcția cu rol de callback va fi apelată de fiecare dată când fișierul este accesat. Opțiunile dacă sunt mențioanate, trebuie pasate ca un obiect. Acest obiect poate avea proprietatea `persistent`, care este un boolean ce semnalează faptul că procesul ar trebui să continue câtă vreme fișierele sunt supravegheate. O altă proprietate a obiectului `options` poate fi `interval`, specificând cât de des fișierul țintă ar trebui să fie pooled - valoarea este în milisecunde.
+
+Funcția cu rol de listener primește două argumente:
+- `current`, care este o instanță `fs.Stat`
+- `previous`, care este o instanță `fs.Stat`.
+
+```javascript
+fs.watchFile('message.text', (curr, prev) => {
+  console.log(`Valoarea actuală mtime este: ${curr.mtime}`);
+  console.log(`Valoarea mtime anterioară a fost: ${prev.mtime}`);
+});
+```
+
+Pentru a fi anunțat de momentul în care a fost nodificat, nu numai accesat, este nevoie să compari `curr.mtime` cu `prev.mtime`.
+
+Dacă o operațiune în momentul execuției metodei aduce o eroare `ENOENT`, va invoca funcția listenr o singură dată cu toate câmpurile având valoarea zero. Dacă fișierul este creat ceva mai târziu, funcția listener va fi apelată din nou cu ultimele informații despre starea acestuia.
+
+Chiar dacă ai la îndemână această metodă, documentația recomandă din motive de eficiență folosirea lui `fs.watch()`.
 
 ## Testarea permisiunii de acces - `fs.access(path[, mode], callback)`
 
@@ -501,6 +605,10 @@ const { COPYFILE_EXCL } = fs.constants;
 fs.copyFile('sursă.txt', 'destinație.txt', COPYFILE_EXCL, callback);
 ```
 
+## Modificarea datei unui fișier `fs.utimes(path, atime, mtime, callback)`
+
+Metoda va modifica data fișierului specificat prin calea primită ca prim argument.
+
 ## Streamuri cu `fs`
 
 Modulul `fs` oferă posibilitatea de a lucra cu stream-uri. Astfel, pot fi create streamuri read și write.
@@ -602,7 +710,8 @@ fs.ftruncate(fd, 4, (err) => {
 
 ### Modificarea timestamp-ului prin `fs.futimes(fd, atime, mtime, callback)`
 
-Această metodă va schimba timestamp-urile fișierului referit prin obiectul referit de file descriptor. Vezi și metoda `fs.utimes()`.
+Această metodă va schimba timestamp-urile fișierului referit prin obiectul file descriptor. Vezi și metoda `fs.utimes()`.
+
 
 ## Constantele Sistemului de Fișiere
 

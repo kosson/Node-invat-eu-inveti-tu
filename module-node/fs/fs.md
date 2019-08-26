@@ -198,7 +198,7 @@ Argumentul `offset` indică partea de buffer care va fi scrisă, iar `length` es
 Argumentul `possition` indică de unde să se înceapă scrierea datelor relativ cu începutul fișierului.
 
 Funcția cu rol de callback primește următoarele argumente:
-- err, 
+- err,
 - bytesWritten, specifică câți bytes au fost scriși din buffer.
 - buffer
 
@@ -214,8 +214,8 @@ Va scrie un array de `ArrayBufferView`-uri în fișierul indicat de file descrip
 
 Metoda este folosită pentru a scrie un fișier.
 
-Primul argument pasat metodei este un string, un Buffer, un URL sau un număr întreg, care este cel al unui file descriptor.
-Al doilea argument pasat sunt chiar datele care vor fi scrise în fișier. Acestea pot fi un șir de caractere, un Buffer, un TypedArray sau un DataView.
+Primul argument pasat metodei este un string, un `Buffer`, un `URL` sau un număr întreg, care este cel al unui file descriptor.
+Al doilea argument pasat sunt chiar datele care vor fi scrise în fișier. Acestea pot fi un șir de caractere, un Buffer, un `TypedArray` sau un `DataView`.
 
 Opțional poate fi pasat un șir de caractere ce menționează standardul de codar al caracterelor.
 
@@ -567,7 +567,7 @@ Executarea acestei operațiuni pe sistemul de operare Windows folosind `/` la ca
 
 ## Crearea unui director temporar cu `fs.mkdtemp(prefix[, options], callback)`
 
-Metoda creează un director temporar unic. Metoda generează șase caractere aleatorii care să fie adăugate prefixului specificat pentru a crea un director temporar. Calea formată este pasată ca al doilea parametru funcției cu rol de callback. 
+Metoda creează un director temporar unic. Metoda generează șase caractere aleatorii care să fie adăugate prefixului specificat pentru a crea un director temporar. Calea formată este pasată ca al doilea parametru funcției cu rol de callback.
 
 ## Copierea fișierelor cu `fs.copyFile(src, dest[, flags], callback)`
 

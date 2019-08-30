@@ -31,6 +31,3 @@ cursor.on('close', function() {
   // Called when done
 });
 ```
-
-
-

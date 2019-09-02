@@ -15,13 +15,22 @@ const persoanăSchema = Schema({
   _id: Schema.Types.ObjectId,
   nume: String,
   vârstă: Number,
-  povești: [{ type: Schema.Types.ObjectId, ref: 'Poveste' }]
+  cărți: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Poveste'
+  }]
 });
 
 const carteSchema = Schema({
-  autor: { type: Schema.Types.ObjectId, ref: 'Persoană' },
+  autor: {
+    type: Schema.Types.ObjectId,
+    ref: 'Persoană'
+  },
   titlu: String,
-  fani: [{ type: Schema.Types.ObjectId, ref: 'Persoană' }]
+  fani: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Persoană'
+  }]
 });
 
 const Poveste = mongoose.model('Carte', carteSchema);

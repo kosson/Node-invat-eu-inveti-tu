@@ -17,7 +17,7 @@ fs.unlink('/cale/director', (err) => {
 });
 ```
 
-În cazul operațiunilor asinrone, primul argument pasat funcțiilor cu rol de callback, este unul rezervat semnalării cazurilor de excepție. Dacă operațiunea s-a încheiat cu succes, valoarea primului argument va fi `null` sau `undefined`. Aceasta este chiar o marcă a modului în care lucrează Node.js.
+În cazul operațiunilor asincrone, primul argument pasat funcțiilor cu rol de callback, este unul rezervat semnalării cazurilor de excepție. Dacă operațiunea s-a încheiat cu succes, valoarea primului argument va fi `null` sau `undefined`. Aceasta este chiar o marcă a modului în care lucrează Node.js.
 
 În cazul operațiunilor sincrone, pentru a *prinde* erorile, se poate folosi constructul `try...catch`.
 
@@ -310,7 +310,7 @@ Descrierea argumentelor:
     console.log('nu este oferit un filename');
   }
 });
-```
+ ```
 
 ### `fs.watchFile(filename[, options], listener)`
 

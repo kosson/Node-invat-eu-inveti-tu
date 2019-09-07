@@ -112,7 +112,9 @@ Resursa.findOne({'title.value': 'Teorema lui Pitagora'}, function existaRed (err
 
 Un modificator va sta între obiectul `Query` format de `User.findOne({email: data.email})` și metoda `then()` pe care o aplici promisiunii generate de obiectul `Query` - `User.findOne({email: data.email}).modificator.then()`. Misiunea modificatorilor este de a customiza `Query`-urile făcute.
 
-Un exemplu pentru modificatori ar fi metoda `populate('numeProprietateDinModelulPeCareFaciCautarea1', 'numeProprietateDinModelulPeCareFaciCautarea2', 'șamd')`. Stringurile pe care le pasezi metodei `populate()` sunt colecții care au înregistrări ce conțin `ObjectId`-ul prezentei înregistrări adusă în baza obiectului `Query`.
+Un exemplu pentru modificatori ar fi metoda `populate('numeProprietateDinModelulPeCareFaciCautarea1', 'numeProprietateDinModelulPeCareFaciCautarea2', 'șamd')`.
+
+**Stringurile pe care le pasezi metodei `populate()` sunt colecții care au înregistrări ce conțin `ObjectId`-ul prezentei înregistrări adusă în baza obiectului `Query`**.
 
 ```javascript
 // /modele/userModel.js

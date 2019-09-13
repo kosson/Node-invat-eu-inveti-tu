@@ -3,7 +3,7 @@
 ## app.route() este de fapt o prescurtare pentru a chema Express Router.
 
 În loc să chemi express.Router() putem chema app.route și să aplicăm rutele de acolo.
-Folosirea lui app.route() permite definirea mai multor acțiuni pe o singură rută de logare.
+Folosirea lui `app.route()` permite definirea mai multor acțiuni pe o singură rută de logare.
 Vom avea nevoie să arătăm un form de logare și o rută POST pentru a procesa formularul de logare.
 
 Un exemplu simplu:

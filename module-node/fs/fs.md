@@ -17,7 +17,7 @@ fs.unlink('/cale/director', (err) => {
 });
 ```
 
-În cazul operațiunilor asinrone, primul argument pasat funcțiilor cu rol de callback, este unul rezervat semnalării cazurilor de excepție. Dacă operațiunea s-a încheiat cu succes, valoarea primului argument va fi `null` sau `undefined`. Aceasta este chiar o marcă a modului în care lucrează Node.js.
+În cazul operațiunilor asincrone, primul argument pasat funcțiilor cu rol de callback, este unul rezervat semnalării cazurilor de excepție. Dacă operațiunea s-a încheiat cu succes, valoarea primului argument va fi `null` sau `undefined`. Aceasta este chiar o marcă a modului în care lucrează Node.js.
 
 În cazul operațiunilor sincrone, pentru a *prinde* erorile, se poate folosi constructul `try...catch`.
 
@@ -310,7 +310,7 @@ Descrierea argumentelor:
     console.log('nu este oferit un filename');
   }
 });
-```
+ ```
 
 ### `fs.watchFile(filename[, options], listener)`
 
@@ -338,11 +338,12 @@ Chiar dacă ai la îndemână această metodă, documentația recomandă din mot
 Metoda va testa dacă utilizatorul are permisiunea de a accesa fișierul sau directorul specificat de cale.
 
 Această metodă primește drept argumente:
-- calea către fișier (string, Buffer sau URL),
+
+- calea către fișier (`String`, `Buffer` sau `URL`),
 - modul (număr întreg) în care se face accesul. Valoarea din oficiu este `fs.constants.F_OK`
 - o funcție cu rol de callback care primește un obiect de eroare.
 
-Modul specifică care verificări vor trebui făcute pentru a evalua nivelul de accesibilitate. Aceste valori sunt specificate în secțiunea dedicată constantelor, mai jos *File Access Constants*. Folosindu-te de aceste constate, vei putea crea adevărate măști de acces folosind bitwise OR-ul pe două sau mai multe valori (`fs.constants.W_OK | fs.constants.R_OK`).
+Modul specifică care verificări vor trebui făcute pentru a evalua nivelul de accesibilitate. Aceste valori sunt specificate în secțiunea dedicată constantelor *File Access Constants*. Folosindu-te de aceste constate, vei putea crea adevărate măști de acces folosind bitwise OR-ul pe două sau mai multe valori (`fs.constants.W_OK | fs.constants.R_OK`).
 
 ### Verifică dacă fișierul există în directorul curent
 
@@ -386,7 +387,7 @@ fs.access(file, fs.constants.F_OK | fs.constants.W_OK, (err) => {
 
 ### Precizări la folosirea lui `fs.access()`
 
-Folosirea metodei `fs.access()` înaintea apelării metodelor `fs.open()`, `fs.readFile` sau `fs.writeFile()` nu este recomandată pentru că introduce condiții de concurență cu alte procese ale sistemului de operare, care ar avea nevoie să lucreze cu acel fișier. Algoritmul de lucrul cu fișierele pe care documentația îl recomandă este cel al deschiderii, citirii și scrierii fișierului în mod direct. Erorile se vor trata în funcție de cele apărute în aceste etape.
+Folosirea metodei `fs.access()` înaintea apelării metodelor `fs.open()`, `fs.readFile()` sau `fs.writeFile()` nu este recomandată pentru că introduce condiții de concurență cu alte procese ale sistemului de operare, care ar avea nevoie să lucreze cu acel fișier. Algoritmul de lucrul cu fișierele pe care documentația îl recomandă este cel al deschiderii, citirii și scrierii fișierului în mod direct. Erorile se vor trata în funcție de cele apărute în aceste etape.
 
 #### Model de scriere recomandat
 
@@ -711,39 +712,6 @@ fs.ftruncate(fd, 4, (err) => {
 ### Modificarea timestamp-ului prin `fs.futimes(fd, atime, mtime, callback)`
 
 Această metodă va schimba timestamp-urile fișierului referit prin obiectul file descriptor. Vezi și metoda `fs.utimes()`.
-
-
-## Constantele Sistemului de Fișiere
-
-Contantele sunt exportate ca `fs.constants`. Aceste constante diferă în funcție de sistemul de fișiere.
-
-### File Access Constants
-
-| Constantă | Descriere                                                    |
-| --------- | ------------------------------------------------------------ |
-| `F_OK`    | Indică faptul că fișierul este disponibil procesului care are nevoie de el. Acesta indică că fișierul există, dar nu spune absolut nimic despre permisiuni `rwx`. Este modul din oficiu. |
-| `R_OK`    | Indică faptul că fișierul poate fi citit de procesul care îl apelează. |
-| `W_OK`    | Indică faptul că fișierul poate fi scris de procesul care îl apelează. |
-| `X_OK`    | Indică faptul că fișierul poate fi executat de procesul care îl apelează. Nu are efect pe Windows (același comportament precum cel al lui `F_OK`). |
-
-### File System Flags
-
-Flag-urile disponibile, care pot fi pasate ca string:
-
-- `a` - deschide fișierul pentru a-i fi adăugate date. Fișierul este creat dacă nu există;
-- `ax` - are același comportament precum `a`, dar eșuează dacă acea cale există;
-- `a+` - deschide fișierul pentru citire și appending. Acest fișier este creat dacă nu există;
-- `ax+` - are același comportament precum `a+`, dar eșuează dacă acea cale există;
-- `as` - deschide fișierul pentru a i se adăuga date în mod sincron. Fișierul este creat dacă nu există;
-- `as+` - deschide fișierul pentru a se citi și adăuga date în mod sincron. Fișierul este creat dacă nu există;
-- `r` - deschide fișierul pentru a fi citit. Apare o excepție dacă fișierul nu există;
-- `r+` - deschide fișierul pentru a citi și a scrie în el. Apare o excepție dacă fișierul nu există;
-- `rs+` - deschide fișierul pentru citire și scriere în mod sincron. Instruiește sistemul de operare să treacă peste sistemul de caching local. Este folositor pentru sisteme NFS și are un impact privind performanțele I/O. Se va folosi doar dacă este neapărată nevoie.
-- `w` - deschide fișierul pentru a se putea scrie. Fișierul poate fi creat (dacă nu există) sau poate fi trunchiat (dacă există).
-- `wx` - același comportament precum `w`, dar nu va acționa dacă deja calea există;
-- `w+` - deschide un fișier pentru citire/scriere. Fișierul este creat dacă nu există sau trunchiat dacă există.
-- `wx+` - același comportament precum `w+`, dar eșuează dacă există calea.
-
 
 ## Cazuistică
 

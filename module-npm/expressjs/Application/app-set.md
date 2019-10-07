@@ -1,4 +1,4 @@
-# app.set()
+# Metoda `app.set()`
 
 Această metodă a lui Express este folosită pentru a seta chei care au rolul de a îmbogăți comportamentul. Lucrurile sunt simple. Este o metodă care ia doi parametri. Ceea ce face este să introducă în obiectul generat de `express()` o proprietate căreia îi atribuie valoarea din cel de-al doilea parametru.
 

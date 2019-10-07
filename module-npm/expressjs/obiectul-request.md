@@ -7,3 +7,19 @@ Acest obiect este o variantă îmbunătățită a propriului obiect request (vez
 ## req.app
 
 Această proprietate a obiectului `req` este o referință către obiectul `app`, adică către instanța Express care este utilizată de funcția middleware.
+
+## req.body
+
+Este un obiect generat de middleware-ul `express.urlencoded()` sau `express.json()` a cărui proprietăți sunt culese din valorile existente în `name` pentru fiecare element de form, iar valoarea fiind cea introdusă de utilizator în form.
+
+```javascript
+var express = require('express');
+var app     = express();
+
+app.use(express.json()); // pentru parsing-ul dateleor cu mimetype-ul application/json
+app.use(express.urlencoded({ extended: true })); // pentru parsing-ul dateleor cu mimetype-ul application/x-www-form-urlencoded
+
+app.post('/profile', function (req, res, next) {
+  console.log(req.body);
+  res.json(req.body);
+})

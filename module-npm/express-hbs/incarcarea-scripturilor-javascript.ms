@@ -1,5 +1,7 @@
 # Încărcarea scripturilor
 
+Acesta este exemplul unei rute care folosește Handlebars pentru a compila un template ce va fi trimis clientului.
+
 ```javascript
 // rute.js
 // ========== RESURSE ================

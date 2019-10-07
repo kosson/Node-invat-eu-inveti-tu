@@ -1,4 +1,4 @@
-# Middleware-ul static
+# Middleware-ul `static`
 
 Express oferă posibilitatea de a servi pagini statice dintr-un director creat în acest scop în rădăcina aplicației. Reține faptul că acest middleware este singurul care a fost păstrat intern în Express.
 Detalii suplimentare pot fi găsite la https://www.npmjs.org/package/serve-static.

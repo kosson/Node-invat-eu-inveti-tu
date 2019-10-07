@@ -10,9 +10,9 @@ Pentru a porni, mai întâi trebuie inițiat constructorul `express` prin cerere
 
 ```javascript
 const express = require('express');
-const app = express();
+const app = express(); // generează obiectul aplicație
 app.listen('3000', function () {
-  console.log('Am pronit serverul pe portul 3000')
+  console.log('Am pornit serverul pe portul 3000')
 });
 ```
 
@@ -27,8 +27,28 @@ app.get('/', function (req, res) {
 
 ## Folosirea middleware-ului
 
+Este considerat a fo middleware orice funcție care se interpune între obiectul `request` și formarea obiectului `respose`. Aceste funcții interpuse au acces la obiectele `request`, `response` și `next`.
+
 În Express, middleware-ul este *consumat* cu `use()`. Din tot middleware-ul folosit cu Express, singurul care a fost păstrat intern este cel responsabil de servirea paginilor statice.
 
 ```javascript
 app.use(express.static(__dirname + '/public'));
 ```
+
+Orice middleware (funcție) construit suplimentar, va trebui să se încheie prin apelarea metodei `next()`. Această metodă indică faptul că trebuie returnat controlul următorului middleware.
+
+În combinație cu `use()`, un middleware pasat acestei metode, va fi executat pentru fiecare cerere indiferent de cale. Ce este în `use()` va fi executat înainte de orice altă cale care gestionează cererile, dacă este poziționată înaintea acestor rute.
+
+## Metodele obiectului generat de `express()`
+
+![](img/Cele4Metode.png)
+
+Middleware-urile `express.json()` și `express.urlencoded()` sunt necesare pentru a colecta datele trimise de client și pentru a popula proprietatea `req.body` cu acestea.
+
+### express.json([options])
+
+Acesta este un middleware construit intern în Express. Acest middleware se bazează pe modulul [body-parser](http://expressjs.com/en/resources/middleware/body-parser.html).
+
+## Referințe
+
+- [Anatomy of an HTTP Transaction | Node.js](https://nodejs.org/en/docs/guides/anatomy-of-an-http-transaction/)

@@ -12,7 +12,7 @@ Această variabilă indică în ce regim funcționează procesului NodeJS. Poți
 - `test`,
 - `stage`.
 
-Express folosește `production` și `development`. Restul le poți folosi tu în diferite scenarii personale de setări.
+Express folosește `production` și `development`. Restul le poți folosi și tu în diferite scenarii personale de setări.
 
 Cum setezi această variabilă? Așa cum am învățat deja, utilizând `app.set('env', 'development')` sau prin `process.env.NODE_ENV=development`.
 
@@ -20,7 +20,7 @@ Setarea modului cum va rula Node este importantă pentru cazurile în care ai ne
 
 ## jsonp callback name
 
-Atunci când construiești un serviciu API și vei servi resurse json, există o problemă legată de CORS - cross-origin resource sharing. Browserul nu permite schimbul de astfel de resurse decât din același domeniu cu același port. Alternativa la CORS este JSONP.
+Atunci când construiești un serviciu API și vei servi resurse JSON, există o problemă legată de CORS - cross-origin resource sharing. Browserul nu permite schimbul de astfel de resurse decât din același domeniu cu același port. Alternativa la CORS este JSONP.
 
 ```javascript
 app.set('jsonp callback name', 'cbk');

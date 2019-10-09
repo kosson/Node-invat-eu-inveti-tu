@@ -121,8 +121,7 @@ Urmat de fragmentul de template în care putem accesa datele din `locals` și di
 
 ## Metode
 
-### res.append(field [, value])
-
+### `res.append(field [, value])`
 
 Cu această metodă poți introduce o nouă valoare în câmpul aferent `header`-ului din răspunsul HTTP. Dacă header-ul nu a fost deja setat, această metodă îl va seta cu valoarea specificată. Valoarea celui de-al doilea parametru poate fi string sau un array.
 
@@ -134,9 +133,42 @@ res.append('Set-Cookie', 'user=cineva; Path=/; HttpOnly');
 res.append('Warning', 'O atenționare');
 ```
 
-### res.attachment([filename])
+### `res.attachment([filename])`
 
+### `res.redirect([status,] path)`
 
+Metoda face o redirecționare pe o cale având posibilitatea de a seta și un număr ce indică starea (HTTP status code).
+
+```javascript
+res.redirect('/foo/bar');
+res.redirect('http://example.com');
+res.redirect(301, 'http://example.com');
+res.redirect('../login');
+```
+
+Redirectarea se poate face pe o cale relativă la punctul în care se face redirectarea sau chiar către un alt site.
+
+```javascript
+res.redirect('http://www.kosson.ro');
+```
+
+De exemplu, pentru a merge de la `http://www.kosson.ro/ceva/adanc`, la `http://www.kosson.ro/ceva`, pur și simplu faci redirect la `..`.
+
+```javascript
+res.redirect('..');
+```
+
+O trimitere `back`, va redirecta către cel care a făcut apelul, iar dacă acesta nu există, va redirecta către rădăcină.
+
+```javascript
+res.redirect('back');
+```
+
+În cazul în care este nevoie, redirectarea se poate face pe o cale și apoi să trimiți și date prin query strings.
+
+```javascript
+res.redirect('/inapoi?ceva=10&altceva=unu');
+```
 
 ## Resurse
 

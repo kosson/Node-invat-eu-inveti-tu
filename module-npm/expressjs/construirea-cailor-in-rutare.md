@@ -64,6 +64,50 @@ app.use(['/abcd', '/xyza', /\/lmn|\/pqr/], function (req, res, next) {
 });
 ```
 
+## Parametrii în rute
+
+Parametrii din căi sunt segmente URL folosite pentru a captura valori în funcție de poziția lor din URL. Valorile care sunt extrase din URL sunt introduse în obiectul `req.params`.
+
+```text
+Route path: /users/:userId/books/:bookId
+Request URL: http://localhost:3000/users/34/books/8989
+/* req.params: { "userId": "34", "bookId": "8989"} */
+```
+
+Numele parametrilor din rute pot fi caractere literale: ([A-Za-z0-9_]).
+
+```javascript
+app.get('/users/:userId/books/:bookId', function (req, res) {
+  res.send(req.params)
+})
+```
+
+Liniuța (`-`) și punctul (`.`) sunt interpretate literal, ceea ce permite realizarea de astfel de parametri precum cei de mai jos.
+
+```text
+Route path: /flights/:from-:to
+Request URL: http://localhost:3000/flights/LAX-SFO
+req.params: { "from": "LAX", "to": "SFO" }
+```
+
+Sunt permise și astfel de construcții cu punct.
+
+```text
+Route path: /plantae/:genus.:species
+Request URL: http://localhost:3000/plantae/Prunus.persica
+req.params: { "genus": "Prunus", "species": "persica" }
+```
+
+Pentru a controla mai bine string-urile care se vor potrivi cu un anumit șablon, se poate folosi și o expresie regulată, care va fi menționată între paranteze.
+
+```text
+Route path: /user/:userId(\d+)
+Request URL: http://localhost:3000/user/42
+req.params: {"userId": "42"}
+```
+
+Referitor la expresii regulate, în Express caracterul `*` este interpretat diferit, recomandarea fiind evitarea folosirii acestuia. În locul lui `*` se poate folosi `{0,}`.
+
 ## Referințe
 
 - [Path examples](http://expressjs.com/en/4x/api.html#path-examples)

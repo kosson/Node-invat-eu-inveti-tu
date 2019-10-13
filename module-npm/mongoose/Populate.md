@@ -329,6 +329,10 @@ carti[0].autor; // null
 carti[1].autor; // { nume: 'Ian Fleming' }
 ```
 
+## Popularea unui document
+
+În cazul în care deja au un document și dorești să populezi unele căi ale sale, vei folosi metoda `populate()`, pe care `Document` o pune la dispoziție. Pentru mai multe detalii utile, vezi documentația pentru `Document.prototype.populate()`.
+
 ## Resurse:
 
 - [Mongoose Design Pattern: Store What You Query For | The Code Barbarian](http://thecodebarbarian.com/mongoose-schema-design-pattern-store-what-you-query-for.html)

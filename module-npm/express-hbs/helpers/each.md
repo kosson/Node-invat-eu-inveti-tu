@@ -2,7 +2,7 @@
 
 Atunci când dorești afișarea unor date într-un fragment repetitiv de HTML5, se va folosi `{{#each numeArrayCuObiecte}}`.
 
-```handlebars
+```html
 {{#each resurse}}
     <div class="card" style="width: 18rem;">
         <img class="coperta" src="{{this.coperta}}" class="card-img-top" alt="{{this.title}}">

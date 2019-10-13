@@ -4,6 +4,10 @@ Mongoose este un ORM - Object Relational Mapper. Acest lucru implică faptul că
 
 De fiecare dată când Mongoose face o cerere către baza de date MongoDB, aceasta ajunge la Index-ul lui MongoDB. Indexul este o structură de date care ține minte unde se află datele în documentele organizate în colecții. Pentru fiecare colecție din MongoDB este creat un indice. Din nefericire, MongoDB face un index doar pentru id-urile documentelor. Dacă se face o căutare după numele unui câmp dintr-un document, MongoDB, va trebui să caute document cu document, ceea ce implică timpi mai mari de răspuns al datelor (*full collection scan*). O soluție pentru aceste situații ar fi implementarea unui mecanism de caching (poate Redis).
 
+Mongoose pune la dispoziție proprietăți și constructori prin obiectul prototipal cu ajutor cărora se pot prelucra datele.
+
+![](img/MainAPIs.png)
+
 ## Totul in Mongoose pornește de la o schema
 
 Fiecare schema are drept corespondent o colecție MongoDB.

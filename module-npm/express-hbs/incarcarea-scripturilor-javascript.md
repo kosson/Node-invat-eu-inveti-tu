@@ -3,8 +3,6 @@
 Acesta este exemplul unei rute care folosește Handlebars pentru a compila un template ce va fi trimis clientului.
 
 ```javascript
-// rute.js
-// ========== RESURSE ================
 const resurse = require('./resurse');
 app.get('/resursepublice', resurse);
 
@@ -37,6 +35,14 @@ router.get('/resurse/adauga', function (req, res) {
 module.exports = router;
 ```
 
+Apoi în template-ul Handlebars, introdu secvența care iterează array-ul de scripturi.
+
+```javascript
+{{#each scripts}}
+    <script src="{{script}}"></script>
+{{/each}}
+```
+
 ## Resurse
 
-- https://stackoverflow.com/questions/40386257/add-scripts-in-express-handlebars-from-view
+- [Add scripts in express handlebars](https://stackoverflow.com/questions/40386257/add-scripts-in-express-handlebars-from-view)

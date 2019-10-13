@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.4 (unknown)"
+   sodipodi:docname="PopulateCardinalitati.svg">
+  <defs
+     id="defs2">
+    <marker
+       inkscape:stockid="Arrow1Mend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="marker1689"
+       style="overflow:visible;"
+       inkscape:isstock="true">
+      <path
+         id="path1687"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#ff00ff;stroke-width:1pt;stroke-opacity:1;fill:#ff00ff;fill-opacity:1"
+         transform="scale(0.4) rotate(180) translate(10,0)" />
+    </marker>
+    <marker
+       inkscape:isstock="true"
+       style="overflow:visible;"
+       id="marker1419"
+       refX="0.0"
+       refY="0.0"
+       orient="auto"
+       inkscape:stockid="Arrow1Mend"
+       inkscape:collect="always">
+      <path
+         transform="scale(0.4) rotate(180) translate(10,0)"
+         style="fill-rule:evenodd;stroke:#ff00ff;stroke-width:1pt;stroke-opacity:1;fill:#ff00ff;fill-opacity:1"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         id="path1417" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Mend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Mend"
+       style="overflow:visible;"
+       inkscape:isstock="true"
+       inkscape:collect="always">
+      <path
+         id="path1112"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#ff4500;stroke-width:1pt;stroke-opacity:1;fill:#ff4500;fill-opacity:1"
+         transform="scale(0.4) rotate(180) translate(10,0)" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="336.22475"
+     inkscape:cy="609.96501"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="983"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="opacity:1;vector-effect:none;fill:#ff8c00;fill-opacity:0.03921569;stroke:#008000;stroke-width:0.87137008;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+       id="rect815"
+       width="52.766293"
+       height="33.218983"
+       x="125.2523"
+       y="114.93271" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:1.25;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="67.811035"
+       y="47.250801"
+       id="text819"><tspan
+         sodipodi:role="line"
+         id="tspan817"
+         x="67.811035"
+         y="47.250801"
+         style="stroke-width:0.26458332">const <tspan
+   style="fill:#ff4500"
+   id="tspan823">mongoose</tspan> = require('mongoose');</tspan><tspan
+         sodipodi:role="line"
+         x="67.811035"
+         y="52.542469"
+         style="stroke-width:0.26458332"
+         id="tspan821">const Schema = <tspan
+   style="fill:#ff4500"
+   id="tspan825">mongoose</tspan>.<tspan
+   style="font-weight:bold;fill:#ff00ff"
+   id="tspan827">Schema</tspan>;</tspan></text>
+    <rect
+       style="opacity:1;vector-effect:none;fill:#ff8c00;fill-opacity:0.03921569;stroke:#ff4500;stroke-width:0.94409788;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+       id="rect815-5"
+       width="62.582542"
+       height="32.87899"
+       x="18.714119"
+       y="116.03813" />
+    <g
+       id="g1093"
+       transform="translate(-2.6458334)">
+      <text
+         id="text848"
+         y="71.915176"
+         x="4.7625036"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:1.25;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+         xml:space="preserve"><tspan
+           style="stroke-width:0.26458332"
+           y="71.915176"
+           x="4.7625036"
+           id="tspan846"
+           sodipodi:role="line">const <tspan
+   style="font-weight:bold;fill:#ff4500"
+   id="tspan1902">persoanăSchema</tspan> = <tspan
+   id="tspan1041"
+   style="font-weight:bold;fill:#ff00ff">Schema</tspan>(<tspan
+   id="tspan878"
+   style="font-weight:bold;fill:#008000">{</tspan></tspan><tspan
+           id="tspan876"
+           style="stroke-width:0.26458332"
+           y="77.206841"
+           x="4.7625036"
+           sodipodi:role="line" /><tspan
+           id="tspan850"
+           style="stroke-width:0.26458332"
+           y="82.498512"
+           x="4.7625036"
+           sodipodi:role="line" /><tspan
+           id="tspan852"
+           style="stroke-width:0.26458332"
+           y="87.790176"
+           x="4.7625036"
+           sodipodi:role="line" /><tspan
+           id="tspan854"
+           style="stroke-width:0.26458332"
+           y="93.081841"
+           x="4.7625036"
+           sodipodi:role="line" /><tspan
+           id="tspan856"
+           style="stroke-width:0.26458332"
+           y="98.373505"
+           x="4.7625036"
+           sodipodi:role="line" /><tspan
+           id="tspan858"
+           style="stroke-width:0.26458332"
+           y="103.66518"
+           x="4.7625036"
+           sodipodi:role="line" /><tspan
+           id="tspan860"
+           style="stroke-width:0.26458332"
+           y="108.95684"
+           x="4.7625036"
+           sodipodi:role="line"><tspan
+   id="tspan880"
+   style="font-weight:bold;fill:#008000">}</tspan>);</tspan></text>
+      <text
+         id="text864"
+         y="77.584824"
+         x="7.9752817"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:1.25;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ff4500;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+         xml:space="preserve"><tspan
+           style="fill:#ff4500;stroke-width:0.26458332"
+           y="77.584824"
+           x="7.9752817"
+           id="tspan862"
+           sodipodi:role="line">  _id:         <tspan
+   style="font-weight:bold"
+   id="tspan1405">Schema.Types.ObjectId</tspan>,</tspan><tspan
+           id="tspan866"
+           style="fill:#ff4500;stroke-width:0.26458332"
+           y="82.876488"
+           x="7.9752817"
+           sodipodi:role="line">  nume:    String,</tspan><tspan
+           id="tspan868"
+           style="fill:#ff4500;stroke-width:0.26458332"
+           y="88.168159"
+           x="7.9752817"
+           sodipodi:role="line">  vârstă:   Number,</tspan><tspan
+           id="tspan870"
+           style="fill:#ff4500;stroke-width:0.26458332"
+           y="93.459824"
+           x="7.9752817"
+           sodipodi:role="line">  <tspan
+   style="font-weight:bold;fill:#6a5acd"
+   id="tspan1910">cărți</tspan>: <tspan
+   id="tspan884"
+   style="font-weight:bold">[</tspan></tspan><tspan
+           id="tspan872"
+           style="fill:#ff4500;stroke-width:0.26458332"
+           y="98.751488"
+           x="7.9752817"
+           sodipodi:role="line" /><tspan
+           id="tspan874"
+           style="font-weight:bold;fill:#ff4500;stroke-width:0.26458332"
+           y="104.04315"
+           x="7.9752817"
+           sodipodi:role="line">]</tspan></text>
+      <rect
+         y="94.59375"
+         x="13.644935"
+         height="6.9925594"
+         width="78.997025"
+         id="rect904"
+         style="opacity:1;vector-effect:none;fill:#ffe4e1;fill-opacity:1;stroke:#ffe4e1;stroke-width:0.72100002;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal" />
+      <text
+         id="text888"
+         y="99.129456"
+         x="11.755054"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:1.25;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+         xml:space="preserve"><tspan
+           style="stroke-width:0.26458332"
+           y="99.129456"
+           x="11.755054"
+           id="tspan886"
+           sodipodi:role="line">{ type: Schema.<tspan
+   id="tspan898"
+   style="font-weight:normal;fill:#008000">Types.ObjectId</tspan>, <tspan
+   id="tspan890"
+   style="font-weight:bold;fill:#ff0000">ref</tspan>: '<tspan
+   style="font-weight:bold;fill:#008000"
+   id="tspan2109">Carte</tspan>' }</tspan></text>
+      <path
+         style="fill:none;stroke:#ff4500;stroke-width:0.565;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 193.50313,99.220548 c 0,0 4.48618,-9.090597 -8.81989,-14.967093 C 162.99013,74.672904 74.835468,76.23537 74.835468,76.23537"
+         id="path1407"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="csc" />
+      <path
+         style="fill:none;stroke:#ff00ff;stroke-width:0.565;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker1419)"
+         d="m 129.35845,52.98292 c 0,0 1.64034,8.197969 -8.8199,12.027129 -13.53168,4.953519 -41.667048,-6.164996 -48.643049,-6.681738 -14.432553,-1.069079 -14.432553,9.087164 -14.432553,9.087164"
+         id="path1409"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cssc" />
+      <path
+         style="fill:none;stroke:#ff00ff;stroke-width:0.565;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker1689)"
+         d="m 129.35845,52.98292 c 0,0 -0.26727,7.750817 3.4745,11.492589 3.74177,3.741774 11.22532,3.207237 16.83798,5.612662 5.61266,2.405425 3.47451,14.165284 3.47451,14.165284"
+         id="path1679"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cssc" />
+    </g>
+    <rect
+       style="opacity:1;vector-effect:none;fill:#ffe4e1;fill-opacity:1;stroke:#ffe4e1;stroke-width:0.73244387;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+       id="rect904-5"
+       width="81.658279"
+       height="6.9811158"
+       x="121.96488"
+       y="87.979172" />
+    <rect
+       style="opacity:1;vector-effect:none;fill:#ffe4e1;fill-opacity:1;stroke:#ffe4e1;stroke-width:0.74812657;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+       id="rect904-5-2"
+       width="85.384369"
+       height="6.9654336"
+       x="117.96368"
+       y="98.945068" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:1.25;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="102.20782"
+       y="87.670639"
+       id="text943"><tspan
+         sodipodi:role="line"
+         id="tspan941"
+         x="102.20782"
+         y="87.670639"
+         style="stroke-width:0.26458332">const <tspan
+   id="tspan1927"
+   style="font-weight:bold;fill:#008000">carteSchema</tspan> = <tspan
+   style="font-weight:bold;fill:#ff00ff"
+   id="tspan1045">Schema</tspan>({</tspan><tspan
+         sodipodi:role="line"
+         x="102.20782"
+         y="92.962303"
+         style="stroke-width:0.26458332"
+         id="tspan945">  <tspan
+   style="font-weight:bold;fill:#6a5acd"
+   id="tspan969">autor</tspan>: { type: Schema.Types.ObjectId, <tspan
+   style="font-weight:bold;fill:#ff0000"
+   id="tspan953">ref</tspan>: '<tspan
+   style="font-weight:bold;fill:#ff4500"
+   id="tspan957">Persoană</tspan>' },</tspan><tspan
+         sodipodi:role="line"
+         x="102.20782"
+         y="98.253975"
+         style="stroke-width:0.26458332"
+         id="tspan947">  titlu: String,</tspan><tspan
+         sodipodi:role="line"
+         x="102.20782"
+         y="103.54564"
+         style="stroke-width:0.26458332"
+         id="tspan949">  <tspan
+   style="font-weight:bold;fill:#6a5acd"
+   id="tspan973">fani</tspan>: [{ type: Schema.Types.ObjectId, <tspan
+   style="font-weight:bold;fill:#ff0000"
+   id="tspan961">ref</tspan>: '<tspan
+   style="font-weight:bold;fill:#ff4500"
+   id="tspan965">Persoană</tspan>' }]</tspan><tspan
+         sodipodi:role="line"
+         x="102.20782"
+         y="108.8373"
+         style="stroke-width:0.26458332"
+         id="tspan951">});</tspan></text>
+    <path
+       sodipodi:nodetypes="csc"
+       inkscape:connector-curvature="0"
+       id="path1099"
+       d="m 195.66814,89.331576 c 0,0 6.94901,-12.561669 -52.38483,-13.898017 -17.63532,-0.397192 -71.093677,0.801811 -71.093677,0.801811"
+       style="fill:none;stroke:#ff4500;stroke-width:0.66500002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow1Mend)" />
+    <text
+       id="text2115"
+       y="123.00753"
+       x="131.79074"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:1.25;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       xml:space="preserve"><tspan
+         id="tspan2117"
+         style="stroke-width:0.26458332"
+         y="123.00753"
+         x="131.79074"
+         sodipodi:role="line">const <tspan
+   style="font-weight:bold;fill:#008000"
+   id="tspan2166">Carte</tspan> </tspan><tspan
+         id="tspan2125"
+         style="stroke-width:0.26458332"
+         y="128.29921"
+         x="131.79074"
+         sodipodi:role="line">= </tspan><tspan
+         id="tspan2127"
+         style="stroke-width:0.26458332"
+         y="133.59087"
+         x="131.79074"
+         sodipodi:role="line">mongoose.model(</tspan><tspan
+         id="tspan2129"
+         style="stroke-width:0.26458332"
+         y="138.88254"
+         x="131.79074"
+         sodipodi:role="line">  'Carte', <tspan
+   style="font-weight:bold;fill:#008000"
+   id="tspan2180">carteSchema</tspan></tspan><tspan
+         id="tspan2131"
+         style="stroke-width:0.26458332"
+         y="144.17421"
+         x="131.79074"
+         sodipodi:role="line">);</tspan></text>
+    <text
+       id="text2123"
+       y="123.54208"
+       x="21.67569"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333311px;line-height:1.25;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       xml:space="preserve"><tspan
+         style="stroke-width:0.26458332"
+         y="123.54208"
+         x="21.67569"
+         id="tspan2121"
+         sodipodi:role="line">const <tspan
+   style="font-weight:bold;fill:#ff4500"
+   id="tspan2170">Persoană</tspan> </tspan><tspan
+         style="stroke-width:0.26458332"
+         y="128.83374"
+         x="21.67569"
+         sodipodi:role="line"
+         id="tspan2158">= </tspan><tspan
+         style="stroke-width:0.26458332"
+         y="134.12541"
+         x="21.67569"
+         sodipodi:role="line"
+         id="tspan2160">mongoose.model(</tspan><tspan
+         style="stroke-width:0.26458332"
+         y="139.41707"
+         x="21.67569"
+         sodipodi:role="line"
+         id="tspan2162">  'Persoană', <tspan
+   style="font-weight:bold;fill:#ff4500"
+   id="tspan2178">persoanăSchema</tspan></tspan><tspan
+         style="stroke-width:0.26458332"
+         y="144.70874"
+         x="21.67569"
+         sodipodi:role="line"
+         id="tspan2164">);</tspan></text>
+  </g>
+</svg>

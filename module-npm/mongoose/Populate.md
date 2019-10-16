@@ -293,45 +293,260 @@ Carte.
   });
 ```
 
-## Filtrarea după câmpuri referințe
-
-```javascript
-// Modelele Carte și Autor
-const Carte = mongoose.model('Carte', Schema({
-  titlu: String,
-  autor: {
-    type: mongoose.ObjectId,
-    ref: 'Autor'
-  }
-}));
-const Autor = mongoose.model('Autor', Schema({
-  nume: String
-}));
-
-// Crearea unor cărți și a autorilor lor
-const [autor1, autor2] = await Autor.create([
-  { nume: 'Michael Crichton' },
-  { nume: 'Ian Fleming' }
-]);
-const carti = await Carte.create([
-  { titlu: 'Jurassic Park', autor: autor1._id },
-  { titlu: 'Casino Royale', autor: autor2._id }
-]);
-
-// Populate carti și filtrează după numele autorului
-const carti = Carte.find().populate({
-  path: 'autor',
-  match: { nume: 'Ian Fleming' }
-});
-
-carti.length; // 2
-carti[0].autor; // null
-carti[1].autor; // { nume: 'Ian Fleming' }
-```
-
 ## Popularea unui document
 
 În cazul în care deja au un document și dorești să populezi unele căi ale sale, vei folosi metoda `populate()`, pe care `Document` o pune la dispoziție. Pentru mai multe detalii utile, vezi documentația pentru `Document.prototype.populate()`.
+
+## Popularea unui model
+
+Pentru a face experimentele mai simple, mai întâi vom crea două colecții introducându-le și referințele necesare.
+
+```javascript
+const mongoose = require('mongoose');
+// MONGOOSE - Conectare la MongoDB
+mongoose.set('useCreateIndex', true); // Deprecation warning
+mongoose.connect('mongodb://localhost:27017/lucru', {useNewUrlParser: true, useUnifiedTopology: true}).catch(error => {
+    if (error) throw error;
+});
+
+var Schema = mongoose.Schema;
+
+// 2 models: Book and Author
+var bookSchema = new Schema({
+    title: String,
+    author: {
+        type: mongoose.ObjectId,
+        ref: 'Author'
+    }
+});
+var Book = mongoose.model('Book', bookSchema);
+
+var authorSchema = new Schema({
+    name: String
+});
+
+var Author = mongoose.model('Author', authorSchema);
+
+// Creează cărțile cu autorii lor
+var arr = [
+    { name: 'Michael Crichton' },
+    { name: 'Ian Fleming' }
+];
+
+Author.create(arr, (err, a) => {
+    if (err) throw err;
+    const [author1, author2] = a;
+    var arr2 = [
+        { title: 'Jurassic Park', author: author1._id },
+        { title: 'Casino Royale', author: author2._id }
+    ];
+    Book.create(arr2, (err, b) => {
+        if (err) throw err;
+    });
+});
+```
+
+În momentul în care facem popularea, vom obține un rezultat foarte interesant în sensul în care vor fi aduse și înregistrările `null` precum în cazul unui **LEFT OUTER JOIN**.
+
+```javascript
+Book.find().populate({
+    path: 'author',
+    match: { name: 'Ian Fleming' }
+}).exec(function (err, books) {
+    if (err) return handleError(err);
+    books.forEach((book) => {
+        console.log(book);
+    });
+});
+/*
+{
+  _id: 5da42cba5edea641e4813518,
+  title: 'Jurassic Park',
+  author: null,
+  __v: 0
+}
+{
+  _id: 5da42cba5edea641e4813519,
+  title: 'Casino Royale',
+  author: { _id: 5da42cba5edea641e4813517, name: 'Ian Fleming', __v: 0 },
+  __v: 0
+}
+*/
+```
+
+Este observabil faptul că în afară de înregistrarea care este utilă, mai este adusă una a cărui date de la câmpul `author` este `null`. De fapt, vor fi aduse multe alte documente pe lângă cel de interes pentru că în spate, ceea ce se petrece, este o operațiune în două faze:
+
+1. Mai întâi se face o căutare globală cu
+
+```javascript
+Book.find().populate({})
+```
+
+2. Apoi se filtrează folosind un scenariu de tipul:
+
+```javascript
+Author.find({ _id: { $in: books.map(b => b.author) }, name: 'Ian Fleming' })
+```
+
+Pentru a filtra eficient, totuși calea corectă este de a introduce numele autorului în înregistrarea de carte.
+
+```javascript
+// avem două modele: Book și Author
+const Book = mongoose.model('Book', Schema({
+  title: String,
+  author: {
+    type: mongoose.ObjectId,
+    ref: 'Author'
+  },
+  authorName: String
+}));
+
+const authorSchema = Schema({ name: String });
+// Adaugi middleware pentru a actualiza numele autorului dereferenced în câmpul `authorName` în cazul modificării sale
+authorSchema.pre('save', async function() {
+  if (this.isModified('name')) {
+    await Book.updateMany({ authorId: this.author }, { authorName: this.name });
+  }
+});
+const Author = mongoose.model('Author', authorSchema);
+```
+
+Mecanismul de mai sus implică faptul că un autor va salva numele său ca string în înregistrarea cărții, dar va fi preent și id-ul său ca referință către colecția autorilor. În cazul în care numele se schimbă, se va actualiza și numele ca string pentru operele sale. Această metodă se numește dereferențiere. Acest mecanism este preferabil lui `populate()` pentru că micșorează numărul de atingeri ale bazei prin query-uri complexe. În plus, nu este nevoie de mecanisme de caching.
+
+Regula rapidă este `store what you query for` - înmagazineazp informația după care vei face căutări direct în înregistrare.
+
+## Popularea în adâncime
+
+```javascript
+User.
+  findOne({ name: 'Val' }).
+  populate({
+    path: 'friends',
+    // Get friends of friends - populate the 'friends' array for every friend
+    populate: { path: 'friends' }
+  });
+```
+
+## Referințe dinamice cu `refPath`
+
+În baza valorii unei proprietăți a documentului, Mongoose poate popula cu date din mai multe colecții odată. Exemplul oferit în documentație este cel al unui user care poate comenta fie la un blogpost sau la un produs.
+
+Pentru a aduce informație din mai multe colecții, în câmpul în care în mod obișnuit avem referința, în loc de a hardcoda numele colecției, vom face o redirectare către un câmp suplimentar, în care vor fi menționate colecțiile din care vor putea fi aduse informațiile în funcție de necesități.
+
+```javascript
+const commentSchema = new Schema({
+  body: { type: String, required: true },
+  on: {
+    type: Schema.Types.ObjectId,
+    required: true,
+    // În loc de numele hardcodat din `ref`, `refPath` face ca Mongoose
+    // să se uite la proprietatea `onModel` pentru a găsi modelul corect.
+    refPath: 'onModel'
+  },
+  onModel: {
+    type: String,
+    required: true,
+    enum: ['BlogPost', 'Product']
+  }
+});
+
+const Product  = mongoose.model('Product', new Schema({ name: String }));
+const BlogPost = mongoose.model('BlogPost', new Schema({ title: String }));
+const Comment  = mongoose.model('Comment', commentSchema);
+```
+
+Este important de subliniat că valorile din proprietatea `enum`, în cazul exemplului fiind `['BlogPost', 'Product']` sunt tot atâtea posibilități de a construi documente care să fie trimise în bază. Pe scurt, se realizează un necenism de reutilizare a schemei în funcție de cui va fi atașat comentariul. Dacă este un comentariu pe un produs, se va completa proprietatea `onModel` cu numele colecției căreia comentariul a fost atașat unuia dintre documentele întroduse.
+
+Folosind `refPath`, poți configura ce model poate folosi Mongoose pentru fiecare document în parte.
+
+```javascript
+// creezi două documente noi și în bază sunt trimise două înregistrări noi
+const book = await Product.create({ name: 'The Count of Monte Cristo' });
+const post = await BlogPost.create({ title: 'Top 10 French Novels' });
+
+// creezi două comentarii noi: unul la înregistrarea de Product care tocmai a fost trimisă în bază
+const commentOnBook = await Comment.create({
+  body: 'Great read',
+  on: book._id,
+  onModel: 'Product'
+});
+// și altul la înregistrarea proaspătă `BlogPost`
+const commentOnPost = await Comment.create({
+  body: 'Very informative',
+  on: post._id,
+  onModel: 'BlogPost'
+});
+
+// Mai jos, `populate()` funcționează chiar dacă un comentariu se referă la colecția `Product`,
+// iar celălalt la `BlogPost`
+const comments = await Comment.find().populate('on').sort({ body: 1 });
+comments[0].on.name; // "The Count of Monte Cristo"
+comments[1].on.title; // "Top 10 French Novels"
+```
+
+Alternativa ar fi definirea separată a proprietăților `blogPost` și `product` în `commentSchema` urmată de popularea deodată a acestora.
+
+```javascript
+const commentSchema = new Schema({
+  body: { type: String, required: true },
+  product: {
+    type: Schema.Types.ObjectId,
+    required: true,
+    ref: 'Product'
+  },
+  blogPost: {
+    type: Schema.Types.ObjectId,
+    required: true,
+    ref: 'BlogPost'
+  }
+});
+// The below `populate()` is equivalent to the `refPath` approach, you
+// just need to make sure you `populate()` both `product` and `blogPost`.
+const comments = await Comment.find().
+  populate('product').
+  populate('blogPost').
+  sort({ body: 1 });
+comments[0].product.name; // "The Count of Monte Cristo"
+comments[1].blogPost.title; // "Top 10 French Novels"
+```
+
+În cazul în care sunt definite separat proprietățile `blogPost` și `product`, acest mecanism este acceptabil pentru cazurile simple. În cazul în care lucrurile devin ceva mai complicate, adică schema unui comentariu să fie folosită pentru a crea documente atașate mai multor altor documente ale mai multor colecții (comentarii făcute la alte comentarii), vei avea nevoie de câte un `populate()` pentru fiecare dintre documentele colecțiilor referite. Folosirea lui `refPath` este mai eficientă pentru că ai nevoie de doar două căi și un singur `populate()` indiferent de câte modele atinge `commentSchema`.
+
+## Popularea virtualelor
+
+Popularea bazată pe câmpul `_id` este o soluție, dar pentru a realiza relații mai sofosticate între documente, se vor folosi *virtuals*.
+
+```javascript
+const PersonSchema = new Schema({
+  name: String,
+  band: String
+});
+
+const BandSchema = new Schema({
+  name: String
+});
+BandSchema.virtual('members', {
+  ref: 'Person',        // Modelul care va fi folosit
+  localField: 'name',   // Persoanele găsite vor fi în câmpul specificat la `localField`
+  foreignField: 'band', // câmpul din documentele colecției cu care se leagă `foreignField`
+  // Dacă `justOne` este true, 'members' va fi un singur document, altfel, un array
+  // `justOne` este false din oficiu.
+  justOne: false,
+  options: { sort: { name: -1 }, limit: 5 } // pentru opțiuni, vezi: http://bit.ly/mongoose-query-options
+});
+
+const Person = mongoose.model('Person', PersonSchema);
+const Band = mongoose.model('Band', BandSchema);
+
+/**
+ * Suppose you have 2 bands: "Guns N' Roses" and "Motley Crue"
+ * And 4 people: "Axl Rose" and "Slash" with "Guns N' Roses", and
+ * "Vince Neil" and "Nikki Sixx" with "Motley Crue"
+ */
+Band.find({}).populate('members').exec(function(error, bands) {
+  /* `bands.members` is now an array of instances of `Person` */
+});
+```
 
 ## Resurse:
 

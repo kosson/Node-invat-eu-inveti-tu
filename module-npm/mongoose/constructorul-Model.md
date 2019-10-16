@@ -3,7 +3,7 @@
 Această clasă este folosită pentru a realiza comunicarea cu MongoDB. Instanțierea unui `Model` este numită `Document`.
 
 ```javascript
-// `UserModel` is a "Model", a subclass of `mongoose.Model`.
+// `UserModel` este un "Model", adică o subclasă a lui `mongoose.Model`.
 const UserModel = mongoose.model('User', new Schema({ name: String }));
 
 // You can use a Model to create new documents using `new`:

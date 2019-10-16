@@ -2,7 +2,7 @@
 
 Sunt proprietăți ale unui model care variază în timp așa cum ar putea fi numărul de comentarii al unui articol de blog sau numărul articolelor scrise de un autor.
 
-În loc să creezi proprietăți în model, care să necesite aducerea înregistrării din bază, actualizarea sa și apoi salvarea înapoi, mai bine se va creea un virtual type.
+În loc să creezi proprietăți în model, care să necesite aducerea înregistrării din bază, actualizarea sa și apoi salvarea înapoi, mai bine creezi un virtual type.
 
 Proprietățile virtuale se adaugă ca declarații separate de schemă.
 

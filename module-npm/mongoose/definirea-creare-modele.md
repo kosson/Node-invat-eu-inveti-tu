@@ -60,7 +60,7 @@ ResObi.save().then(() => {
 
 ## Toate obiectele model primesc id
 
-Spre deosebire de alte ORM-uri, Mongoose, atribuie un id fiecărui obiect instanțiat în baza unui model înainte ca acesta să fie trimis către baza de date.
+Spre deosebire de alte ORM-uri, Mongoose, atribuie un **id** fiecărui obiect instanțiat în baza unui model înainte ca acesta să fie trimis către baza de date.
 
 ```javascript
 var înregistrare = new NumeModel({});

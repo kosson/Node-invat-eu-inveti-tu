@@ -23,39 +23,39 @@ Carte.
   exec();
 ```
 
-### [select]
+### `[select]`
 
 Poate fi un `Object` sau un `String`. Reprezintă calea din documentul care va popula un câmp atunci când se va face popularea.
 
-### [model]
+### `[model]`
 
 Este un obiect de tip `Model`. Reprezintă modelul pe care dorești să-l folosești pentru a face popularea. În cazul în care nu este specificat, `populate()` se va uita la valoarea câmpului `ref` din Schema.
 
-### [match]
+### `[match]`
 
 Este un `Object` care indică condițiile la care trebuie să se supună documentele care vor fi găsite.
 
-### [options]
+### `[options]`
 
 Este un `Object` care indică criterii de sortare a documentelor care s-au potrivit criteriilor de căutare.
 
-#### [options.path=null]
+#### `[options.path=null]`
 
 Este un `String` care indică calea documentului care va primi rezultatele lui `populate()`.
 
-#### [options.retainNullValues=false]
+#### `[options.retainNullValues=false]`
 
 Din oficiu, Mongoose elimină înregistrările care au valoarea `null` sau `undefined` din array-urile în care s-a făcut popularea. Această opțiune se va seta la `true` atunci când se dorește includerea înregistrărilor cu valoarea `null` sau `undefined`.
 
-#### [options.getters=false]
+#### `[options.getters=false]`
 
 Este o valoare `Boolean` care în cazul `true`, va apela orice getteri au fost setați pe câmpul care trebuie să fie populat - `localField`. Din oficiu, Mongoose obține valoarea neprelucrată pentru `localField`. De exemplu, dacă vrei să folosețti niște [getteri așa cum sunt cei definiți în opțiunile tipului de schemă](https://mongoosejs.com/docs/schematypes.html#schematype-options), se va seta opțiune cu valoarea `true`.
 
-#### [options.clone=false]
+#### `[options.clone=false]`
 
 Când lansezi o comandă precum `Carte.find().populate('autor')`, toate cărțile care au același autor vor folosi aceeași înregistrare adusă de populate; același document `autor`. Pentru a beneficia de acest mecanism de copiere, se va seta opțiunea la `true`.
 
-#### [options.match=null]
+#### `[options.match=null]`
 
 Valoarea lui `match` poate fi un `Obiect` sau un `Function`. Acesta este un filtru suplimentar care influiențează rezultatele aduse de interogarea populate. Poate fi un obiect de tip filtru ce conține [sintaxă MongoDB](https://docs.mongodb.com/manual/tutorial/query-documents/) sau o funcție care returnează un obiect de filtrare.
 

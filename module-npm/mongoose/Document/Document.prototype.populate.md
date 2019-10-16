@@ -1,6 +1,8 @@
 # Document.prototype.populate()
 
-Metoda populează cu documentele referite în câmpuri și execută callback-ul atunci când operațiunea se încheie. În cazul în care dorești să folosești promisiuni, vei folosi metoda `execPopulate()`. Metoda returnează un `Document`, care este legat la `this`.
+Metoda populează cu documentele referite în câmpuri și execută callback-ul atunci când operațiunea se încheie. În cazul în care dorești să folosești promisiuni, vei folosi metoda `execPopulate()`.
+
+Metoda returnează un obiect tip `Document`, care este legat la `this`.
 
 ```javascript
 doc

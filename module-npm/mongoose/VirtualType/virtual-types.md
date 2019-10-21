@@ -2,6 +2,13 @@
 
 Sunt proprietăți ale unui model care variază în timp așa cum ar putea fi numărul de comentarii al unui articol de blog sau numărul articolelor scrise de un autor.
 
+Atributele unui document virtual se vor seta prin metoda `virtual()` căreia îi vor fi pasate câmpurile documentului virtual (`Schema.prototype.virtual`).
+
+```javascript
+const fullname = schema.virtual('fullname');
+fullname instanceof mongoose.VirtualType // true
+```
+
 În loc să creezi proprietăți în model, care să necesite aducerea înregistrării din bază, actualizarea sa și apoi salvarea înapoi, mai bine creezi un virtual type.
 
 Proprietățile virtuale se adaugă ca declarații separate de schemă.

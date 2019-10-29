@@ -1,6 +1,6 @@
-# Introducere Document
+# Introducere `Document`
 
-Documentele Mongoose sunt o reprezentare a documentelor din MongoDB într-o relație directă unu la unu.
+Documentele Mongoose sunt o reprezentare a înregistrărilor din colecțiile MongoDB într-o relație directă unu-la-unu. Adică un document Mongoose oglindește o înregistrare dintr-o colecție în MongoDB.
 
 Fiecare document Mongoose este o instanță a modelului său. `Document` și `Model` sunt două clase distincte în Mongoose. Clasa `Model` este o subclasă a lui `Document`. În momentul în care folosești contructorul `Model`, de fapt construiești un document. În Mongoose, un document este de fapt o instanță a unui model.
 
@@ -38,9 +38,10 @@ await doc.save();
 ```
 
 În cazul în care documentul a fost șters din MongoDB între timp, Mongoose va da o eroare `DocumentNotFoundError`.
-Apelând funcția `save()` este cel mai eficient mecanism de a actualiza un document în bază pentru că beneficiezi și de faptul că se face validare, dar și de middleware-ul setat. Înainte de salvarea oricărui document, în spate se apelează metoda `validate()`.
 
-Totuși, Mongoose oferă metodele `update()`, `updateMany()` și `findOneAndUpdate()` pentru actualizarea documentelor, dar acestea nu se folosesc de `save` în subsidiar.
+Apelând funcția `save()` este cel mai eficient mecanism de a actualiza un document în bază, pentru că beneficiezi și de faptul că se face validare, dar și de middleware-ul setat. Înainte de salvarea oricărui document, în spate se apelează metoda `validate()`.
+
+Totuși, Mongoose oferă metodele `update()`, `updateMany()` și `findOneAndUpdate()` pentru actualizarea documentelor, dar acestea nu se folosesc de `save()` în subsidiar.
 
 ## Validarea documentelor
 

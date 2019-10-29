@@ -96,3 +96,17 @@ var p = Book.find().populate({
 ]
 */
 ```
+
+## Populare și salvare
+
+În exemplul de mai jos avem un document care mai întâi va fi populat cu datele corespondente.
+
+```javascript
+var pResEd = resursaEducationala.populate('competenteS').execPopulate(); // returnează o promisiune
+pResEd.then(res => {
+    res.save();
+    socket.emit('red', res);
+}).catch(err => {
+    if (err) throw err;
+});
+```

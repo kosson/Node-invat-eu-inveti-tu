@@ -2,7 +2,7 @@
 
 Operațiunile asincrone precum `save()`, returnează promisiuni.
 
-Query-urile Mongoose nu sunt promisiuni. Acestea au o funcție `then()` de conveniență, care poate fi apelată atunci este într-un lanț de promisiuni sau este folosit async/await.
+Query-urile Mongoose **nu sunt promisiuni**. Acestea au o funcție `then()` de conveniență, care poate fi apelată atunci este într-un lanț de promisiuni sau este folosit async/await.
 
 ```javascript
 Band.findOne({name: "Guns N' Roses"}).then(function(doc) {
@@ -16,12 +16,12 @@ Pentru a lucra cu o promisiune, se va folosi `exec()`.
 var query = Band.findOne({name: "Guns N' Roses"});
 assert.ok(!(query instanceof Promise));
 
-// A query is not a fully-fledged promise, but it does have a `.then()`.
+// Un query nu este o promisiune chiar dacă are un `.then()`.
 query.then(function (doc) {
   // use doc
 });
 
-// `.exec()` gives you a fully-fledged promise
+// `.exec()` returnează o promisiune completă
 var promise = query.exec();
 assert.ok(promise instanceof Promise);
 

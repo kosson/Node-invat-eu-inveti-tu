@@ -53,7 +53,7 @@ var rezultat = await queryPers;
 // în cazul în care dorești să ai acces la rezultat.
 ```
 
-Pentru a face interceptările necesare, este sugerată rescrierea funcției exec.
+Pentru a face interceptările necesare, este sugerată rescrierea funcției `exec()`.
 
 ```javascript
 queryPers.exec(function (err, rezultat) {
@@ -132,7 +132,7 @@ mongoose.Query.prototype.exec = async function () {
 };
 ```
 
-Funcția `exec` returnează instanțe ale modelelor de mongoose - documente mongoose. Aceste nu sunt obiecte care pot fi exploatate direct. Servesc doar lui `mongoose`.
+Metoda `exec()` returnează instanțe ale modelelor de mongoose, adică documente mongoose. Aceste nu sunt obiecte care pot fi exploatate direct. Servesc doar lui `mongoose`.
 
 În modelul prezentat mai sus, toate cererile către MongoDB, la întoarcere vor fi cached, fără excepție. Totuși, în practică cel mai bine este să avem posibilitatea de a face cache doar pe anumite rute.
 

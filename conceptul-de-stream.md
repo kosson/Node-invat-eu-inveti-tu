@@ -1,8 +1,8 @@
 # Un concept central: stream-uri
 
-Streamurile sunt date care *curg* ca urmare a unui eveniment `EventEmitter` între diferitele părți funcționale ale unui program.
+Streamurile sunt date care *curg* ca urmare a unui eveniment `EventEmitter` între diferitele părți funcționale ale unui program. Streamurile sunt metode de a trata datele citindu-le dintr-o sursă și scriindu-le în alta într-o manieră secvențială, fragment după fragment. Avantajul tratării datelor prin folosirea stream-urilor este superioară citirii și introducerii în memorie a unui întreg fișier. În cazul fișierelor de mari citirea și introducerea lor în memorie este nefezabilă din punct de vedere al rezurselor de memorie. Astfel, stream-urile oferă metoda optimă. Ca să avem o dimensiune a limitării, un fișier CSV sau JSON poate ocupa o fereastră limitată de memorie de 536MB (limitare impusă de motorul V8 pe care NodeJS îl folosește). Ce se întâmplă atunci când dorești să lucrezi cu fișiere de dimensiuni mai mari, de ordinul gigabiților, de exemplu.
 
-Subiectul `stream`-urilor este legat intim de cel al funcționării sistemelor de operare UNIX. Una din cele mai apreciate facilități ale acestui sistem de operare este capacitatea de a folosi programe mai mici pentru a dezvolta programe mai elaborate. Dar așa cum rândurile de cărămizi sunt legate unele de celelalte prin mortar, așa există și în UNIX un liant foarte puternic numit `pipes`. În română ar fi tradus ca `racorduri`. În folosirea de zi cu zi, aceste racorduri sunt identificabile prin utilizarea caracterului *pipe* <code>&#124;</code>. Pentru a face utiliza racordurile în Node.js, vom folosi `.pipe()`. Datele de input ale unui program sau componentă software sunt datele de output ale alteia. În UNIX, două sau mai multe programe sunt conectate prin caracterul `|`, care în limba engleză se numește `pipe`, iar în română *țeavă*.
+Subiectul `stream`-urilor este legat intim de cel al funcționării sistemelor de operare UNIX. Una din cele mai apreciate facilități ale acestui sistem de operare este capacitatea de a folosi programe mai mici pentru a dezvolta programe mai elaborate. Dar așa cum rândurile de cărămizi sunt legate unele de celelalte prin mortar, așa există și în UNIX un liant foarte puternic numit `pipes`. În română ar fi tradus ca `racorduri`. În folosirea de zi cu zi, aceste racorduri sunt identificabile prin utilizarea caracterului *pipe* <code>&#124;</code>. Pentru a face utiliza racordurile în Node.js, vom folosi `.pipe()`. Datele de input ale unui program sau componentă software sunt datele de output ale alteia. În UNIX, două sau mai multe programe sunt conectate prin caracterul `|`, care în limba engleză se numește `pipe`, iar în română *tub*.
 
 Chiar dacă nu suntem programatori de UNIX, vom explora un exemplu de funcționare a mai multor progrămele mici folosite în mod curent într-un terminal, de data aceasta de GNU/Linux.
 
@@ -22,13 +22,28 @@ Douglas McIlroy, unul dintre autorii UNIX-ului, a scris o notă în care surprin
 
 Stream-urile lucrează cu fragmente - **chunks**. Acestea sunt trimise între două puncte de comunicare. Streamurile sunt emitere de evenimente. Acest lucru înseamnă că se poate gestiona lucrul cu acestea atașându-se callback-uri pe diferitele evenimente.
 
-## Lucrul cu streamurile
+## Tipuri de stream-uri
+
+În cazul lucrului cu fișierele de mari dimensiuni, trebuie să privim întregul ca un set de fragmente, care pot fi prelucrate. Uneori, în lucrările de specialitate veți găsri aceste fragmente numite ferestre (*windows*). În NodeJS, acestea sunt numite *fragmente* (*chunks* în lb. engleză).
+
+NodeJS oferă patru tipuri de stream-uri care pot fi folosite pentru a lucra cu datele:
+
+- `Readable` sunt stream-uri care pot citi date;
+- `Writable`, fiind stream-ul care permite scrierea datelor;
+- `Duplex`, fiind stream-uri care sunt `Readable` și `Writable` în același timp;
+- `Transform`, fiind stream-uri care pot modifica datele pe măsură ce acestea sunt citite și scrise.
 
 NodeJS pune la dispoziție două module care fac posibil lucrul cu stream-uri. Primul este modulul `fs` cu ajutorul căruia putem crea stream-uri care citesc date (`createReadStream`) și stream-uri care scriu date (`createWriteStream`). Cel de-al doilea modul este `stream`, care oferă trei metode de lucru: `stream.Readable`, `stream.Writable` și `stream.Transform`.
 
-Stream-urile își dovedesc utilitatea în cazul în care se lucrează cu fișiere de mari dimensiuni, care nu pot fi încărcate în memorie în întregime. Ca să avem o dimensiune a limitării, un fișier CSV sau JSON, care sunt text simplu, pot ocupa o fereastră limitată de memorie de 536MB (limitare impusă de motorul V8 pe care NodeJS îl folosește). Ce se întâmplă atunci când dorești să lucrezi cu fișiere de dimensiuni mai mari, de ordinul gigabiților, de exemplu.
+Un exemplu concret de utilizare a stream-urilor este cazul serverelor HTTP, care în cazul gestionării rutelor pe care vin cererile, vom avea o funcție callback, care pune la dispoziție prin argumentele sale un stream *readable*, numit `request` și unul *writable* numit `response`.
 
-În cazul lucrului cu fișierele de mari dimensiuni, trebuie să privim întregul ca un set de fragmente, care pot fi prelucrate. Uneori, în lucrările de specialitate veți găsri aceste fragmente numite ferestre (*windows*). În NodeJS, acestea sunt numite *bucăți* (*chunks* în lb. engleză).
+```javascript
+app.get('/resursa', function (req, res) {
+  // fă ceva cu datele din request (req.body, req.params, etc).
+  res.status(200).send('Îți trimit acest text!');
+  // trimiți date clientului prin folosirea stream-ului re
+});
+```
 
 ## Stream-urile se bazează pe evenimente
 
@@ -157,3 +172,8 @@ server.listen(3000);
 ```
 
 Ceea ce trebuie să înțelegi este faptul că `req` și `res` sunt niște obiecte, care au ca principiu de funcționare intern stream-urile. În cazul nostru, am creat un stream care citește (*Read*) stream-ul și apoi, l-am *racordat* folosind metoda `pipe()` la obiectul răspuns. Metoda `.pipe()` va avea grijă de evenimentele `date` și `end` care apar în momentul în care folosești `fs.createReadStream(__dirname + '/fisier.json');`.
+
+## Resurse
+
+- [Easier Node.js streams via async iteration | Dr. Axel Rauschmayer](https://2ality.com/2019/11/nodejs-streams-async-iteration.html)
+- [Bash | Pipelines](https://www.gnu.org/software/bash/manual/bash.html#Pipelines)

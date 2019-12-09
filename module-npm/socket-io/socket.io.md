@@ -635,7 +635,7 @@ const nameSpSeparat = io.of('/separat');
 nameSpSeparat.to('spatiul01').emit('salutare', date);
 ```
 
-#### 7.3.4. Camera proprie și conectare socket la socket
+#### 7.3.4. Camera proprie pe baza id-ului și conectare socket la socket
 
 Te poți conecta la propria cameră pentru că id-ul de socket poate fi folosit drept identificator.
 
@@ -1513,6 +1513,7 @@ Pentru a face logging doar pentru socket.io, vei proceda la un `export DEBUG=soc
 
 ## Referințe
 
+- [The WebSocket Protocol | RFC 6455](https://tools.ietf.org/html/rfc6455)
 - [WebSockets - A Conceptual Deep-Dive](https://www.ably.io/concepts/websockets)
 - [Long Polling - Concepts and Considerations](https://www.ably.io/concepts/long-polling)
 - [Known Issues and Best Practices for the Use of Long Polling and Streaming in Bidirectional HTTP: draft-loreto-http-bidirectional-07](https://tools.ietf.org/id/draft-loreto-http-bidirectional-07.html)

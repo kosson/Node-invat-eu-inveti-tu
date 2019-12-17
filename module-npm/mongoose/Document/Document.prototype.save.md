@@ -14,7 +14,7 @@ Metoda poate primi opțional un `Object` care menționează opțiuni `[options]`
 
 ### `[fn]`
 
-Un al doilea parametru posibile este un callback.
+Un al doilea parametru posibil este un callback.
 
 ```javascript
 documentul.save(function (err, document) {

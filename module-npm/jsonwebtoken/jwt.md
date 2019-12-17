@@ -1,4 +1,4 @@
-# Modulul jwt
+# Modulul `jwt`
 
 Pentru a folosi JSON Web Tokens, mai întâi trebuie cerut modulul specializat `jsonwebtoken` (https://www.npmjs.com/package/jsonwebtoken).
 
@@ -6,7 +6,7 @@ JSON Web Tokens sunt un standard guvernat de RFC 7919 (https://tools.ietf.org/ht
 
 Acest mecanism este utilizat pentru a autentifica cererile lansate unui serviciu RESTful. Avantajul pe care îl oferă este cel legat de faptul că nu este necesară ținerea minte a vreunei stări. Fiecare cerere care ajunge la API, va avea datele de autentificare, care vor fi decodate și comparate cu un contract elaborat anterior între client și server. Dacă verificarea este cu succes, atunci cererea va fi validă.
 
-### Construirea jotul-ului
+### Construirea `jwt`-ului
 
 Se pun în headerul cererii trei fragmente alfanumerice codate BASE64 delimitate prin puncte.
 
@@ -29,8 +29,8 @@ Cel de-al doilea segment reprezintă o parte constantă a tuturor cererilor care
 
 ```javascript
 {
-"name": "Ion Dică",
-"isAdmin": true
+  "name": "Ion Dică",
+  "isAdmin": true
 }
 ```
 
@@ -40,7 +40,7 @@ Cel de-al doilea segment reprezintă o parte constantă a tuturor cererilor care
 
 Cel de-al treilea segment este constituit din semnătura digitală care s-a generat folosindu-se algoritmul precizat în primul segment.
 
-Cele trei segmente arată similar următorului jot: `eyJhbGciOiJIUzI1NiIsInR5cCIAdkpXVCJ9.eyJlbWFpbCI6Imtvc3NvbkBnbWFpbC5jb20iLCJ1c2VySWQiOiI1YWVL0TU4M2ZmNTNhOTU2MTQ1Y2EwNDgiLCJpYXQiOjE1NDAzOTEyOTYsImV4cCI6MTU0MDQxMjg5Nn0.2aeYz6p8T09jJLW2ydwJxJacb62v5ViF334WZLUXwBE`
+Cele trei segmente arată similar următorului `jwt: `eyJhbGciOiJIUzI1NiIsInR5cCIAdkpXVCJ9.eyJlbWFpbCI6Imtvc3NvbkBnbWFpbC5jb20iLCJ1c2VySWQiOiI1YWVL0TU4M2ZmNTNhOTU2MTQ1Y2EwNDgiLCJpYXQiOjE1NDAzOTEyOTYsImV4cCI6MTU0MDQxMjg5Nn0.2aeYz6p8T09jJLW2ydwJxJacb62v5ViF334WZLUXwBE`
 
 ## Procesul de autentificare
 

@@ -8,7 +8,7 @@ Autentificarea se poate face în două moduri: folosind cookie-uri sau folosind 
 
 ## Îmbinarea cu Express
 
-Începând cu versiunea 3 a framework-ului, aplicațiile Express s-au transformat în niște funcții care gestionează apeluri. Acestea pot fi pasate unor instanțe `http` (din Node) sau `httpServer`. Pentru ca socket.io să funcționeze, trebuie să pasezi serverul creat instanței de socket.io. Fii foarte atent, ca metoda `listen()` să o ceri pe server, nu pe aplicația express.
+Începând cu versiunea 3 a framework-ului, aplicațiile Express s-au transformat în niște funcții care gestionează apeluri. Acestea pot fi pasate unor instanțe `http` (din Node) sau `httpServer`. Pentru ca socket.io să funcționeze, trebuie să pasezi serverul creat instanței de socket.io. Fii foarte atent, ca metoda `listen()` să o ceri pe server, nu pe aplicația Express.
 
 ```javascript
 var app = require('express')();

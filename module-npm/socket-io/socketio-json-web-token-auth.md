@@ -67,3 +67,7 @@ Scenariu permite trimiterea unui token după momentul conectării la server. Se 
 - [JSON Web Token (JWT) — The right way of implementing, with Node.js](https://medium.com/@siddharthac6/json-web-token-jwt-the-right-way-of-implementing-with-node-js-65b8915d550e)
 - [Enforcing a Single Web Socket Connection per User with Node.js, Socket.IO, and Redis](https://hackernoon.com/enforcing-a-single-web-socket-connection-per-user-with-node-js-socket-io-and-redis-65f9eb57f66a)
 - [10.5.  WebSocket Client Authentication | The WebSocket Protocol](https://tools.ietf.org/html/rfc6455#section-10.5)
+- [Token-based Authentication with Socket.IO](https://auth0.com/blog/auth-with-socket-io/)
+- [Get Started with JSON Web Tokens](https://auth0.com/learn/json-web-tokens/)
+- https://hacks.mozilla.org/2012/03/browserquest/
+- [Implementing JWT based authentication in Node.js, Soham Kamani](https://www.sohamkamani.com/blog/javascript/2019-03-29-node-jwt-authentication/)

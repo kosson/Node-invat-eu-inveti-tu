@@ -2,7 +2,7 @@
 
 ## Implementare paginare
 
-Modificatorii `skip()` și `limit()` permit implementarea paginației.
+Modificatorii `skip()` și `limit()` permit implementarea paginări rezultatelor.
 
 Folosind `skip()` declari limita de la care să porneasscă selecția. Modificatorul `limit()` declară numărul de înregistrări care să fie aduse din set. Pentru a avea o ordine în setul adus din bază, se poate adăuga un modificator `sort()`. Pentru `sort()`, o valoare atribuită câmpului după care se face sortarea, de `1` înseamnă o sortare ascendentă. O valoare `-1` este o sortare descendentă.
 

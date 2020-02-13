@@ -33,8 +33,8 @@ const carteSchema = Schema({
   },
   titlu: String,
   fani: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Persoană'
+    persoana: {type: Schema.Types.ObjectId, ref: 'Persoană'},
+    impresie: String
   }]
 });
 
@@ -76,30 +76,44 @@ autor.save(function (err) {
 });
 ```
 
-Ceea ce am realizat este salvarea unui autor cu o primă operă/carte a sa dintr-o-o singură mișcare.
+Ceea ce am realizat este salvarea unui autor cu o primă operă/carte a sa dintr-o singură mișcare.
 
 ## Popularea unui singur câmp cu date
 
-Scenariul este următorul: ai nevoie să afișezi datele unei cărți. O carte poate fi scrisă de o singură persoană sau de mai multe. Pentru că anterior am introdus un singur autor cu o singură operă.
-
-Să inițiem popularea câmpului `autor` cu datele ce reprezintă cărțile sale. Pentru că anterior am introdus doar una, datele acesteia vor popula câmpul `autor` al înregistrării de tip carte pentru un titlu ales.
+Scenariul este următorul: ai nevoie să afișezi datele unei cărți. O carte poate fi scrisă de o singură persoană sau de mai multe. Anterior am introdus un singur autor cu o singură operă. Să inițiem popularea câmpului `autor` cu datele ce reprezintă cărțile sale. Pentru că anterior am introdus doar una, datele acesteia vor popula câmpul `autor` al înregistrării de tip carte pentru un titlu ales.
 
 ```javascript
 Carte.
-  findOne({ titlu: 'Casino Royale' }).
-  populate('autor').
-  exec(function (err, carte) {
-    if (err) throw err;
-    console.log('Autorul este %s', carte.autor.nume);
-    // afișează "Autorul este Ian Fleming"
+  findOne({ titlu: 'Casino Royale' })
+    .populate('autor')
+    .exec(function (err, carte) {
+      if (err) throw err;
+      console.log('Autorul este %s', carte.autor.nume);
+      // afișează "Autorul este Ian Fleming"
+    });
+```
+
+În baza de date, în câmpul `autor` avem un array de id-uri ale autorilor care au scris opera. În momentul în care facem interogarea, în cazul nostru o carte, acele id-uri ale autorilor vor fi înlocuite cu documentele care sunt tot atâția autori. În exemplul de mai sus a fost folosită metoda `exec()` pentru a afișa punctual datele.
+
+În callback-ul lui `exec`, dacă o carte are mai mulți autori, va fi disponibil un array `carte.autor` care va cuprinde toți autorii (adică documente `Persoană`). În cazul în care avem un singur autor, obiectul său va fi disponibil pe calea `carte.autor`.
+
+În cazul modelului explorat, am putea popula și câmpul `fani` pentru că este posibilă imbricarea apelurilor `populate()`.
+
+```javascript
+Carte.findOne({titlu: 'Casino Royale'})
+  .populate({
+    path: 'autor',
+    populate: {
+      path: 'fani.persoana'
+    }
+  })
+  .exec(function (error, carte) {
+    if (error) throw error;
+    // Aici ai la dispoziție carte.autor.fani.persona
   });
 ```
 
-În baza de date, în câmpul `autor` avem un array de id-uri ale autorilor care au scris opera. În momentul în care facem interogarea, în cazul nostru o carte, acele id-uri ale autorilor vor fi înlocuite cu documentele ce reprezintă fiecare dintre autori.
-
-În exemplul de mai sus a fost folosită metoda `exec()` pentru a afișa punctual datele.
-
-## Popularea a mai multor câmpuri deodată
+## Popularea câtorva câmpuri deodată
 
 Pentru a popula mai multe câmpuri deodată, se va apela metoda `populate` pentru fiecare din câmpuri.
 
@@ -119,40 +133,28 @@ Carte.
 
 ```javascript
 Carte.
-  findOne({ titlu: 'Casino Royale' }).
-  populate({path: 'fani', select: 'nume').
-  populate({path: 'fani', select: 'vârstă').
-  exec(function (err, carte) {
-    if (err) throw err;
-    console.log('Fanii sunt %s', carte.fani.nume);
-    // afișează toate întregistrările de persoane pentru care câmpul fani are id-uri.
-  });
+  findOne({ titlu: 'Casino Royale' })
+    .populate({path: 'fani', select: 'nume'})
+    .populate({path: 'fani', select: 'vârstă'})
+    .exec(function (err, carte) {
+      if (err) throw err;
+      console.log('Fanii sunt %s', carte.fani.nume);
+      // afișează toate întregistrările de persoane pentru care câmpul fani are id-uri.
+    });
   // Fiind echivalent cu:
   Carte.find().populate({ path: 'fani', select: 'vârstă' });
 ```
 
 ## Setarea explicită a câmpurilor pentru populare
 
-O proprietate poate fi populată manual prin setarea sa unui document. Documentul trebuie să fie o instanță a modelului la care proprietatea `ref` se referă.
+O proprietate poate fi populată manual prin setarea sa cu un document. Documentul trebuie să fie o instanță a modelului la care proprietatea `ref` menționată în model se referă. În cazul în care un anumit scenariu o cere, se poate atribui explicit valoarea câmpului ce va fi populat.
 
 ```javascript
-Carte.findOne({ titlu: 'Casino Royale' }, function(error, carte) {
+Carte.findOne({ titlu: 'Casino Royale' }, function (error, carte) {
   if (error) {
     console.log(error);
   }
   carte.autor = autor;
-  console.log(carte.autor.nume); // afișează "Ian Fleming"
-});
-```
-
-## Setarea explicită a câmpului populat
-
-În cazul în care un anumit scenariu o cere, se poate atribui explicit valoarea câmpului ce va fi populat.
-
-```javascript
-Carte.findOne({titlui: "Casino Royale"}, function (err, carte) {
-  if (err) throw err;
-  carte.autor = autor; // atribuirea într-o manieră explicită a valorii
   console.log(carte.autor.nume); // afișează "Ian Fleming"
 });
 ```
@@ -172,7 +174,7 @@ carte.autor; // `null`
 
 ## Selectarea câtorva câmpuri, nu a întregii întregistrări
 
-În cazul în care dorești să aduci doar câteva câmpuri din întreaga întregistrare care va popula câmpul, acestea pot fi menționate ca argumente metodei `populate()`.
+În cazul în care dorești să aduci doar câteva câmpuri din întreaga întregistrare care vor popula câmpul, acestea pot fi menționate ca argumente metodei `populate()`.
 
 ```javascript
 Carte.
@@ -194,11 +196,10 @@ Carte.
 În cazul în care dorești popularea mai multor căi, acest lucru este posibil:
 
 ```javascript
-Carte.
-  find({ titlu: 'Casino Royale' }).
-  populate('fans').
-  populate('author').
-  exec();
+Carte.find({ titlu: 'Casino Royale' })
+  .populate('fans')
+  .populate('author')
+  .exec();
 ```
 
 ## Popularea cu anumite condiții - `match`
@@ -206,9 +207,8 @@ Carte.
 Uneori dorești să faci o alegere a unor date cu care se va face popularea în funcție de anumite criterii. În exemplul de mai jos, vom aduce toate cărțile ale căror fani au vârsta peste 21 de ani.
 
 ```javascript
-Carte.
-  find().
-  populate({
+Carte.find({ titlu: 'Casino Royale' })
+  .populate({
     path: 'fani',
     match: { vârstă: { $gte: 18 }},
     // Excluzi `_id` în mod explicit, vezi http://bit.ly/2aEfTdB
@@ -222,15 +222,18 @@ Carte.
 
 Să presupunem că o anumită resursă are mai multe comentarii. Unele dintre acestea sunt șterse de administrator. Pentru a filtra documentele comentariu care au setat un boolean ce indică ștergerea, ne putem ajuta de un posibil model, care folosește o zonă de documente găsite ca tampon de date implicând `virtual()`.
 
+Un virtual este un câmp virtual al unei scheme Mongoose care nu va fi salvat în baza de date.
+
 ```javascript
 // Creează schema resursei
 const resursaSchema = new mongoose.Schema({
   titlu:   String,
   autorId: Number
 });
+
 // creează virtualul
 resursaSchema.virtual('comentarii', {
-  ref:        'Comentariis',
+  ref:        'Comentariu',
   localField: '_id',
   foreignField: 'resursaId',
   // În momentul în care populezi comentariile, exclude-le pe cele care au fost șterse`; sters este setat la `true`
@@ -239,10 +242,13 @@ resursaSchema.virtual('comentarii', {
 
 const comentariuSchema = new mongoose.Schema({
   _id:       Number,
-  resursaId: mongoose.ObjectId,
+  resursaId: {type: mongoose.schema.Types.ObjectId, ref: 'Resursa'},
   authrId:   Number,
   sters:     Boolean
 });
+
+const Resursa = mongoose.model('Resursa', resursaSchema);
+const Comentariu = mongoose.model('Comentariu', comentariuSchema);
 ```
 
 În materialul dedicat metodei `match()` este detaliat modul în care poți combina `populate` cu `match` pentru a aduce rezultate.
@@ -413,7 +419,7 @@ const Author = mongoose.model('Author', authorSchema);
 
 Mecanismul de mai sus implică faptul că un autor va salva numele său ca string în înregistrarea cărții, dar va fi preent și id-ul său ca referință către colecția autorilor. În cazul în care numele se schimbă, se va actualiza și numele ca string pentru operele sale. Această metodă se numește dereferențiere. Acest mecanism este preferabil lui `populate()` pentru că micșorează numărul de atingeri ale bazei prin query-uri complexe. În plus, nu este nevoie de mecanisme de caching.
 
-Regula rapidă este `store what you query for` - înmagazineazp informația după care vei face căutări direct în înregistrare.
+Regula rapidă este `store what you query for` - înmagazinează informația după care vei face căutări direct în înregistrare.
 
 ## Popularea în adâncime
 
@@ -455,7 +461,7 @@ const BlogPost = mongoose.model('BlogPost', new Schema({ title: String }));
 const Comment  = mongoose.model('Comment', commentSchema);
 ```
 
-Este important de subliniat că valorile din proprietatea `enum`, în cazul exemplului fiind `['BlogPost', 'Product']` sunt tot atâtea posibilități de a construi documente care să fie trimise în bază. Pe scurt, se realizează un necenism de reutilizare a schemei în funcție de cui va fi atașat comentariul. Dacă este un comentariu pe un produs, se va completa proprietatea `onModel` cu numele colecției căreia comentariul a fost atașat unuia dintre documentele întroduse.
+Este important de subliniat că valorile din proprietatea `enum`, în cazul exemplului fiind `['BlogPost', 'Product']` sunt tot atâtea posibilități de a construi documente care să fie trimise în bază. Pe scurt, se realizează un mecanism de reutilizare a schemei în funcție de cui va fi atașat comentariul. Dacă este un comentariu pe un produs, se va completa proprietatea `onModel` cu numele colecției căreia comentariul a fost atașat unuia dintre documentele întroduse.
 
 Folosind `refPath`, poți configura ce model poate folosi Mongoose pentru fiecare document în parte.
 
@@ -514,7 +520,7 @@ comments[1].blogPost.title; // "Top 10 French Novels"
 
 ## Popularea virtualelor
 
-Popularea bazată pe câmpul `_id` este o soluție, dar pentru a realiza relații mai sofosticate între documente, se vor folosi *virtuals*.
+Popularea bazată pe câmpul `_id` este o soluție, dar pentru a realiza relații mai sofisticate între documente, se vor folosi *virtuals*.
 
 ```javascript
 const PersonSchema = new Schema({
@@ -526,8 +532,8 @@ const BandSchema = new Schema({
   name: String
 });
 BandSchema.virtual('members', {
-  ref: 'Person',        // Modelul care va fi folosit
-  localField: 'name',   // Persoanele găsite vor fi în câmpul specificat la `localField`
+  ref: 'Person',        // Modelul care va fi folosit așa cum este el exportat. Fii foarte atent și verifică cum este exportat.
+  localField: 'name',   // Este câmpul în care se vor injecta datele venite din documente.
   foreignField: 'band', // câmpul din documentele colecției cu care se leagă `foreignField`
   // Dacă `justOne` este true, 'members' va fi un singur document, altfel, un array
   // `justOne` este false din oficiu.
@@ -552,3 +558,5 @@ Band.find({}).populate('members').exec(function(error, bands) {
 
 - [Mongoose Design Pattern: Store What You Query For | The Code Barbarian](http://thecodebarbarian.com/mongoose-schema-design-pattern-store-what-you-query-for.html)
 - [LEFT JOIN vs. LEFT OUTER JOIN in SQL Server | stackoverflow](https://stackoverflow.com/questions/406294/left-join-vs-left-outer-join-in-sql-server)
+- [Mongoose 4.5 Virtual Populate | http://thecodebarbarian.com](http://thecodebarbarian.com/mongoose-virtual-populate)
+- [Mongoose Virtuals](https://mongoosejs.com/docs/tutorials/virtuals.html)

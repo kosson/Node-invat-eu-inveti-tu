@@ -24,6 +24,34 @@ Este un `Object` opțional - vezi [`Query.prototype.setOptions()`](https://mongo
 
 Este o funcție cu rol de callback în cazul în care este aleasă această opțiune.
 
+## Exemplu
+
+```javascript
+// are numele john și are cel puțin 18 ani
+MyModel.find({ name: 'john', age: { $gte: 18 }});
+
+// se execută și pasează rezultatele în callback
+MyModel.find({ name: 'john', age: { $gte: 18 }}, function (err, docs) {});
+
+// caută un nume asemănător (LIKE) cu john, selectând doar câmpurile "name" și "friends"
+MyModel.find({ name: /john/i }, 'name friends', function (err, docs) { })
+
+// pasarea opțiunilor folosind un obiect
+MyModel.find({ name: /john/i }, null, { skip: 10 })
+
+// pasarea opțiunilor folosind un obiect și executarea callback-ului
+MyModel.find({ name: /john/i }, null, { skip: 10 }, function (err, docs) {});
+
+// Executarea unui query explicit
+var query = MyModel.find({ name: /john/i }, null, { skip: 10 })
+query.exec(function (err, docs) {});
+
+// poți folosi promisiunea care a fost returnată din executarea unui query
+var query = MyModel.find({ name: /john/i }, null, { skip: 10 });
+var promise = query.exec();
+promise.addBack(function (err, docs) {});
+```
+
 ## Referințe
 
 - [Model.find()](https://mongoosejs.com/docs/api/model.html#model_Model.find)

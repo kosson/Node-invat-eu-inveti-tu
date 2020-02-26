@@ -20,9 +20,17 @@ Douglas McIlroy, unul dintre autorii UNIX-ului, a scris o notă în care surprin
 
 **IO** înseamnă In/Out - o paradigmă a intrărilor și a ieșirilor. Intrările și ieșirile în NodeJS au un comportament **asincron**, ceea ce înseamnă că va trebui pasat un callback care va acționa asupra datelor.
 
-Stream-urile lucrează cu fragmente - **chunks**. Acestea sunt trimise între două puncte de comunicare. Streamurile mai au caracteristica importantă că emit evenimente. Acest lucru înseamnă că se poate gestiona lucrul cu acestea atașându-se callback-uri pe diferitele evenimente.
+## Stream-uri în JavaScript
 
-## Tipuri de stream-uri
+De ceva vreme conceptul de stream-uri a pătruns și în ecosistemul limbajului de programare JavaScript, mai ales prin adoptarea de către browsere a [API-ului Streams](https://streams.spec.whatwg.org)). În acest moment, stream-urile sunt folosite pentru a prelua corpul unei cereri HTTP care a reușit (ca rezultat al unui `fetch`) și transformarea acestuia într-un stream pentru o prelucrare ulterioară.
+
+Stream-urile lucrează cu fragmente, care în limba engleză se numesc **chunks**. Conform textului documentului are reglementează stream-urile în JavaScript ([2. Models](https://streams.spec.whatwg.org/#model)), un *chunk* este:
+
+> un singur fragment de date care este scris sau care este citit dintr-un stream. Poate fi de orice tip; stream-urile pot conține chunks de tipuri diferite. Un chunk va fi cel mai adesea cea mai mică unitate de date pentru un anumit stream; de exemplu, un byte stream poate conține chunks ca `Uint8Array`-uri de 16KiB în loc de bytes unici.
+
+Acestea sunt trimise între două puncte de comunicare. Streamurile emit evenimente ceea ce înseamnă că se pot atașa funcții de callback pe diferitele evenimente.
+
+## Tipuri de stream-uri în NodeJS
 
 În cazul lucrului cu fișierele de mari dimensiuni, trebuie să privim întregul ca un set de fragmente, care pot fi prelucrate. Uneori, în lucrările de specialitate veți găsri aceste fragmente numite ferestre (*windows*). În NodeJS, acestea sunt numite *fragmente* (*chunks* în lb. engleză).
 
@@ -177,3 +185,4 @@ Ceea ce trebuie să înțelegi este faptul că `req` și `res` sunt niște obiec
 
 - [Easier Node.js streams via async iteration | Dr. Axel Rauschmayer](https://2ality.com/2019/11/nodejs-streams-async-iteration.html)
 - [Bash | Pipelines](https://www.gnu.org/software/bash/manual/bash.html#Pipelines)
+- [Streams API | MDN](https://developer.mozilla.org/en-US/docs/Web/API/Streams_API)

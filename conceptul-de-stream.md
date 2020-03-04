@@ -28,7 +28,7 @@ Stream-urile lucrează cu fragmente, care în limba engleză se numesc **chunks*
 
 > un singur fragment de date care este scris sau care este citit dintr-un stream. Poate fi de orice tip; stream-urile pot conține chunks de tipuri diferite. Un chunk va fi cel mai adesea cea mai mică unitate de date pentru un anumit stream; de exemplu, un byte stream poate conține chunks ca `Uint8Array`-uri de 16KiB în loc de bytes unici.
 
-Acestea sunt trimise între două puncte de comunicare. Streamurile emit evenimente ceea ce înseamnă că se pot atașa funcții de callback pe diferitele evenimente.
+Acestea sunt trimise între două puncte de comunicare. Streamurile emit evenimente ceea ce înseamnă că se pot atașa funcții de callback pe acestea.
 
 ## Tipuri de stream-uri în NodeJS
 

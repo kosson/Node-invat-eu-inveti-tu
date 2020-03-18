@@ -1,6 +1,6 @@
 # express.Router();
 
-Se comportă ca o miniaplicație. Poți apela o instanță a acesteia și apoi să definești rute pe aceea.
+Se comportă ca o miniaplicație. Poți apela o instanță a acesteia și apoi să definești rute pe aceea. Folosirea ruterului, în general, urmează următorul scenariu:
 
 1. cheamă o instanță a ruterului
 2. adaugă rute la aceasta
@@ -30,12 +30,36 @@ app.add('/administrator', adminRouter);
 ```
 
 Trebuie reținut faptul că putem avea oricâte rutere avem nevoie. Pentru fiecare zonă a aplicației putem avea un router diferit.
-Toate aceste rutere pot fi adăugate aplicației.
+Toate aceste rutere pot fi adăugate aplicației. Rutarea este foarte utilă pentru compartimentarea aplicațiilor complexe.
 
-Ordinea în care pui middleware-ul este foarte importantă. Totul se va întâmpla în ordinea în care va apărea. Acest lucru înseamnă că de vei pune middleware-ul după o rută, atunci rutarea se va face înainte de middleware iar cererea se va termina acolo ne mai ajungând la middleware. Un middleware poare fi folosit pentru a vedea dacă un utilizator este logat sau nu într-o sesiune de lucru.
+## Ordinea rutelor
 
-Rutarea este foarte utilă pentru compartimentarea aplicațiilor complexe.
+Ordinea în care pui middleware-ul este foarte importantă. Cererile vor fi prelucrate în funcție de lanțul de prelucrare pe care îl creezi.
 
+De exemplu, dacă ai următoarele posibile rute:
+
+```javascript
+let router = express.Router();
+
+router.get('/', functieDePrelucrareACererii);
+router.get('/carti', functieDePrelucrareACererii);
+router.get('/carti/:idCarte', functieDePrelucrareACererii);
+router.get('/carti/delete', functieDePrelucrareACererii);
+```
+
+În exemplul de mai sus, dacă am poziționat ruta care are o parte variabilă marcată prin două puncte înaintea altor rute cu acelați prefix, în cazul nostru `/carti/`, lanțul de prelucrare se va opri la acest middleware cu două puncte pentru că următoarea cale `/carti/delete` va fi prelucrată de `/carti/:idCarte`, ceea ce înseamnă că nu va mai ajunge niciodată pe `/carti/delete`.
+Reține faptul că modul în care ordonezi căile, indică cine va prelucra cererea. În exemplul dat, pentru a ajunge la `/carti/delete`, va trebui să punem această cale înaintea celei care are partea variabilă.
+
+```javascript
+let router = express.Router();
+
+router.get('/', functieDePrelucrareACererii);
+router.get('/carti', functieDePrelucrareACererii);
+router.get('/carti/delete', functieDePrelucrareACererii);
+router.get('/carti/:idCarte', functieDePrelucrareACererii);
+```
+
+Numele părții variabile va fi o cheie a obiectului `req.params`.
 
 ## Rute simple
 

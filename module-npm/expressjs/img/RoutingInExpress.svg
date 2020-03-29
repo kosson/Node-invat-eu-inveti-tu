@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.4 (unknown)"
+   sodipodi:docname="RoutingInExpress.svg">
+  <defs
+     id="defs2">
+    <marker
+       inkscape:stockid="TriangleOutS"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="TriangleOutS"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path4859"
+         d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z "
+         style="fill-rule:evenodd;stroke:#c83737;stroke-width:1pt;stroke-opacity:1;fill:#c83737;fill-opacity:1"
+         transform="scale(0.2)" />
+    </marker>
+    <marker
+       inkscape:stockid="TriangleOutM"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="TriangleOutM"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path4856"
+         d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#d9b0b3;fill-opacity:1"
+         transform="scale(0.4)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Sstart"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Sstart"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path4723"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#d9b0b3;fill-opacity:1"
+         transform="scale(0.2) translate(6,0)" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="376.01368"
+     inkscape:cy="737.40406"
+     inkscape:document-units="mm"
+     inkscape:current-layer="g4573-8"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1016"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="opacity:1;fill:#ff6600;fill-opacity:1;stroke:#cccccc;stroke-width:0.36592185;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4587-8-6"
+       width="34.273193"
+       height="11.424397"
+       x="153.35696"
+       y="192.73499"
+       ry="5.7121987"
+       inkscape:export-filename="/home/nicolaie/Pictures/cerereRaspunsExpress.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="160.35884"
+       y="200.31805"
+       id="text4606-7"
+       inkscape:export-filename="/home/nicolaie/Pictures/cerereRaspunsExpress.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200"><tspan
+         sodipodi:role="line"
+         id="tspan4604-7"
+         x="160.35884"
+         y="200.31805"
+         style="font-size:7.05555534px;fill:#ffffff;stroke-width:0.26458332">răspuns</tspan></text>
+    <path
+       style="fill:#c83737;fill-opacity:1;stroke:#c83737;stroke-width:1.15579498;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleOutS)"
+       d="M 53.453905,198.11027 H 152.10241"
+       id="path4709"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/nicolaie/Pictures/cerereRaspunsExpress.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <g
+       id="g4585"
+       transform="translate(39.53651,4.4303084)"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300">
+      <rect
+         ry="9.5819016"
+         y="16.025394"
+         x="31.998009"
+         height="43.179058"
+         width="66.991486"
+         id="rect4518"
+         style="opacity:1;fill:#ff0000;fill-opacity:1;stroke:#cccccc;stroke-width:0.95087552;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <text
+         id="text4522"
+         y="23.850534"
+         x="38.486813"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+         xml:space="preserve"><tspan
+           style="font-weight:bold;fill:#ffffff;stroke-width:0.26458332"
+           y="23.850534"
+           x="38.486813"
+           id="tspan4520"
+           sodipodi:role="line">const express  = require('express');</tspan><tspan
+           id="tspan4524"
+           style="font-weight:bold;fill:#ffffff;stroke-width:0.26458332"
+           y="28.260256"
+           x="38.486813"
+           sodipodi:role="line">const router   = express.Router();</tspan><tspan
+           id="tspan4526"
+           style="font-weight:bold;fill:#ffffff;stroke-width:0.26458332"
+           y="32.669979"
+           x="38.486813"
+           sodipodi:role="line" /><tspan
+           id="tspan4528"
+           style="font-weight:bold;fill:#ffffff;stroke-width:0.26458332"
+           y="37.0797"
+           x="38.486813"
+           sodipodi:role="line">router.get('/', function (req, res, next) {</tspan><tspan
+           id="tspan4530"
+           style="font-weight:bold;fill:#ffffff;stroke-width:0.26458332"
+           y="41.489422"
+           x="38.486813"
+           sodipodi:role="line" /><tspan
+           id="tspan4532"
+           style="font-weight:bold;fill:#ffffff;stroke-width:0.26458332"
+           y="45.899143"
+           x="38.486813"
+           sodipodi:role="line">}</tspan><tspan
+           id="tspan4534"
+           style="font-weight:bold;fill:#ffffff;stroke-width:0.26458332"
+           y="50.308868"
+           x="38.486813"
+           sodipodi:role="line" /><tspan
+           id="tspan4536"
+           style="font-weight:bold;fill:#ffffff;stroke-width:0.26458332"
+           y="54.71859"
+           x="38.486813"
+           sodipodi:role="line">module.exports = router;</tspan></text>
+    </g>
+    <g
+       id="g4573"
+       transform="translate(15.768901,31.805074)">
+      <rect
+         ry="6.6980867"
+         y="111.17885"
+         x="54.721424"
+         height="16.441095"
+         width="60.807842"
+         id="rect4567"
+         style="opacity:1;fill:#ffb380;fill-opacity:1;stroke:#cccccc;stroke-width:0.42734671;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <text
+         id="text4563"
+         y="118.19669"
+         x="59.333839"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+         xml:space="preserve"><tspan
+           style="stroke-width:0.26458332"
+           y="118.19669"
+           x="59.333839"
+           id="tspan4561"
+           sodipodi:role="line">const routes = require('./routes/routes');</tspan><tspan
+           id="tspan4565"
+           style="stroke-width:0.26458332"
+           y="122.60641"
+           x="59.333839"
+           sodipodi:role="line">app.use(routes);</tspan></text>
+    </g>
+    <rect
+       style="opacity:1;fill:#800080;fill-opacity:1;stroke:#cccccc;stroke-width:0.4227607;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4587"
+       width="45.976215"
+       height="11.367558"
+       x="55.583744"
+       y="192.73499"
+       ry="5.6837792"
+       inkscape:export-filename="/home/nicolaie/Pictures/cerereRaspunsExpress.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <rect
+       style="opacity:1;fill:#808000;fill-opacity:1;stroke:#cccccc;stroke-width:0.36592185;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4587-8"
+       width="34.273193"
+       height="11.424397"
+       x="18.677517"
+       y="192.66534"
+       ry="5.7121987"
+       inkscape:export-filename="/home/nicolaie/Pictures/cerereRaspunsExpress.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="27.796032"
+       y="200.24841"
+       id="text4606"
+       inkscape:export-filename="/home/nicolaie/Pictures/cerereRaspunsExpress.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200"><tspan
+         sodipodi:role="line"
+         id="tspan4604"
+         x="27.796032"
+         y="200.24841"
+         style="font-size:7.05555534px;fill:#ffffff;stroke-width:0.26458332">cerere</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="57.657291"
+       y="200.49153"
+       id="text4606-6"
+       inkscape:export-filename="/home/nicolaie/Pictures/cerereRaspunsExpress.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200"><tspan
+         sodipodi:role="line"
+         id="tspan4604-2"
+         x="57.657291"
+         y="200.49153"
+         style="font-size:7.05555534px;fill:#ffffff;stroke-width:0.26458332"><tspan
+   style="fill:#ffff00"
+   id="tspan4644">req</tspan> <tspan
+   style="fill:#ff6600"
+   id="tspan4648">res</tspan> <tspan
+   style="fill:#00ff00"
+   id="tspan4650">next</tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="89.752769"
+       y="200.42149"
+       id="text4606-6-1"
+       inkscape:export-filename="/home/nicolaie/Pictures/cerereRaspunsExpress.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200"><tspan
+         sodipodi:role="line"
+         id="tspan4604-2-2"
+         x="89.752769"
+         y="200.42149"
+         style="font-size:7.05555534px;fill:#ffffff;stroke-width:0.26458332">{...}</tspan></text>
+    <rect
+       style="opacity:1;fill:#800080;fill-opacity:1;stroke:#cccccc;stroke-width:0.4227607;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect4587-0"
+       width="45.976215"
+       height="11.367558"
+       x="104.20579"
+       y="192.73499"
+       ry="5.6837792"
+       inkscape:export-filename="/home/nicolaie/Pictures/cerereRaspunsExpress.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="106.27934"
+       y="200.49153"
+       id="text4606-6-7"
+       inkscape:export-filename="/home/nicolaie/Pictures/cerereRaspunsExpress.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200"><tspan
+         sodipodi:role="line"
+         id="tspan4604-2-3"
+         x="106.27934"
+         y="200.49153"
+         style="font-size:7.05555534px;fill:#ffffff;stroke-width:0.26458332"><tspan
+   style="fill:#ffff00;stroke-width:0.26458332"
+   id="tspan4644-1">req</tspan> <tspan
+   style="fill:#ff6600;stroke-width:0.26458332"
+   id="tspan4648-1">res</tspan> <tspan
+   style="fill:#00ff00;stroke-width:0.26458332"
+   id="tspan4650-9">next</tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="138.3748"
+       y="200.42149"
+       id="text4606-6-1-0"
+       inkscape:export-filename="/home/nicolaie/Pictures/cerereRaspunsExpress.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200"><tspan
+         sodipodi:role="line"
+         id="tspan4604-2-2-5"
+         x="138.3748"
+         y="200.42149"
+         style="font-size:7.05555534px;fill:#ffffff;stroke-width:0.26458332">{...}</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="82.566902"
+       y="16.788261"
+       id="text898"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300"><tspan
+         sodipodi:role="line"
+         id="tspan896"
+         x="82.566902"
+         y="16.788261"
+         style="font-weight:bold;stroke-width:0.26458332">/routes/adminstrator.js</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="93.59874"
+       y="140.3658"
+       id="text898-3"><tspan
+         sodipodi:role="line"
+         id="tspan896-6"
+         x="93.59874"
+         y="140.3658"
+         style="font-weight:bold;stroke-width:0.26458332">app.js</tspan></text>
+    <g
+       id="g4573-8"
+       transform="translate(58.131122,-78.562932)">
+      <rect
+         ry="10.342144"
+         y="135.57162"
+         x="80.450539"
+         height="25.385782"
+         width="70.019791"
+         id="rect4567-0"
+         style="opacity:1;fill:#ffb380;fill-opacity:1;stroke:#cccccc;stroke-width:0.56982422;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         inkscape:export-xdpi="300"
+         inkscape:export-ydpi="300" />
+      <text
+         id="text4563-4"
+         y="140.4016"
+         x="84.991714"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+         xml:space="preserve"
+         inkscape:export-xdpi="300"
+         inkscape:export-ydpi="300"><tspan
+           style="stroke-width:0.26458332"
+           y="140.4016"
+           x="84.991714"
+           id="tspan4561-7"
+           sodipodi:role="line">const admin = require('./routes/administrator');</tspan><tspan
+           style="stroke-width:0.26458332"
+           y="144.81133"
+           x="84.991714"
+           sodipodi:role="line"
+           id="tspan1006">const produse = require('./routes/produse');</tspan><tspan
+           id="tspan4565-6"
+           style="stroke-width:0.26458332"
+           y="149.22104"
+           x="84.991714"
+           sodipodi:role="line">let app = express();</tspan><tspan
+           style="stroke-width:0.26458332"
+           y="153.63077"
+           x="84.991714"
+           sodipodi:role="line"
+           id="tspan1010">app.use('/administrator', admin);</tspan><tspan
+           style="stroke-width:0.26458332"
+           y="158.04048"
+           x="84.991714"
+           sodipodi:role="line"
+           id="tspan1008">app.use('/produse', produse);</tspan></text>
+      <g
+         id="g4585-1"
+         transform="translate(-18.607328,136.61795)"
+         inkscape:export-xdpi="300"
+         inkscape:export-ydpi="300">
+        <rect
+           ry="9.5819016"
+           y="16.025394"
+           x="31.998009"
+           height="43.179058"
+           width="66.991486"
+           id="rect4518-1"
+           style="opacity:1;fill:#ff0000;fill-opacity:1;stroke:#cccccc;stroke-width:0.95087552;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+        <text
+           id="text4522-9"
+           y="23.850534"
+           x="38.486813"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+           xml:space="preserve"><tspan
+             style="font-weight:bold;fill:#ffffff;stroke-width:0.26458332"
+             y="23.850534"
+             x="38.486813"
+             id="tspan4520-0"
+             sodipodi:role="line">const express  = require('express');</tspan><tspan
+             id="tspan4524-5"
+             style="font-weight:bold;fill:#ffffff;stroke-width:0.26458332"
+             y="28.260256"
+             x="38.486813"
+             sodipodi:role="line">const router   = express.Router();</tspan><tspan
+             id="tspan4526-6"
+             style="font-weight:bold;fill:#ffffff;stroke-width:0.26458332"
+             y="32.669979"
+             x="38.486813"
+             sodipodi:role="line" /><tspan
+             id="tspan4528-7"
+             style="font-weight:bold;fill:#ffffff;stroke-width:0.26458332"
+             y="37.0797"
+             x="38.486813"
+             sodipodi:role="line">router.get('/', function (req, res, next) {</tspan><tspan
+             id="tspan4530-7"
+             style="font-weight:bold;fill:#ffffff;stroke-width:0.26458332"
+             y="41.489422"
+             x="38.486813"
+             sodipodi:role="line" /><tspan
+             id="tspan4532-4"
+             style="font-weight:bold;fill:#ffffff;stroke-width:0.26458332"
+             y="45.899143"
+             x="38.486813"
+             sodipodi:role="line">}</tspan><tspan
+             id="tspan4534-0"
+             style="font-weight:bold;fill:#ffffff;stroke-width:0.26458332"
+             y="50.308868"
+             x="38.486813"
+             sodipodi:role="line" /><tspan
+             id="tspan4536-6"
+             style="font-weight:bold;fill:#ffffff;stroke-width:0.26458332"
+             y="54.71859"
+             x="38.486813"
+             sodipodi:role="line">module.exports = router;</tspan></text>
+      </g>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+         x="31.906614"
+         y="149.51045"
+         id="text898-4"
+         inkscape:export-xdpi="300"
+         inkscape:export-ydpi="300"><tspan
+           sodipodi:role="line"
+           id="tspan896-7"
+           x="31.906614"
+           y="149.51045"
+           style="font-weight:bold;stroke-width:0.26458332">/routes/produse.js</tspan></text>
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="170.17148"
+       y="54.853851"
+       id="text898-3-8"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300"><tspan
+         sodipodi:role="line"
+         id="tspan896-6-9"
+         x="170.17148"
+         y="54.853851"
+         style="font-weight:bold;stroke-width:0.26458332">app.js</tspan></text>
+  </g>
+</svg>

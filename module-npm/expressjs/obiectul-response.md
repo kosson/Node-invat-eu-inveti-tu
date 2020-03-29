@@ -117,7 +117,7 @@ Urmat de fragmentul de template în care putem accesa datele din `locals` și di
 </div>
 ```
 
-În cazul în care folosești un motor de templating Handlebars, ai putea accesa datele trimise
+În cazul în care folosești un motor de templating Handlebars, ai putea accesa datele trimise.
 
 ## Metode
 
@@ -169,6 +169,20 @@ res.redirect('back');
 ```javascript
 res.redirect('/inapoi?ceva=10&altceva=unu');
 ```
+
+### `res.download()`
+
+### `res.end()`
+
+### `res.json()`
+
+### `res.jsonp()`
+
+### `res.render()`
+
+### `res.sendFile()`
+
+### `res.sendStatus()`
 
 ## Resurse
 

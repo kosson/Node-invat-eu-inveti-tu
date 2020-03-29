@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.4 (unknown)"
+   sodipodi:docname="express.app.svg"
+   inkscape:export-filename="/home/nicolaie/Pictures/Espress.router.expose01.png"
+   inkscape:export-xdpi="200"
+   inkscape:export-ydpi="200">
+  <defs
+     id="defs2">
+    <marker
+       inkscape:stockid="TriangleOutS"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="TriangleOutS"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path1170"
+         d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z "
+         style="fill-rule:evenodd;stroke:#ff6600;stroke-width:1pt;stroke-opacity:1;fill:#ff6600;fill-opacity:1"
+         transform="scale(0.2)" />
+    </marker>
+    <marker
+       inkscape:stockid="TriangleOutS"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="TriangleOutS-0"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         inkscape:connector-curvature="0"
+         id="path1170-5"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         style="fill:#ff6600;fill-opacity:1;fill-rule:evenodd;stroke:#ff6600;stroke-width:1.00000003pt;stroke-opacity:1"
+         transform="scale(0.2)" />
+    </marker>
+    <marker
+       inkscape:stockid="TriangleOutS"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="TriangleOutS-6"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         inkscape:connector-curvature="0"
+         id="path1170-4"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         style="fill:#ff6600;fill-opacity:1;fill-rule:evenodd;stroke:#ff6600;stroke-width:1.00000003pt;stroke-opacity:1"
+         transform="scale(0.2)" />
+    </marker>
+    <marker
+       inkscape:stockid="TriangleOutS"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="TriangleOutS-0-6"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         inkscape:connector-curvature="0"
+         id="path1170-5-2"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         style="fill:#ff6600;fill-opacity:1;fill-rule:evenodd;stroke:#ff6600;stroke-width:1.00000003pt;stroke-opacity:1"
+         transform="scale(0.2)" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="361.12727"
+     inkscape:cy="454.74429"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1016"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     showguides="true"
+     inkscape:guide-bbox="true">
+    <sodipodi:guide
+       position="59.066564,177.46697"
+       orientation="0,1"
+       id="guide1998"
+       inkscape:locked="false" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <circle
+       style="opacity:1;fill:#c83737;fill-opacity:1;stroke:#c83737;stroke-width:1.16499996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path815"
+       cx="104.23511"
+       cy="50.577492"
+       r="13.898015" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="96.751564"
+       y="52.982933"
+       id="text819"><tspan
+         sodipodi:role="line"
+         id="tspan817"
+         x="96.751564"
+         y="52.982933"
+         style="font-size:11.28888893px;fill:#ffffff;stroke-width:0.26458332">app</tspan></text>
+    <g
+       id="g841"
+       transform="translate(11.759859,-60.135644)">
+      <circle
+         r="8.7604733"
+         cy="139.31097"
+         cx="70.024612"
+         id="path821"
+         style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#c83737;stroke-width:1.81838048;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <text
+         id="text825"
+         y="140.64732"
+         x="62.829826"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+         xml:space="preserve"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu Bold';fill:#c83737;stroke-width:0.26458332"
+           y="140.64732"
+           x="62.829826"
+           id="tspan823"
+           sodipodi:role="line">.listen</tspan></text>
+    </g>
+    <circle
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#e9afaf;stroke-width:1.81838048;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path821-9"
+       cx="68.955536"
+       cy="21.445114"
+       r="8.7604733" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="63.898911"
+       y="22.781464"
+       id="text825-2"><tspan
+         sodipodi:role="line"
+         id="tspan823-5"
+         x="63.898911"
+         y="22.781464"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu Bold';fill:#c83737;stroke-width:0.26458332">.get</tspan></text>
+    <circle
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#e9afaf;stroke-width:1.81838048;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path821-9-4"
+       cx="92.742523"
+       cy="21.712387"
+       r="8.7604733" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="86.627563"
+       y="23.048737"
+       id="text825-2-0"><tspan
+         sodipodi:role="line"
+         id="tspan823-5-5"
+         x="86.627563"
+         y="23.048737"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu Bold';fill:#c83737;stroke-width:0.26458332">.post</tspan></text>
+    <circle
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#e9afaf;stroke-width:1.81838048;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path821-9-9"
+       cx="115.72769"
+       cy="22.246925"
+       r="8.7604733" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="110.67107"
+       y="23.583275"
+       id="text825-2-4"><tspan
+         sodipodi:role="line"
+         id="tspan823-5-6"
+         x="110.67107"
+         y="23.583275"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu Bold';fill:#c83737;stroke-width:0.26458332">.put</tspan></text>
+    <circle
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#e9afaf;stroke-width:1.81838048;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path821-9-92"
+       cx="137.6438"
+       cy="21.979652"
+       r="8.7604733" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="129.41219"
+       y="23.316002"
+       id="text825-2-2"><tspan
+         sodipodi:role="line"
+         id="tspan823-5-4"
+         x="129.41219"
+         y="23.316002"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu Bold';fill:#c83737;stroke-width:0.26458332">.delete</tspan></text>
+    <circle
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#c83737;stroke-width:1.81838048;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path821-9-7"
+       cx="104.50239"
+       cy="79.175331"
+       r="8.7604733" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="99.445755"
+       y="80.511681"
+       id="text825-2-7"><tspan
+         sodipodi:role="line"
+         id="tspan823-5-54"
+         x="99.445755"
+         y="80.511681"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu Bold';fill:#c83737;stroke-width:0.26458332">.use</tspan></text>
+    <circle
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#c83737;stroke-width:1.81838048;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path821-9-7-8"
+       cx="126.15121"
+       cy="78.908058"
+       r="8.7604733" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="121.09458"
+       y="80.244408"
+       id="text825-2-7-1"><tspan
+         sodipodi:role="line"
+         id="tspan823-5-54-2"
+         x="121.09458"
+         y="80.244408"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.93888903px;font-family:Ubuntu;-inkscape-font-specification:'Ubuntu Bold';fill:#c83737;stroke-width:0.26458332">.set</tspan></text>
+    <rect
+       style="opacity:1;fill:#ff6600;fill-opacity:1;stroke:#e9afaf;stroke-width:1.50462794;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect944"
+       width="60.59782"
+       height="11.420231"
+       x="13.266021"
+       y="119.1683"
+       ry="5.7101154"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.26458332;"
+       x="20.579754"
+       y="126.21477"
+       id="text948"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200"><tspan
+         sodipodi:role="line"
+         id="tspan946"
+         x="20.579754"
+         y="126.21477"
+         style="font-size:4.23333311px;stroke-width:0.26458332;fill:#ffffff;">var router = express.Router();</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ff6600;fill-opacity:1;stroke:none;stroke-width:0.26458332;"
+       x="33.408691"
+       y="115.79124"
+       id="text952"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200"><tspan
+         sodipodi:role="line"
+         id="tspan950"
+         x="33.408691"
+         y="115.79124"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.64444447px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu;stroke-width:0.26458332;fill:#ff6600;">router</tspan></text>
+    <rect
+       style="opacity:1;fill:#ff6600;fill-opacity:1;stroke:#e9afaf;stroke-width:1.16499996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect954"
+       width="76.706352"
+       height="10.958051"
+       x="64.679222"
+       y="138.77643"
+       ry="5.4790254"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="72.53376"
+       y="145.65488"
+       id="text948-8"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200"><tspan
+         sodipodi:role="line"
+         id="tspan946-9"
+         x="72.53376"
+         y="145.65488"
+         style="font-size:4.23333311px;fill:#ffffff;stroke-width:0.26458332">router.get('/produse', returneazăProduse);</tspan><tspan
+         sodipodi:role="line"
+         x="72.53376"
+         y="150.28862"
+         style="font-size:4.23333311px;fill:#ffffff;stroke-width:0.26458332"
+         id="tspan974" /></text>
+    <rect
+       style="opacity:1;fill:#ff6600;fill-opacity:1;stroke:#e9afaf;stroke-width:1.16499996;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect954-8"
+       width="76.70636"
+       height="10.958051"
+       x="64.679214"
+       y="152.38028"
+       ry="5.4790254"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="78.993256"
+       y="159.28349"
+       id="text948-8-0"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200"><tspan
+         sodipodi:role="line"
+         id="tspan946-9-2"
+         x="78.993256"
+         y="159.28349"
+         style="font-size:4.23333311px;fill:#ffffff;stroke-width:0.26458332">router.get('/coș', returneazăCoșul);</tspan><tspan
+         sodipodi:role="line"
+         x="78.993256"
+         y="163.91724"
+         style="font-size:4.23333311px;fill:#ffffff;stroke-width:0.26458332"
+         id="tspan974-1" /></text>
+    <path
+       style="fill:none;stroke:#ff6600;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleOutS)"
+       d="m 37.150463,131.56016 c 0,0 2.939965,6.94901 11.492589,10.15624 8.552625,3.20723 15.234365,2.6727 15.234365,2.6727"
+       id="path1020"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="csc"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <path
+       style="fill:none;stroke:#ff6600;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleOutS-0)"
+       d="m 37.150463,131.56016 c 0,0 2.638435,15.89112 9.9458,21.37164 8.552625,6.41447 15.501635,5.3454 15.501635,5.3454"
+       id="path1020-1"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="csc"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <rect
+       style="opacity:1;fill:#ff6600;fill-opacity:1;stroke:#e9afaf;stroke-width:1.25233197;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="rect944-1"
+       width="41.07217"
+       height="11.672527"
+       x="147.77379"
+       y="119.04755"
+       ry="5.8362637"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="155.21367"
+       y="126.22015"
+       id="text948-0"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200"><tspan
+         sodipodi:role="line"
+         id="tspan946-8"
+         x="155.21367"
+         y="126.22015"
+         style="font-size:4.23333311px;fill:#ffffff;stroke-width:0.26458332">app.use(router)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52777767px;line-height:1.25;font-family:'Ubuntu Condensed';-inkscape-font-specification:'Ubuntu Condensed, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ff6600;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="163.01088"
+       y="115.80817"
+       id="text952-5"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200"><tspan
+         sodipodi:role="line"
+         id="tspan950-0"
+         x="163.01088"
+         y="115.80817"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:5.64444447px;font-family:Ubuntu;-inkscape-font-specification:Ubuntu;fill:#ff6600;stroke-width:0.26458332">app</tspan></text>
+    <path
+       style="fill:none;stroke:#ff6600;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleOutS-6)"
+       d="m 142.44391,144.06813 c 0,0 10.95805,1.33634 16.03617,-2.40543 7.35355,-5.4184 9.09,-9.7553 9.09,-9.7553"
+       id="path1020-5"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="csc"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <path
+       style="fill:none;stroke:#ff6600;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleOutS-0-6)"
+       d="m 140.85304,157.35484 c 0,0 14.55477,0.56879 20.03529,-6.73857 6.41447,-8.55263 6.68175,-18.70887 6.68175,-18.70887"
+       id="path1020-1-8"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="csc"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <rect
+       style="opacity:1;vector-effect:none;fill:#ffd700;fill-opacity:1;stroke:#ff0000;stroke-width:0.26499999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+       id="rect916"
+       width="60.402912"
+       height="24.054256"
+       x="15.234363"
+       y="182.0741"
+       ry="3.4069602" />
+  </g>
+</svg>

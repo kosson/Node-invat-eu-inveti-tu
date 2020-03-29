@@ -2,7 +2,22 @@
 
 Acest obiect reprezintă cererea HTTP. Obiectul are proprietăți corespondente *query string*, parametri, *body*, headere HTTP ș.a.m.d. Prin convenție acesta este denumit **req** (request), fiind primul parametru pasat unui middleware.
 
-Acest obiect este o variantă îmbunătățită a propriului obiect request (vezi [Class: http.IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)). Urmând documentația Node, vom afla că `http.Server` va crea un obiect `IncomingMessage`. Acest obiect este pasat ca prim argument, fie unui eveniment `request`, fie unuia `response`. Acest obiect poate fi utilizat pentru a accesa starea răspunsului, headerele și datele. Acest obiect implementează interfața `Readable Stream`.
+Acest obiect este o variantă îmbunătățită a propriului obiect request (vezi [Class: http.IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)). Urmând documentația Node, vom afla că `http.Server` va crea un obiect `IncomingMessage`. Acest obiect este pasat ca prim argument, fie unui eveniment `request`, fie unuia `response`. Acest obiect poate fi utilizat pentru a accesa starea răspunsului, headerele și datele.
+
+Acest obiect implementează interfața `Readable Stream`, fiind un obiect *stream*, de fapt. Precizarea este importantă deoarece putem *asculta* evenimente `data` sau `end`. Nu uita că în spate, avem de fapt modulul `http` a lui NodeJS.
+
+```javascript
+app.get('/produse/:id', function clbkGetProdId (err, req, res, next) {
+  req.on('data', function clbkData () {
+    console.log('Apare un chunk...');
+  });
+  req.on('end', function clbkEnd () {
+    console.log('Am primit body...')
+  });
+});
+```
+
+Corpul unui mesaj este transmis în *chunks*. În NodeJS, fragmentele de date numite *chunks* sunt obiecte `Buffer`.
 
 ## req.app
 

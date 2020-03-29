@@ -16,7 +16,7 @@ app.get('/', function (req, res) {
 
 Funcția callback va primi două obiecte drept argumente. Unul este cel care reflectă ceea ce s-a obținut în urma solicitării făcută pe calea specificată și este numit, de regulă `req` (de la *request*), iar celălalt este `res` (de la *response*), care este obiectul cu ajutorul căruia se va construi răspunsul către agent.
 
-Răspunsul este configurabil în cele mai mici amănunte.
+Răspunsul este configurabil în cele mai mici amănunte. De exemplu, poți gestiona părți variabile ale unei căi. Partea variabilă este marcată prin două puncte.
 
 ```javascript
 app.get('/test/:nume', function (req, res) {

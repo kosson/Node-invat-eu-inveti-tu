@@ -33,13 +33,9 @@ Schema indică numele câmpurilor și tipurile datelor. Un exemplu tipic este ce
   });
 ```
 
-### Definirea unei scheme
-
-#### Creează un model de date
+### Creează un model de date
 
 ```javascript
-// creezi fișierul în app/models/bear.js
-
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 

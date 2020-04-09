@@ -1,6 +1,6 @@
 # beforeEach
 
-Indică faptul că va repeta o operațiune ori de câte ori se va face un save în bază. Mongoose este un wrapper peste MongoDB. De exemplu, poți accesa direct o colecție din bază: `mongoose.connection.collections.numecolectie`.
+Indică faptul că va repeta o operațiune ori de câte ori se va face un `save` în bază. Mongoose este un wrapper peste MongoDB. De exemplu, poți accesa direct o colecție din bază: `mongoose.connection.collections.numecolectie`.
 
 De exemplu, cum ștergi toate înregistrările unei colecții mai înainte de a introduce una nouă. Acest lucru ar fi necesar pentru a face un test de conectare și încărcare date folosind Mocha, de exemplu.
 

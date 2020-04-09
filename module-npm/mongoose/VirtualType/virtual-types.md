@@ -1,6 +1,6 @@
 # Virtual types
 
-Sunt proprietăți ale unui model care variază în timp așa cum ar putea fi numărul de comentarii al unui articol de blog sau numărul articolelor scrise de un autor.
+Sunt proprietăți ale unui document care nu sunt păstrate în bază, ci sunt constituite ad-hoc așa cum ar putea fi numărul de comentarii al unui articol de blog sau numărul articolelor scrise de un autor.
 
 Atributele unui document virtual se vor seta prin metoda `virtual()` căreia îi vor fi pasate câmpurile documentului virtual (`Schema.prototype.virtual`).
 
@@ -11,7 +11,7 @@ fullname instanceof mongoose.VirtualType // true
 
 În loc să creezi proprietăți în model, care să necesite aducerea înregistrării din bază, actualizarea sa și apoi salvarea înapoi, mai bine creezi un virtual type.
 
-Proprietățile virtuale se adaugă ca declarații separate de schemă.
+Proprietățile virtuale se adaugă aplicând metoda `virtual()` pe schema deja instanțiată. Metoda acceptă drept parametru un string care va fi numele proprietății noi pe care o adaugi documentului care va fi constituit mai târziu. Poți spune că o proprietate virtuală este o efemeridă.
 
 ```javascript
 const mongoose = require('mongoose');
@@ -26,17 +26,7 @@ let CompetentaS = new mongoose.Schema({
             message: 'Numele resursei trebuie să fie mai mare de trei caractere'
         },
         required: [true, 'Fără numele resursei, nu se poate face înregistrarea']
-    },
-    ids:        [],     // În programă este codat cu 1.1. Aici se poate trece orice secvență alfanumerică care să ofere o adresă rapidă către competența specifică
-    cod:        String, // cod intern agreat (parte a vocabularului controlat)
-    token:      [],     // cunoștințe, abilități, atitudini: „utilizarea imaginilor pentru indicarea semnificaţiei unui mesaj audiat”, altul: „realizarea unui desen care corespunde subiectului textului audiat”
-    disciplina: String, // COMUNICARE ÎN LIMBA ROMÂNĂ
-    nivel:      [],     // toate acestea sunt cuvinte cheie. Sintagma în document este „Clasa pregătitoare, clasa I şi clasa a II-a”. Cheile: „clasa pregătitoare”, „clasa I”, „clasa a II-a”
-    ref:        [],     // De ex: „Ordin al ministrului Nr. 3418/19.03.2013” sau poate fi link către ordin sau orice URI care poate identifica sursa informației sau orice asemenea
-    parteA:     String, // Se introduce numele grupei de competențe specifice. De ex: „Receptarea de mesaje orale în contexte de comunicare cunoscute”
-    din:        Date,
-    REDfolos:   [],
-    // nrREDuri:   Number  // numărul de resurse care vizează această competență
+    }
 });
 
 CompetentaS.virtual('nrREDuri').get(function () {
@@ -47,3 +37,32 @@ module.exports = new mongoose.model('competentaspecifica', CompetentaS);
 ```
 
 Aceste declarații se comportă ca un getter. De fiecare dată când va fi cerută valoarea din model pentru o proprietate, care, de fapt este una virtuală necesitând computație suplimentară pentru a genera valoarea, se va apela o funcție callback definită folosind `function`. Ceea ce va returna funcția din `get()` este valoarea tipului virtual.
+
+Pentru a lucra cu proprietățile schemei și astfel, mai târziu făcându-se calcule cu valorile care vor hidrata modelul, se vor apela folosind `this`.
+
+De fiecare dată când se va istanția modelul și se va hidrata cu date, propritatea *virtuală* va fi disponibilă și va acea drept valoare evaluarea operațiunilor menționate atunci când a fost declarată.
+
+## Modificarea datelor la nivel de schemă cu getteri
+
+Există un truc pentru a putea modifica valorile care vor fi disponibile într-un document după ce a fost generat prin hidratarea cu date a unui model. Această operațiune implică aplicarea metodei `get()` cu un callback ce va face transformarea datelor pe calea unei scheme obținută în prealabil prin aplicarea metodei `path()`. Apoi se activează toți getterii pentru `toObject`.
+
+```javascript
+// creează schema
+var schemă = new Schema({nume: String});
+
+// aplică un getter pe calea pe care vrei să o transformi
+schemă.path('nume').get(function (nume_plus_ceva) {
+  return nume_plus_ceva + ', salut!'; // returnează rezultatul modificării datelor
+});
+
+// instanțiază un model
+var Utilizator = mongoose.model('Utilizator', schemă);
+
+// hidratează cu date
+var utilizator = new Utilizator({nume: "Andreea"});
+
+// rezultat utilizator.nume
+console.log(utilizator.nume); // Andreea, salut!
+```
+
+Pentru mai multe opțiuni pe care le oferă `toObject`, citește și Document.prototype.toObject().

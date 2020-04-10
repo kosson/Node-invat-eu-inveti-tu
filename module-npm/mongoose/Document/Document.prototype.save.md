@@ -2,7 +2,7 @@
 
 Această metodă se folosește pentru a salva un document în baza de date MongoDB.
 
-Această metodă se aplică numai pe documente. Acestă mențiune este importantă pentru că uneori poți confunda un `Query` cu un `Document`.
+Această metodă se aplică numai pe documente. Mențiunea este importantă pentru că uneori poți confunda un `Query` cu un `Document`.
 
 Metoda returnează valoarea `undefined`, dacă este folosită cu un callback, și un `Promise`, dacă nu este menționat callback-ul.
 

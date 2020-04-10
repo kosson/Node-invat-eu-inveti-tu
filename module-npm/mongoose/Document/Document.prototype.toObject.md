@@ -58,6 +58,8 @@ Acestă funcție primește trei argumente:
 ```javascript
 // asigură-te că ai la dispoziție opțiunea toObject
 if (!schema.options.toObject) schema.options.toObject = {};
+
+// scrie o funcție de transformare
 schema.options.toObject.transform = function (doc, ret, options) {
   // șterge proprietatea _id a fiecărui document î
   delete ret._id;

@@ -3,7 +3,33 @@
 Mongoose respectă paradigma Node.js care este cea a gestionării de evenimente. Ceea ce ne este oferit cu aceste *hooks* (am putea traduce *cârlige*), este posibilitatea de a adăuga funcții (middleware), care să fie executate înainte sau după un event pe care *cârligul* îl ascultă, iar când apare, execută callback-ul.
 
 Când apare evenimentul, funcțiile cu rol de callback preiau controlul în timpul execuției asincrone.
-Middleware-ul este specificat la nivel de schemă și este util pentru a scrie [pluginuri](http://mongoosejs.com/docs/plugins.html), care au capacitatea de a extinde schema.
+Middleware-ul este specificat la nivel de schemă și este util pentru a scrie [pluginuri](http://mongoosejs.com/docs/plugins.html), care au capacitatea de a extinde schema. Imediat ce declari schema, trebuie să declari și middleware-ul. Apelarea `pre()` și `post()` după compilarea unui model, nu funcționează.
+
+```javascript
+const schema = new mongoose.Schema({ name: String });
+
+// Compilarea modelului folosind schema
+const User = mongoose.model('User', schema);
+
+// Mongoose nu va apela middleware-ul pentru că a fost declarat după compilarea modelului
+schema.pre('save', () => console.log('Facem ceva înainte de save?!'));
+
+new User({ name: 'test' }).save();
+```
+
+Declară tot middleware-ul și plugin-urile înainte de a executa `mongoose.model()`. Din acest motiv există o problemă în momentul în care decizi să creezi o schemă și să exporți modelul compilat din interiorul aceluiași fișier.
+
+```javascript
+const schema = new mongoose.Schema({ name: String });
+
+// În momentul în care faci `require()` pe acest fișier,
+// nu mai poți adăuga vreun middleware la prezenta schemă.
+module.exports = mongoose.model('User', schema);
+```
+
+În cazul în care folosești acest șablon de structurare a codului, trebuie să declari un plugin la nivel global, care să fie apelat pentru a fi executat pe toate schemele. Este echivalentul apelării lui `.plugin(fn)` pe fiecare schemă pe care o creezi.
+
+## Evenimente
 
 Un eveniment poate fi căutarea în bază sau ștergerea unei înregistrări, ori actualizarea unei înregistrări. De cele mai multe ori vei avea un scenariu de tip *one-to-many* în care dorești să ștergi înregistrarea unui utilizator din baza de date, dar în același timp dorești să ștergi și toate înregistrările asociate cu acesta. În acest scenariu, vei folosi un hook `pre`, care înainte de a șterge utilizatorul, va căuta toate înregistrările asociate cu acesta și le va șterge mai întâi de toate.
 
@@ -43,6 +69,11 @@ Resursa.pre('remove', function hRemoveCb(next) {
 
 Evită scenariile în care un model are nevoie de un altul, iar acela la rândul său pe primul. Aceasta este o circularitate care trebuie evitată. Pentru a o evita, în cazul hook-urilor, se poate referi un model folosind metoda `mongoose.model('numeModelCerut')`. Acest helper `mongoose.model` oferă acces direct la un model fără să-l mai ceri cu *require*.
 
-Fii foarte atent ca în declararea callback-urilor hook-urilor să declari callback-ul cu `function` și să nu folosești fat arrow. Acest lucru este necesar pentru că accesul la model sau mai bine spus reprezentarea modelului este accesibilă doar prin `this`.
+Fii foarte atent ca în declararea hook-urilor să declari funcția cu rol de callback folosind cuvântul cheie `function` și să nu folosești fat arrow. Acest lucru este necesar pentru că accesul la model sau mai bine spus reprezentarea modelului este accesibilă doar prin `this`.
 
 După cum se observă în exemplu, funcția cu rol de callback la momentul executării trebuie să semnaleze cumva lui mongoose faptul că și-a încheiat execuția. În acest sens, callback-ul va primi drept argument referința către o funcție pe care o vom apela după ce toate operațiunile se vor fi încheiat. Acest `next()` va reda controlul lui mongoose, care, în funcție de caz, va executa următorul middleware sau mai departe alte operațiuni dacă un altul nu mai există.
+
+## Resurse
+
+- [Define Middleware Before Compiling Models](https://mongoosejs.com/docs/middleware.html#defining)
+- [Plugins](https://mongoosejs.com/docs/plugins.html)

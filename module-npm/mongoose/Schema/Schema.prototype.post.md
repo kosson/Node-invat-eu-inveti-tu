@@ -1,6 +1,6 @@
 # Schema.prototype.post()
 
-Middleware-ul post este executat după ce au fost executate metodele hook au fost executate, dar și middleware-ul pre.
+Middleware-ul post este executat **după** ce au fost executate metodele hook, dar și tot middleware-ul setat pentru `pre`.
 
 ```javascript
 schema.post('init', function(doc) {
@@ -76,6 +76,38 @@ schema.post('save', function(doc, next) {
 schema.post('save', function(doc, next) {
   console.log('post2');
   next();
+});
+```
+
+## Hookuri post care preiau controlul
+
+Toate post save hooks care sunt async și cele care sunt aplicate pe scheme copil, se vor executa înaintea callback-ului metodei `save()`. Asta înseamnă că [preiau controlul execuției](https://mongoosejs.com/docs/migrating_to_5.html#post-save-flow-control) înainte de a se face cu adevărat save-ul.
+
+```javascript
+// am declarat schema copil
+const ChildModelSchema = new mongoose.Schema({
+  text: {
+    type: String
+  }
+});
+// aplic schemei copil, un hook post save
+ChildModelSchema.post('save', function(doc) {
+  // In mongoose 5.x următorul console.log se va executa înaintea celui din save-ul schemei părinte
+  console.log('Post save din copil');
+});
+//integrează subschema
+const ParentModelSchema = new mongoose.Schema({
+  children: [ChildModelSchema]
+});
+
+// generează modelul
+const Model = mongoose.model('Parent', ParentModelSchema);
+// hidratează modelul cu date constituind documentul
+const m = new Model({ children: [{ text: 'test' }] });
+// documentul se salvează
+m.save(function() {
+  // In mongoose 5.xm mesajul apare după ce apare cel din schema copil.
+  console.log('Mesaj din callback-ul de salvare');
 });
 ```
 

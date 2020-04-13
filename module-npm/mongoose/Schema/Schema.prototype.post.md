@@ -1,6 +1,6 @@
 # Schema.prototype.post()
 
-Middleware-ul post este executat **după** ce au fost executate metodele hook, dar și tot middleware-ul setat pentru `pre`.
+Middleware-ul `post` este executat **după** ce au fost executate metodele hook, dar și tot middleware-ul setat pentru `pre`.
 
 ```javascript
 schema.post('init', function(doc) {

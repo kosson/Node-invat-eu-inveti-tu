@@ -560,3 +560,4 @@ Band.find({}).populate('members').exec(function(error, bands) {
 - [LEFT JOIN vs. LEFT OUTER JOIN in SQL Server | stackoverflow](https://stackoverflow.com/questions/406294/left-join-vs-left-outer-join-in-sql-server)
 - [Mongoose 4.5 Virtual Populate | http://thecodebarbarian.com](http://thecodebarbarian.com/mongoose-virtual-populate)
 - [Mongoose Virtuals](https://mongoosejs.com/docs/tutorials/virtuals.html)
+- [Introduction to Mongoose Populate](https://masteringjs.io/tutorials/mongoose/populate)

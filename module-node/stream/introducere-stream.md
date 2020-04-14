@@ -394,3 +394,4 @@ Stream-ul `res` este un obiect `Writable`, care expune metode precum `write()` È
 - [The UNIX Philosophy, Streams and Node.js. Posted on August 29, 2013 by Safari Books Online & filed under Content - Highlights and Reviews, Programming & Development.](https://www.safaribooksonline.com/blog/2013/08/29/the-unix-philosophy-streams-and-node-js/)
 - [stream-handbook](https://github.com/substack/stream-handbook)
 - [Stream Adventure](https://www.npmjs.com/package/stream-adventure)
+- [The Definitive Guide to Object Streams in Node.js](https://community.risingstack.com/the-definitive-guide-to-object-streams-in-node-js/)

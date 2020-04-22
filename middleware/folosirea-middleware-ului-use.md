@@ -66,36 +66,36 @@ Calea este un string reprezentând:
 
 1.	o cale scrisă explicit:
 
-  ```javascript
-    // va răspunde la căi care încep cu /abcd
-  app.use('/abcd', function (req, res, next) {
-    next();
-  })
-  ```
+```javascript
+// va răspunde la căi care încep cu /abcd
+app.use('/abcd', function (req, res, next) {
+  next();
+})
+```
 
 2.	un șablon regex care reprezintă o cale:
 
-  ```javascript
-  // va răspunde la căi care încep cu /abcd și /abd
-  app.use('/abc?d', function (req, res, next) {
-    next();
-  })
+```javascript
+// va răspunde la căi care încep cu /abcd și /abd
+app.use('/abc?d', function (req, res, next) {
+  next();
+})
 
-  // va răspunde la căi care încep cu /abcd, /abbcd, /abbbbbcd ș.a.m.d.
-  app.use('/ab+cd', function (req, res, next) {
-    next();
-  })
+// va răspunde la căi care încep cu /abcd, /abbcd, /abbbbbcd ș.a.m.d.
+app.use('/ab+cd', function (req, res, next) {
+  next();
+})
 
-  // va răspunde la căi care încep cu /abcd, /abxcd, /abFOOcd, /abbArcd ș.a.m.d.
-  app.use('/ab*cd', function (req, res, next) {
-    next();
-  })
+// va răspunde la căi care încep cu /abcd, /abxcd, /abFOOcd, /abbArcd ș.a.m.d.
+app.use('/ab*cd', function (req, res, next) {
+  next();
+})
 
-  // va răspunde la căi care încep cu /ad și /abcd
-  app.use('/a(bc)?d', function (req, res, next) {
-    next();
-  })
-  ```
+// va răspunde la căi care încep cu /ad și /abcd
+app.use('/a(bc)?d', function (req, res, next) {
+  next();
+})
+```
 3.	o expresie regulată RegExp
 
 ```javascript

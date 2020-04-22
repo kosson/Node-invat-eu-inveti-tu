@@ -1,8 +1,8 @@
 # Ce-i middleware-ul?
 
-Un middleware este o funcție care are trei callback-uri: `request`, `response` și la final, `next`.
+Un middleware este o funcție care are trei callback-uri: `request`, `response` și la final, `next`. Identificatorii `request`, `response` și `next` sunt denumiți astfel prin convenție pentru a fi ușor de înțeles codul între programatori.
 
-Un schelet care ar lămuri lucrurile este următoarea construcție. De fapt, un middleware este un șablon de lucru care permite reutilizarea codului, fiind pretabil și la distribuirea în pachete `npm`. Middleware-ul are acces la obiectele `request` și `response`, dar trebuie să apeleze `next()` ca să cheme următorul middleware. Cum poți să construiești un middleware?
+Un middleware este un șablon de lucru care permite reutilizarea codului, fiind pretabil și la distribuirea în pachete `npm`. Middleware-ul are acces la obiectele `request` și `response`, dar trebuie să apeleze `next()` ca să cheme următorul middleware. Cum poți să construiești un middleware?
 
 ```javascript
 let nume_middleware = function (request, response, next) {
@@ -11,7 +11,29 @@ let nume_middleware = function (request, response, next) {
 }
 ```
 
-Dacă middleware-ul elaborat nu are în intenție să încheie ciclul cerere - răspuns, trebuie musai să apelezi `next()`. Dacă omiți acest pas, cererea nu se va rezolva.
+Dacă middleware-ul elaborat nu are în intenție să încheie ciclul cerere - răspuns, trebuie musai să apelezi `next()`. Dacă omiți acest pas, cererea nu se va rezolva. Un alt motiv pentru care mai pasezi un callback `next` este pentru a pasa eventualele erori mai departe în lanțul operațiunilor.
+
+```javascript
+const fs = require("fs");
+
+function citesteFisierSiPrelucreazaDate(next) {
+  fs.readFile("./test.txt", (error, data) => {
+    if (error) {
+      next(error);
+    } else {
+      next(null, data);
+    }
+  });
+}
+
+citesteFisierSiPrelucreazaDate((error, data) => {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log(data);
+  }
+});
+```
 
 Atenție, ordinea în care menționezi middleware-ul are o deosebită importanță pentru că este și ordinea în care vor fi executate la rulare. Din aceleași rațiuni vom declara middleware-ul înaintea tratării rutelor.
 
@@ -31,7 +53,7 @@ app.use('/o_ruta', nume_middleware);
 app.get(`/ruta`, nume_middleware);
 ```
 
-Middleware-ul este secvența de cod invocată care se interpune între cererea clientului și răspunsul final. Concluzia este că midlleware-ul se va defini înainte de rute pentru ca rutele să-l folosească.
+În cazul construcție de aplicații web, middleware-ul este secvența de cod invocată care se interpune între cererea clientului și răspunsul final. Concluzia este că midlleware-ul se va defini înainte de rute pentru ca rutele să-l folosească.
 
 Middleware-ul funcționează precum un șir. Cererile lovesc primul middleware definit și apoi următorul și următorul pentru fiecare rută definită. Un exemplu simplu este:
 
@@ -80,3 +102,7 @@ Să presupunem că avem nevoie de middleware-ul acesta pe o anume rută.
 ```javascript
 app.get('/anume_ruta', require('./modul.js'));
 ```
+
+## Resurse
+
+- [Essential Node.js patterns and snippets](http://blog.mixu.net/2011/02/02/essential-node-js-patterns-and-snippets/)

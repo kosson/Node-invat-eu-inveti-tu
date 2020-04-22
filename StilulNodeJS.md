@@ -1,5 +1,17 @@
 # Stilul de programare în Node.js
 
+Modulele NodeJS ar trebui să expună o interfață *error first callback*. Acest lucru înseamnă crearea unor module, care să expună ca prim argument o posibilă eroare.
+
+```javascript
+module.exports = function (date, callback) {
+  console.log(date); // prelucrează datele cumva
+  const prelucrate = date + 1;
+  // dacă apar erori în timpul prelucrării datelor, acestea ar trebui pasate
+  // ca prim argument al funcției cu rol de callback
+  return callback(null, prelucrate); // dacă nu apare nicio eroare, pasează null
+}
+```
+
 În Node.js, dacă o funcție acceptă ca argument un callback, acesta trebuie să fie pasat ultimul.
 
 În *continuation-passing style* (CPS), caracteristic lucrului asincron, erorile sunt propagate ca un rezultat, ceea ce implică trimiterea lor ca argument unui callback.

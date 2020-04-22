@@ -28,7 +28,7 @@ Bufferele joacă un rol central în operațiunile de scriere și citire. Datele 
 let buf = new Buffer(24);
 ```
 
-Buffer-ele din NodeJS sunt diferite de ArrayBuffer-ele din JavaScript pentru că în Node, Buffer-ul nu va încărca și conținutul. Inițializarea buffer-ului se face cu ajutorul metodei `fill()`.
+Buffer-ele din NodeJS sunt diferite de ArrayBuffer-ele din JavaScript pentru că în Node, `Buffer`-ul nu va încărca și conținutul. Inițializarea buffer-ului se face cu ajutorul metodei `fill()`.
 
 ```javascript
 buf.fill(1); // încarcă buffer-ul cu valoarea 1
@@ -38,3 +38,6 @@ buf.fill(1); // încarcă buffer-ul cu valoarea 1
 
 - [The Art of Node](https://github.com/maxogden/art-of-node)
 - [Learn You The Node.js For Much Win!](https://github.com/workshopper/learnyounode#learn-you-the-nodejs-for-much-win)
+- [Mixu's Node book](http://book.mixu.net/node/single.html)
+- [Fundamental Node.js Design Patterns](https://blog.risingstack.com/fundamental-node-js-design-patterns/)
+- [Design patterns in Node.js: A practical guide](https://blog.logrocket.com/design-patterns-in-node-js/)

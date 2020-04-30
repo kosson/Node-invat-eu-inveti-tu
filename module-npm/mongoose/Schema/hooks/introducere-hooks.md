@@ -211,3 +211,4 @@ Atenție, middleware-ul poate transforma o eroare, dar nu poate să o elimine. �
 - [Define Middleware Before Compiling Models](https://mongoosejs.com/docs/middleware.html#defining)
 - [Plugins](https://mongoosejs.com/docs/plugins.html)
 - [Error Handling Middleware](https://mongoosejs.com/docs/middleware.html#error-handling-middleware)
+- [What's New in Mongoose 5: Improved Post Hooks | thecodebarbarian.com](https://thecodebarbarian.com/whats-new-in-mongoose-5-improved-post-hooks.html)

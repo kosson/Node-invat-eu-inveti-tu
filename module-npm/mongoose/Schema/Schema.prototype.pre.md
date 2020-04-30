@@ -127,3 +127,4 @@ myDoc.save(function(err) {
 
 - [Schema.prototype.pre()](https://mongoosejs.com/docs/api/schema.html#schema_Schema-pre)
 - [pre](https://mongoosejs.com/docs/middleware.html#pre)
+- [Pre-save hooks in mongoose.js | medium](https://medium.com/@justinmanalad/pre-save-hooks-in-mongoose-js-cf1c0959dba2)

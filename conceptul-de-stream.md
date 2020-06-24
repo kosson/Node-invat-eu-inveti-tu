@@ -1,6 +1,6 @@
 # Un concept central: stream-uri
 
-Un *stream* este un flux de date dispuse secvențial, care sunt emise de o sursă fragment după fragement (caractere say bytes) și se îndreaptă către o destinație. În sfera computerelor și în special în NodeJS, streamurile sunt date care *curg* ca urmare a unui eveniment `EventEmitter` între diferitele părți funcționale ale unui program. Sursele unui stream pot fi multiple: un fișier, memoria computerului, dispozitive de input cum ar fi mouse-ul, de exemplu sau tastatura. Din momentul în care este deschis un stream, datele vor curge în fragmente către destinația care le și *consumă*. Streamurile care citesc datele de la o sursă se numesc `readable`. La destinație, fragmentele de date sunt prelucrate cu ceea ce se numește *writable* stream, iar datele ajung într-un fișier, în memorie sau chiar în linia de comandă.
+Un *stream* este un flux de date dispuse secvențial, care sunt emise de o sursă fragment după fragment (caractere sau bytes) și se îndreaptă către o destinație. În sfera computerelor și în special în NodeJS, streamurile sunt date care *curg* ca urmare a unui eveniment `EventEmitter` între diferitele părți funcționale ale unui program. Sursele unui stream pot fi multiple: un fișier, memoria computerului, dispozitive de input cum ar fi mouse-ul, de exemplu sau tastatura. Din momentul în care este deschis un stream, datele vor curge în fragmente către destinația care le și *consumă*. Streamurile care citesc datele de la o sursă se numesc `readable`. La destinație, fragmentele de date sunt prelucrate cu ceea ce se numește *writable* stream, iar datele ajung într-un fișier, în memorie sau chiar în linia de comandă.
 
 Următorul exemplu simplu ia o pagină și o trimite în terminal.
 
@@ -54,7 +54,15 @@ NodeJS oferă patru tipuri de stream-uri care pot fi folosite pentru a lucra cu 
 
 NodeJS pune la dispoziție două module care fac posibil lucrul cu stream-uri. Primul este modulul `fs` cu ajutorul căruia putem crea stream-uri care citesc date (`createReadStream`) și stream-uri care scriu date (`createWriteStream`). Cel de-al doilea modul este `stream`, care oferă trei metode de lucru: `stream.Readable`, `stream.Writable` și `stream.Transform`.
 
-Un exemplu concret de utilizare a stream-urilor este cazul serverelor HTTP, care în cazul gestionării rutelor pe care vin cererile, vom avea o funcție callback, care pune la dispoziție prin argumentele sale un stream *readable*, numit `request` și unul *writable* numit `response`.
+Un mic exemplu de folosire a stream-urilor indică și modul în care *curg* datele.
+
+```javascript
+const destinație = fs.createWriteStream(outFile);
+const sursă = fs.createReadStream('fișier.csv');
+source.pipe(destinație);
+```
+
+Un exemplu concret de utilizare a stream-urilor este cazul serverelor HTTP, care în cazul gestionării rutelor pe care vin cererile, vor folosi o funcție callback. Aceasta are drept argumente un stream *readable*, numit `request` și unul *writable* numit `response`.
 
 ```javascript
 app.get('/resursa', function (req, res) {
@@ -66,7 +74,7 @@ app.get('/resursa', function (req, res) {
 
 ## Stream-urile se bazează pe evenimente
 
-Stream-urile în Node.js se bazează pe lucrul cu evenimente pentru că stream-urile implementează clasa `EventEmitter`. Pe cale de consecință, atunci când apar datele, poți atașa un listener, un callback care să facă ceva cu acele date. Pentru a exemplifica, cel mai bine ar fi să creăm un stream folosind metoda dedicată a modulului `fs` : `fs.createWriteStream`. Mai întâi de a porni este necesar să trecem prin descrierea metodei `fs.createWriteStream`. Această metodă primește următoarele argumente posibile:
+Stream-urile în Node.js se bazează pe lucrul cu evenimente pentru că stream-urile implementează clasa `EventEmitter`. Pe cale de consecință, atunci când apar datele, poți atașa un *listener*, un callback care să facă ceva cu acele date. Pentru a exemplifica, cel mai bine ar fi să creăm un stream folosind metoda dedicată a modulului `fs` : `fs.createWriteStream`. Mai întâi de a porni este necesar să trecem prin descrierea metodei `fs.createWriteStream`. Această metodă primește următoarele argumente posibile:
 
 - o **cale** care specifică resursa. Această cale poate fi un șir, un buffer sau un obiect url;
 - o opțiune din mai multe posibile sau un obiect în cazul în care dorești mai multe opțiuni să influențeze crearea acestui stream.
@@ -150,7 +158,36 @@ var streamDeScriere = fs.createWriteStream('altceva.txt');
 streamDeCitire.pipe(streamDeScriere);
 ```
 
-Metoda `pipe()` returnează stream-ul destinație.
+Metoda `pipe()` returnează stream-ul destinație. Această metodă nu distruge automat sursa sau stream-urile destinație, iar acest lucru poate conduce în timp la apariția scurgerilor de memorie. Ceea ce se petrece este că stream-ul sursă nu va fi distrus automat dacă stream-ul destinație emite evenimentele `close` sau `error`.
+
+Din acest motiv, pentru a ne asigura că nu sunt probleme, va trebui să atașăm listeneri pentru a verifica dacă s-au încheiat operațiunile cu stream-ul pentru a-l elimina.
+
+```javascript
+var fs = require('fs');
+var streamDeCitire = fs.createReadStream('ceva.txt');
+var streamDeScriere = fs.createWriteStream('altceva.txt');
+streamDeCitire.pipe(streamDeScriere);
+
+// când ai terminat de scris în destinație, distruge sursa
+streamDeScriere.on('close', () => {
+  streamDeCitire.destroy();
+});
+// aigură-te că în cazul apariției erorilor, distrugi sursa
+streamDeScriere.on('error', () => {
+  streamDeCitire.destroy();
+});
+
+/* Pe stream-ul de citire trebuie să gestionăm `error` și `end` */
+streamDeScriere.on('error', () => {
+  streamDeCitire.destroy();
+});
+
+streamDeScriere.on('end', () => {
+  streamDeCitire.destroy();
+});
+```
+
+Începând cu Node 10, pentru a evita scrierea de cod șablon care să gestioneze evenimentele necesare distrugerii stream-ului sursă, a fost introdus [pipeline](https://nodejs.org/dist/latest-v14.x/docs/api/stream.html#stream_stream_pipeline_source_transforms_destination_callback) în namespace-ul `stream`.
 
 ### Copierea unui fișier în altul
 
@@ -198,3 +235,6 @@ Ceea ce trebuie să înțelegi este faptul că `req` și `res` sunt niște obiec
 - [Bash | Pipelines](https://www.gnu.org/software/bash/manual/bash.html#Pipelines)
 - [Streams API | MDN](https://developer.mozilla.org/en-US/docs/Web/API/Streams_API)
 - [How to Use Buffers in Node.js](https://nodejs.org/en/knowledge/advanced/buffers/how-to-use-buffers/)
+- [Understanding memory leaks in node.js part 1](https://www.alxolr.com/articles/understanding-memory-leaks-in-node-js-part-1)
+- [Understanding memory leaks in node.js part 2](https://www.alxolr.com/articles/understanding-memory-leaks-in-node-js-part-2)
+- [Understanding node's possible eventemitter leak error message](http://web.archive.org/web/20180315203155/http://www.jongleberry.com/understanding-possible-eventemitter-leaks.html)

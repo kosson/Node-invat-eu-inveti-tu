@@ -395,3 +395,4 @@ Stream-ul `res` este un obiect `Writable`, care expune metode precum `write()` È
 - [stream-handbook](https://github.com/substack/stream-handbook)
 - [Stream Adventure](https://www.npmjs.com/package/stream-adventure)
 - [The Definitive Guide to Object Streams in Node.js](https://community.risingstack.com/the-definitive-guide-to-object-streams-in-node-js/)
+- [Node.js Streams - NearForm bootcamp series](https://youtu.be/mlNUxIUS-0Q)

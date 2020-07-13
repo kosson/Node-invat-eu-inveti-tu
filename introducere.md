@@ -12,7 +12,9 @@ Node.js este o aplicație la rândul său care comunică cu sistemul de operare 
 
 Câteva module nucleu ar fi `fs`, `http`, `net`, `dgram`, `dns`, `os`, `buffer`, `events`, `stream` și alte câteva care vin să completeze un context bogat și expresiv cum ar fi `url`, `querystring`, `path` sau `crypto`.
 
-Responsabil de conectarea JS-ului cu funcțiile C++ este `process.binding()` parte a motorului V8. Pentru fiecare metodă a API-ului NodeJS există un corespondent în C++. Legătura cu C++ poate fi investigată prin resursele din directorul `/lib` al proiectului NodeJS. Motorul V8 face o traducere a valorilor din JavaScript în C++, care mai apoi sunt procesate de `libuv` pentru a manipula resursele sistemului.
+Responsabil de conectarea JS-ului cu funcțiile C++ este `process.binding()` parte a motorului V8. Pentru fiecare metodă a API-ului NodeJS există un corespondent în C++. Legătura cu C++ poate fi investigată prin resursele din directorul `/lib` al proiectului Node.js. Motorul V8 face o traducere a valorilor din JavaScript în C++, care mai apoi sunt procesate de `libuv` pentru a manipula resursele sistemului.
+
+Node.js este scris în C++. De exemplu, unele callback-urile sunt gestionate pe un nivel asigurat de cod scris în C++. Altele invocă fragmente de cod scrise în JavaScript.
 
 ## Date de lucru în Node.js
 

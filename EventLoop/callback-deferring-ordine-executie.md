@@ -1,6 +1,6 @@
 # Callbacks, programarea execuției asincron
 
-În NodeJS, dacă o funcție acceptă ca argument un callback, acesta trebuie să fie pasat ultimul.
+În Node.js, dacă o funcție acceptă ca argument un callback, acesta trebuie să fie pasat ultimul.
 
 ## Amânarea funcțiilor callback
 

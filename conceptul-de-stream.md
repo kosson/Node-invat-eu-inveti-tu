@@ -1,19 +1,21 @@
 # Un concept central: stream-uri
 
-Un *stream* este un flux de date dispuse secvențial, care sunt emise de o sursă fragment după fragment (caractere sau bytes) și se îndreaptă către o destinație. În sfera computerelor și în special în NodeJS, streamurile sunt date care *curg* ca urmare a unui eveniment `EventEmitter` între diferitele părți funcționale ale unui program. Sursele unui stream pot fi multiple: un fișier, memoria computerului, dispozitive de input cum ar fi mouse-ul, de exemplu sau tastatura. Din momentul în care este deschis un stream, datele vor curge în fragmente către destinația care le și *consumă*. Streamurile care citesc datele de la o sursă se numesc `readable`. La destinație, fragmentele de date sunt prelucrate cu ceea ce se numește *writable* stream, iar datele ajung într-un fișier, în memorie sau chiar în linia de comandă.
+Un *stream* este un flux de date dispuse secvențial, care sunt emise de o sursă fragment după fragment (caractere sau bytes) și se îndreaptă către o destinație. În sfera computerelor și în special în Node.js, streamurile sunt date care *curg* ca urmare a unui eveniment `EventEmitter` între diferitele părți funcționale ale unui program. Sursele unui stream pot fi multiple: un fișier, memoria computerului, dispozitive de input cum ar fi mouse-ul, de exemplu sau tastatura. Din momentul în care este deschis un stream, datele vor curge în fragmente către destinația care le și *consumă*. Streamurile care citesc datele de la o sursă se numesc `readable`. La destinație, fragmentele de date sunt prelucrate cu ceea ce se numește *writable* stream, iar datele ajung într-un fișier, în memorie sau chiar în linia de comandă. Există și o problemă legată de cum sunt *consumate* datele dintr-un stream. În cazul Node.js, presiunea (*backpressure*) datelor din upstream este regltă în funcție de capacitatea de prelucrare a downstream-ului.
 
-Următorul exemplu simplu ia o pagină și o trimite în terminal.
+Ca exemplu, putem lua o pagină web să o trimitem în terminal.
 
 ```javascript
 const request = require('request');
 request('https://europa.eu').pipe(process.stdout);
 ```
 
-O procedură similară angajează un scraper de pagini web, de exemplu. Totuși, cel mai util lucru în cazul stream-urilor este că între sursă și destinație poți interpune software care să modifice într-un mod util datele. Aceste pachete software sunt numite
+O procedură similară angajează un scraper de pagini web, de exemplu. Totuși, cel mai util lucru în cazul stream-urilor este că între sursă și destinație poți interpune software care să modifice într-un mod util datele.
 
-Avantajul tratării datelor prin folosirea stream-urilor este superioară citirii și introducerii în memorie a unui întreg fișier. În cazul fișierelor de mari citirea și introducerea lor în memorie este nefezabilă din punct de vedere al rezurselor de memorie. Astfel, stream-urile oferă metoda optimă. Ca să avem o dimensiune a limitării, un fișier CSV sau JSON poate ocupa o fereastră limitată de memorie de 536MB (limitare impusă de motorul V8 pe care NodeJS îl folosește). Ce se întâmplă atunci când dorești să lucrezi cu fișiere de dimensiuni mai mari, de ordinul gigabiților, de exemplu.
+Avantajul tratării datelor prin folosirea stream-urilor este superioară citirii și introducerii în memorie a unui întreg fișier. Pur și simplu este vorba despre posibilitatea de a prelucra date de dimensiuni foarte mari folosind memorie care este limitată. În cazul fișierelor de mari dimensiuni citirea urmată de introducerea lor în memorie este nefezabilă din punct de vedere al rezurselor de memorie. Astfel, stream-urile oferă metoda optimă. Ca să avem o dimensiune a limitării, un fișier CSV sau JSON poate ocupa o fereastră limitată de memorie de 536MB (limitare impusă de motorul V8 pe care Node.js îl folosește). Ce se întâmplă atunci când dorești să lucrezi cu fișiere de dimensiuni mai mari, de ordinul gigabiților, de exemplu.
 
-Subiectul `stream`-urilor este legat intim de cel al funcționării sistemelor de operare UNIX. Una din cele mai apreciate facilități ale acestui sistem de operare este capacitatea de a folosi programe mai mici pentru a dezvolta programe mai elaborate. Dar așa cum rândurile de cărămizi sunt legate unele de celelalte prin mortar, așa există și în UNIX un liant foarte puternic numit `pipes` (vezi [Pipelines din manualul de Bash](http://www.gnu.org/software/bash/manual/bash.html#Pipelines)). În română ar putea fi tradus ca `racorduri`. În folosirea de zi cu zi, aceste *racorduri* sunt identificabile prin utilizarea caracterului *pipe* <code>&#124;</code>. Pentru a face utiliza racordurile în NodeJS, vom folosi `.pipe()`. Urmând acest model, datele de input ale unui program sau componentă software pot fi datele de output ale alteia. În UNIX, două sau mai multe programe sunt conectate prin caracterul `|`, care în limba engleză se numește `pipe`. Am putea traduce în limba română ca *racord*.
+Stream-urile emit evenimente pentru că implementează `EventEmitter`. Acestor evenimente li se pot atașa funcții care să gestioneze datele. Cele mai bune aspecte funcționale ale Node.js au la bază stream-urile.
+
+Subiectul `stream`-urilor este legat intim de cel al funcționării sistemelor de operare UNIX. Una din cele mai apreciate facilități ale acestui sistem de operare este capacitatea de a folosi programe mai mici pentru a dezvolta programe mai elaborate. Dar așa cum rândurile de cărămizi sunt legate unele de celelalte prin mortar, așa există și în UNIX un liant foarte puternic numit `pipes` (vezi [Pipelines din manualul de Bash](http://www.gnu.org/software/bash/manual/bash.html#Pipelines)). În română ar putea fi tradus ca `racorduri`. În folosirea de zi cu zi, aceste *racorduri* sunt identificabile prin utilizarea caracterului *pipe* <code>&#124;</code>. Pentru a face utiliza racordurile în Node.js, vom folosi `.pipe()`. Urmând acest model, datele de input ale unui program sau componentă software pot fi datele de output ale alteia. În UNIX, două sau mai multe programe sunt conectate prin caracterul `|`, care în limba engleză se numește `pipe`. Am putea traduce în limba română ca *racord*.
 
 Chiar dacă nu suntem programatori de UNIX, vom explora un exemplu de funcționare a mai multor progrămele mici folosite în mod curent într-un terminal, de data aceasta de GNU/Linux.
 
@@ -29,7 +31,7 @@ Douglas McIlroy, unul dintre autorii UNIX-ului, a scris o notă în care surprin
 
 > Ar trebui să avem modalități de a conecta programele precum furtunele din grădină - înfiletezi alt segment atunci când este necesar să masezi datele în alt fel. Aceasta este și calea IO. (Douglas McIlroy, 1964)
 
-**IO** înseamnă In/Out - o paradigmă a intrărilor și a ieșirilor. Intrările și ieșirile în NodeJS au un comportament **asincron**, ceea ce înseamnă că va trebui pasat un callback care va acționa asupra datelor.
+**IO** înseamnă In/Out - o paradigmă a intrărilor și a ieșirilor. Intrările și ieșirile în Node.js au un comportament **asincron**, ceea ce înseamnă că va trebui pasat un callback care va acționa asupra datelor.
 
 ## Stream-uri în JavaScript
 
@@ -39,20 +41,20 @@ Stream-urile lucrează cu fragmente, care în limba engleză se numesc **chunks*
 
 > un singur fragment de date care este scris sau care este citit dintr-un stream. Poate fi de orice tip; stream-urile pot conține chunks de tipuri diferite. Un chunk va fi cel mai adesea cea mai mică unitate de date pentru un anumit stream; de exemplu, un byte stream poate conține chunks ca `Uint8Array`-uri de 16KiB în loc de bytes unici.
 
-Acestea sunt trimise între două puncte de comunicare. Streamurile emit evenimente ceea ce înseamnă că se pot atașa funcții de callback pe acestea.
+Acestea sunt trimise între două puncte de comunicare. Stream-urile emit evenimente ceea ce înseamnă că se pot atașa funcții de callback pe acestea.
 
-## Tipuri de stream-uri în NodeJS
+## Tipuri de stream-uri în Node.js
 
-În cazul lucrului cu fișierele de mari dimensiuni, trebuie să privim întregul ca un set de fragmente, care pot fi prelucrate. Uneori, în lucrările de specialitate veți găsri aceste fragmente numite ferestre (*windows*). În NodeJS, acestea sunt numite *fragmente* (*chunks* în lb. engleză).
+În cazul lucrului cu fișierele de mari dimensiuni, trebuie să privim întregul ca un set de fragmente, care pot fi prelucrate. Uneori, în lucrările de specialitate veți găsri aceste fragmente numite ferestre (*windows*). În Node.js, acestea sunt numite *fragmente* (*chunks* în lb. engleză).
 
-NodeJS oferă patru tipuri de stream-uri care pot fi folosite pentru a lucra cu datele:
+Node.js oferă patru tipuri de stream-uri care pot fi folosite pentru a lucra cu datele:
 
 - `Readable` sunt stream-uri care pot citi date;
 - `Writable`, fiind stream-ul care permite scrierea datelor;
 - `Duplex`, fiind stream-uri care sunt `Readable` și `Writable` în același timp;
 - `Transform`, fiind stream-uri care pot modifica datele pe măsură ce acestea sunt citite și scrise.
 
-NodeJS pune la dispoziție două module care fac posibil lucrul cu stream-uri. Primul este modulul `fs` cu ajutorul căruia putem crea stream-uri care citesc date (`createReadStream`) și stream-uri care scriu date (`createWriteStream`). Cel de-al doilea modul este `stream`, care oferă trei metode de lucru: `stream.Readable`, `stream.Writable` și `stream.Transform`.
+Node.js pune la dispoziție două module care fac posibil lucrul cu stream-uri. Primul este modulul `fs` cu ajutorul căruia putem crea stream-uri care citesc date (`createReadStream`) și stream-uri care scriu date (`createWriteStream`). Cel de-al doilea modul este `stream`, care oferă trei metode de lucru: `stream.Readable`, `stream.Writable` și `stream.Transform`.
 
 Un mic exemplu de folosire a stream-urilor indică și modul în care *curg* datele.
 
@@ -187,7 +189,7 @@ streamDeScriere.on('end', () => {
 });
 ```
 
-Începând cu Node 10, pentru a evita scrierea de cod șablon care să gestioneze evenimentele necesare distrugerii stream-ului sursă, a fost introdus [pipeline](https://nodejs.org/dist/latest-v14.x/docs/api/stream.html#stream_stream_pipeline_source_transforms_destination_callback) în namespace-ul `stream`.
+Începând cu Node 10, pentru a evita scrierea de cod șablon care să gestioneze evenimentele necesare distrugerii stream-ului sursă, a fost introdus [pipeline](https://Node.js.org/dist/latest-v14.x/docs/api/stream.html#stream_stream_pipeline_source_transforms_destination_callback) în namespace-ul `stream`.
 
 ### Copierea unui fișier în altul
 
@@ -231,10 +233,12 @@ Ceea ce trebuie să înțelegi este faptul că `req` și `res` sunt niște obiec
 
 ## Resurse
 
-- [Easier Node.js streams via async iteration | Dr. Axel Rauschmayer](https://2ality.com/2019/11/nodejs-streams-async-iteration.html)
+- [Easier Node.js streams via async iteration | Dr. Axel Rauschmayer](https://2ality.com/2019/11/Node.js-streams-async-iteration.html)
 - [Bash | Pipelines](https://www.gnu.org/software/bash/manual/bash.html#Pipelines)
 - [Streams API | MDN](https://developer.mozilla.org/en-US/docs/Web/API/Streams_API)
-- [How to Use Buffers in Node.js](https://nodejs.org/en/knowledge/advanced/buffers/how-to-use-buffers/)
+- [How to Use Buffers in Node.js](https://Node.js.org/en/knowledge/advanced/buffers/how-to-use-buffers/)
 - [Understanding memory leaks in node.js part 1](https://www.alxolr.com/articles/understanding-memory-leaks-in-node-js-part-1)
 - [Understanding memory leaks in node.js part 2](https://www.alxolr.com/articles/understanding-memory-leaks-in-node-js-part-2)
 - [Understanding node's possible eventemitter leak error message](http://web.archive.org/web/20180315203155/http://www.jongleberry.com/understanding-possible-eventemitter-leaks.html)
+- [Node.js Streams - NearForm bootcamp series | YouTube](https://youtu.be/mlNUxIUS-0Q)
+- [Stream Into the Future (Node.js Streams) | YouTube](https://www.youtube.com/watch?v=aTEDCotcn20)

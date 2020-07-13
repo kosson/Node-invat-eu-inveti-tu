@@ -1,6 +1,7 @@
-# Stream-uri Transform
+### Clasa `stream.Transform`
 
-Un stream `Transform` este un stream `Duplex`, în care rezultatul este obținut din input-ul supus unei prelucrări. Aceste stream-uri implementează clasele `Readable` și `Writable`.
+Stream-urile de transformare sunt acele stream-uri `Duplex` care implementează interfețele `Readable` și `Writable`. De exemplu, streamurile `zlib` și `crypto` sunt de tip `Transform`.
+Rezultatul este obținut din input-ul supus unei prelucrări. Aceste stream-uri implementează clasele `Readable` și `Writable`.
 
 Manualul oferă drept exemplu modulele `zlib` și `crypto`.
 
@@ -133,3 +134,40 @@ transform.prototype._transform = function(data, encoding, callback) {
 ```
 
 Această funcție este apelată după ce fragmentul de date a fost prelucrat.
+
+### Cazuistică
+
+#### Preluare de imagine
+
+Majoritatea aplicațiilor Node.js folosesc `stream`-urile într-un fel sau altul. Totuși există excepții când dorești să lucrezi cu `Buffer`e, de exemplu. Să presupunem că faci un `Buffer` în care introduci o imagine codată base64. Pentru a o scrie pe hard disk, mai întâi ai nevoie să introduci conținutul `Buffer`-ului într-un stream care să poată fi citit.
+
+```javascript
+var unit = '' || `${process.env.BASE_UNIT}`;
+var user = '' || `${process.env.BASE_USER}`;
+function createRecord (data) {
+    //TODO: urmeaza standardul BagIt
+    var calea = `${__dirname}/${process.env.REPO}/${unit}/${user}/${uuidv1()}`; // numele directorului resurselor va fi un UUID v1
+    var bag = bagit(calea, 'sha256', {'Contact-Name': `${user}`});
+    // separă extensia
+    // var ext = data.split(';')[0].match(/jpeg|png|gif/)[0];
+
+    var b64data = data.replace(/^data:image\/\w+;base64,/, "");
+
+    // creează un buffer specializat
+    var buffy = Buffer.from(b64data, 'base64');
+    // poți scrie datele pe hard direct
+    // fs.writeFile('imagine.png', buffy, 'base64', () => {
+    //     console.log('Am scris fișierul');
+    // });
+
+    // introdu Buffer-ul într-un stream
+    var strm = new Readable();
+    strm.push(buffy);
+    strm.push(null);
+    strm.pipe(bag.createWriteStream('cover.png'));
+
+    bag.finalize(function () {
+        console.log('Am creat bag-ul');
+    });
+}
+```

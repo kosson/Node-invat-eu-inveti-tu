@@ -62,7 +62,7 @@ modules.define('primo', function mod01 () {
 modules.define('secundo', function mod02 () {
     var primo = modules.require('primo')(4);
     return {
-        valoareCalculata: function dividCu (divizor) {            
+        valoareCalculata: function dividCu (divizor) {
             return primo / divizor;
         }
     }
@@ -75,11 +75,13 @@ console.log(ceva.valoareCalculata(3)); // 4.666666
 
 Trebuie să-ți imaginezi aceste fragmente de cod fiecare în fișierul propriu. Odată strânse într-unul singur (operațiunea de bundling - `cat registru.js modul01.js modul02.js app.js > main.js`) vor funcționa corespunzător.
 
-Node.js implementează modularitatea folosind [CommonJS](https://requirejs.org/docs/commonjs.html). Acest lucru permite organizarea codului mai eficientă și expunerea funcționalităților necesare printr-o interfață publică: `module.exports`. unul din motivele pentru care este folosit sistemul de module, este acela pentru că oferă incapsulare codului din modul. Este ca și cum ai avea codul izolat într-o funcție auto-executabilă: `(function () { })();`. Tot codul care este declarat în modul, nu poate fi accesat din afară.
+Node.js implementează modularitatea folosind [CommonJS](https://requirejs.org/docs/commonjs.html). Acest lucru permite organizarea codului mai eficientă și expunerea funcționalităților necesare printr-o interfață publică: `module.exports`. Unul din motivele pentru care este folosit sistemul de module, este acela pentru că oferă incapsulare codului din modul. Este ca și cum ai avea codul izolat într-o funcție auto-executabilă: `(function () { })();`. Tot codul care este declarat în modul, nu poate fi accesat din afară.
 
 ## Ce este un modul
 
-În Node.js fiecare fișier este tratat ca un modul în sine. În interiorul motorului V8, implementarea modulelor conform CommonJS se rezumă la ambalarea codului propriu într-o expresie de funcție căreia îi sunt pasate câteva referințe esențiale pentru a face posibilă modularizarea.
+În Node.js fiecare fișier este tratat ca un modul în sine. Un fișier poate fi introdus din necesitate în economia unui script.
+
+În interiorul motorului V8, implementarea modulelor conform CommonJS se rezumă la ambalarea codului propriu într-o expresie de funcție căreia îi sunt pasate câteva referințe esențiale pentru a face posibilă modularizarea.
 
 ```javascript
 (function (exports, require, module, __filename, __filename) {
@@ -89,7 +91,7 @@ Node.js implementează modularitatea folosind [CommonJS](https://requirejs.org/d
 
 Privind acest fragment (poți explora modul de funcționare cu Debugger-ul), realizăm că din start, codul prorpiu are acces la obiectele care vor fi vehiculul prin care vom putea colporta funcționalități în alte module. Ca ultim pas după executarea codului sursă pe care tu l-ai scris, motorul V8 va face un return lui `module.export`, ceea ce va expune entitățile care s-au format prin evaluarea codului tău. Aceasta este puntea cu restul modulelor care îl vor cere pe acesta. Poți să gândești propriul cod precum corpul expresiei de funcție anonimă cu care motorul îl va înveli.
 
-Toate variabilele locale ale unui modul sunt considerate private. De regulă, fragmentul de text pe care îl pasezi lui `require('./numemodul')` este și calea către modul, fără a mai preciza extensia `.js`, pe care motorul V8 o completează automat. Însuși efortul de standardizare al JavaScript a pornit pe calea modularizării de ceva timp. Node.js folosește standardele CommonJS, dar mai nou, oferă suport și pentru modulele introduse de versiunea ES2015.
+Toate variabilele locale ale unui modul sunt considerate private; modulele au propriul lor mediu lexical. Acest lucru înseamnă că nu ai acces la variabilele unui modul la rularea codului. De regulă, fragmentul de text pe care îl pasezi lui `require('./numemodul')` este și calea către modul, fără a mai preciza extensia `.js`, pe care motorul V8 o completează automat. Însuși efortul de standardizare al JavaScript a pornit pe calea modularizării de ceva timp. Node.js folosește standardele CommonJS, dar mai nou, oferă suport și pentru modulele introduse de versiunea ES2015.
 
 Cererea pentru un modul se face prin apelarea funcției `require('nume_modul')`. Această operațiune este una sincronă, însemnând că se va proceda la o localizare a fișierului JavaScript, citirea acestuia și construirea tuturor legăturilor la valorile din memorie. Dacă a fost apelat o dată, modulul va intra într-un cache din care va fi disponibil ori de câte ori va mai fi cerut din interiorul aplicației sau din alte module.
 
@@ -135,7 +137,7 @@ const express = require('express');
 
 Invocarea funcției, returnează un obiect. Putem să ne închipuim modulele precum niște fragmente de care depinde funcționarea întregii aplicații. În unele lucrări sunt numite de-a dreptul **dependințe**. În cazul Express este nevoie și de o instanțiere prin `express()`.
 
-Ar fi util să privim mai îndeaproape cum lucrează modularizarea. Să presupunem că avem codul unui modul și acesta expune o funcție.
+Ar fi util să privim mai îndeaproape cum lucrează modularizarea. Să presupunem că avem codul unui modul care expune o funcție.
 
 ```javascript
 // fisierul salutare.js
@@ -146,7 +148,7 @@ module.exports = salutari;
 
 // fișierul index.js
 const salut = require('./salutari');
-/* presupunem că ambele fișiere stau în aceeași rădăcină */ 
+/* presupunem că ambele fișiere stau în aceeași rădăcină */
 salut('Ioanide');
 ```
 
@@ -261,7 +263,7 @@ Poți exporta un obiect simplu instanțiat dintr-un constructor.
 // modul.js
 var Obiect = function () {};
 Obiect.prototype.cevaNou = function () {
-    console.log('bau`);
+    console.log('bau');
 };
 module.exports = new Obiect(); // înlocuiește obiectul exports cu cel nou creat.
 // app.js
@@ -275,7 +277,7 @@ sau poți specifica direct care să fie numele obiectului.
 // modul.js
 var Obiect = function () {};
 Obiect.prototype.cevaNou = function () {
-    console.log('bau`);
+    console.log('bau');
 };
 exports.Obi = new Obiect();
 // app.js
@@ -307,7 +309,7 @@ Uneori este necesară instanțierea unui obiect din modulul în care ajunge. Pen
 // modul.js
 var Obiect = function () {};
 Obiect.prototype.cevaNou = function () {
-    console.log('bau`);
+    console.log('bau');
 };
 module.exports = Obiect;
 // app.js
@@ -322,7 +324,7 @@ Ai putea exporta un constructor care să aibă nume.
 // modul.js
 var Obiect = function () {};
 Obiect.prototype.cevaNou = function () {
-    console.log('bau`);
+    console.log('bau');
 };
 exports.Obiect = Obiect;
 // app.js
@@ -403,7 +405,7 @@ Pentru a folosi un modul ES6 va trebui să-l imporți folosind cuvântul cheie `
 
 ```javascript
 import * as nume_identificare from 'test.mjs';
-nume_identificare.facCeva(); 
+nume_identificare.facCeva();
 ```
 
 ### Module Node.js în cele ES6

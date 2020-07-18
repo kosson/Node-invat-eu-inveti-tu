@@ -1,6 +1,42 @@
-# npm
+# Introducere module
 
-Pachetele software scrise de programatorii care contribuie la ecosistemul Node.js, se pot instala folosid `npm install nume_pachet`. Aceste pachete se găsesc într-un depozit pe Internet la http://npmjs.com.
+Sistemul de modularizare al Node.js este bazat pe implementarea de Singleton-uri. În exemplul următor, expunem o funcție numită `adaugă`. Chiar dacă acest modul este importat în mai multe alte module ale programului, obiectul va fi instanțiat o singură dată.
+
+```javascript
+let ceva = 10;
+module.exports = {
+  adaugă: function adaugă (număr) {
+    return număt + ceva;
+  }
+}
+```
+
+Acest lucru este posibil pentru că Node.js face un caching al modului cerut de îndată ce a fost instanțiat prima dată. Faptul că ai la îndemână un Singleton, implică posibilitate modificării stării acestuia din mai multe puncte ale programului. Acest comporament nu se va întâmpla dacă folosești funcții cu rol de constructori sau clase. În acest caz ori de câte ori faci `require`, vei instanția un obiect nou.
+
+```javascript
+class Ceva {
+  constructor (prima) {
+    let a = prima;
+  }
+  aduna () {
+    return a++;
+  }
+}
+module.exports = Ceva;
+```
+
+În modulul în care faci require, va trebui să instanțiezi obiectul. Atenție, instanțierea obiectului în alt modul face ca acest obiect să fie disponibil doar celui care a făcut `require`.
+
+```javascript
+const Ceva = require('./Ceva');
+const Chestii = new Ceva();
+```
+
+Dacă dorești să beneficiezi de un obiect unic, de un Singleton, vei exporta un obiect instanțiat: `module.exports = new Ceva()`. Există o problemă legată de această abordare. Pe sistemele care nu onorează numele case-sensitive, modulul nu se va comporta ca un Singleton pentru că va fi cache-uit ca instanțe separate. Reține faptul că în cazul în care instanțiezi o clasă înainte să o exporți într-un modul, va rezulta în generarea unui Singleton.
+
+## Node Package Management - npm
+
+Pachetele software scrise de programatorii care contribuie la ecosistemul Node.js, se pot instala folosind `npm install nume_pachet`. Aceste pachete se găsesc într-un depozit pe Internet la http://npmjs.com.
 
 ## Căutarea unui pachet
 
@@ -24,9 +60,9 @@ dist
 .unpackedSize: 206.1 kB
 
 dependencies:
-accepts: ~1.3.5            content-disposition: 0.5.2 cookie: 0.3.1              encodeurl: ~1.0.2          finalhandler: 1.1.1        methods: ~1.1.2            path-to-regexp: 0.1.7      range-parser: ~1.2.0       
-array-flatten: 1.1.1       content-type: ~1.0.4       debug: 2.6.9               escape-html: ~1.0.3        fresh: 0.5.2               on-finished: ~2.3.0        proxy-addr: ~2.0.4         safe-buffer: 5.1.2         
-body-parser: 1.18.3        cookie-signature: 1.0.6    depd: ~1.1.2               etag: ~1.8.1               merge-descriptors: 1.0.1   parseurl: ~1.3.2           qs: 6.5.2                  send: 0.16.2               
+accepts: ~1.3.5            content-disposition: 0.5.2 cookie: 0.3.1              encodeurl: ~1.0.2          finalhandler: 1.1.1        methods: ~1.1.2            path-to-regexp: 0.1.7      range-parser: ~1.2.0
+array-flatten: 1.1.1       content-type: ~1.0.4       debug: 2.6.9               escape-html: ~1.0.3        fresh: 0.5.2               on-finished: ~2.3.0        proxy-addr: ~2.0.4         safe-buffer: 5.1.2
+body-parser: 1.18.3        cookie-signature: 1.0.6    depd: ~1.1.2               etag: ~1.8.1               merge-descriptors: 1.0.1   parseurl: ~1.3.2           qs: 6.5.2                  send: 0.16.2
 (...and 6 more.)
 
 maintainers:
@@ -36,7 +72,7 @@ maintainers:
 - mikeal <mikeal.rogers@gmail.com>
 
 dist-tags:
-latest: 4.16.4       next: 5.0.0-alpha.7  
+latest: 4.16.4       next: 5.0.0-alpha.7
 
 published 3 months ago by dougwilson <doug@somethingdoug.com>
 ```

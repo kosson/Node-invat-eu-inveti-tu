@@ -1,8 +1,8 @@
 # Callbacks, programarea execuției asincron
 
-În Node.js, dacă o funcție acceptă ca argument un callback, acesta trebuie să fie pasat ultimul.
+Callback-urile sunt funcții care sunt *programate* să fie executate în funcție de rezultatul unei operațiuni sau interacțiuni. În Node.js, dacă o funcție acceptă ca argument un callback, acesta trebuie să fie pasat ultimul.
 
-## Amânarea funcțiilor callback
+## Programarea execuției funcțiilor callback
 
 Se folosește API-ul `process.nextTick()`, care amână execuția unei funcții până la următorul ciclu al buclei I/O. Poți considera `process.nextTick()` ca pe un punct de intrare în buclă. Funcționează astfel: se ia un callback ca argument și se introduce în capul *listei de execuție* (task queue) înaintea oricărui eveniment I/O care așteaptă, iar funcția gazdă va returna imediat. Funcția callback va fi invocată de îndată ce bucla începe un nou ciclu (adică când stiva este goală și poate fi trimis spre execuție callback-ul).
 
@@ -10,7 +10,7 @@ Un alt API pentru amânarea execuției este `setImmediate()`. Diferența dintre 
 
 ##  Ordinea de execuție a codului în Node.js
 
-Node.js rulează un singur fir de execuție pentru codul JavaScript și controlează execuția folosind un *event loop*. Pentru orice altceva Node.js nu va ezita să folosească multiple fire de execuție.
+Node.js rulează un singur fir de execuție pentru codul JavaScript și controlează execuția codului asincron folosind un *event loop*. Pentru orice altceva Node.js nu va ezita să folosească multiple fire de execuție.
 
 Există un lucru foarte interesant care trebuie reținut de fiecare dată când pornești execuția unui program în Node.js. Fișierul de JavaScript pe care îl execuți cu Node.js pentru prima dată, va face parte din secvența de bootstrapping a lui Node.js. Acest lucru înseamnă că event loop-ul nu este pornit decât după ce codul acestui prim fișier este executat. În cazul în care avem callback-uri în cod, acestea vor beneficia de apelarea în *event loop*.
 
@@ -38,7 +38,7 @@ queueMicrotask(() => {
 });
 ```
 
-În acest exemplu, funcția din promisiune este executată imediat, dar `then` va fi executat de *event loop*. Ca o regulă generală, funcțiile sunt executate la momentul bootstrapping-ului, indiferent că sunt pasate unui constructor ori sunt declarate direct. Apoi vor fi executate în ordine oricare `process.nextTick(() => {console.log('ceva')})` declarat. Din motive istorice, `process.nextTick()` nu înseamnă chiar următorul tick de buclă. De fapt înseamnă „rulează codul la finalul executării codului JavaScript”. Trebuie menționat faptul că `nextTick` are cea mai înaltă prioritate. Acest cod va rula înaintea codului aflat în microtask queue.
+În acest exemplu, funcția din promisiune este executată imediat, dar `then` va fi executat de *event loop*. Ca o regulă generală, funcțiile sunt executate la momentul bootstrapping-ului, indiferent că sunt pasate unui constructor ori sunt declarate direct. Apoi vor fi executate în ordine oricare `process.nextTick(() => {console.log('ceva')})` declarat. Din motive istorice, `process.nextTick()` nu înseamnă chiar următorul *tick* de buclă. De fapt înseamnă „rulează codul la finalul executării codului JavaScript”. Trebuie menționat faptul că `nextTick` are cea mai înaltă prioritate. Acest cod va rula înaintea codului aflat în *microtask queue*.
 
 Atunci și numai atunci, va fi apelat codul. Din acest motiv orice `process.nextTick` am avea în codul executat la momentul bootstrapping-ului, va fi executat după ce întregul cod JavaScript va fi executat. Putem spune că `process.nextTick()` și `queueMicrotask()` nu sunt executate în *event loop*. Restul, `setImmediate`, `setTimeout` și `setInterval` rulează în *event loop*.
 

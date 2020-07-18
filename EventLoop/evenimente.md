@@ -1,8 +1,8 @@
-# Evenimente în Node
+# Evenimente în Node.js
 
-NodeJS se bazează pe modelul de comunicare folosind evenimentele. Pe de o parte, avem evenimentele care țin de sistemul de operare, care sunt legate de funcționarea nucleului NodeJS (programat în C++), numit `libuv`. Pe de altă parte, avem evenimente specifice nucleului JavaScript al NodeJS (implementare `EventEmitter`).
+Node.js se bazează pe modelul de comunicare folosind evenimentele. Pe de o parte, avem evenimentele care țin de sistemul de operare, care sunt legate de funcționarea nucleului Node.js (programat în C++), numit `libuv`. Pe de altă parte, avem evenimente specifice nucleului JavaScript al Node.js (implementare `EventEmitter`).
 
-NodeJS pune la dispoziție obiecte numite `emitters` a căror sarcină este să genereze evenimente la anumite intervale. Evenimentele emise vor declanșa executarea unor funcții care au rol de receptoare (*handlers*). Toate obiectele care emit evenimente implementează clasa `EventEmitter`. Aceste obiecte oferă o metodă `eventEmiter.on()` care permite atașarea unor funcții la evenimentele emise. Aceste funcții vor fi executate sincron la momentul apelării lor. Metoda `eventEmiter.emit()` este folosită pentru a declanșa executarea funcțiilor receptor.
+Node.js pune la dispoziție obiecte numite `emitters` a căror sarcină este să genereze evenimente la anumite intervale. Evenimentele emise vor declanșa executarea unor funcții care au rol de receptoare (*handlers*). Toate obiectele care emit evenimente implementează clasa `EventEmitter`. Aceste obiecte oferă o metodă `eventEmiter.on()` care permite atașarea unor funcții la evenimentele emise. Aceste funcții vor fi executate sincron la momentul apelării lor. Metoda `eventEmiter.emit()` este folosită pentru a declanșa executarea funcțiilor receptor.
 
 Modelul de emitere a unui eveniment:
 
@@ -23,7 +23,7 @@ Node privește `EventEmitter`-ul ca pe o clasă care își găsește implementar
 const EventEmitter = require('events');
 ```
 
-## this și arguments
+## `this` și `arguments`
 
 De cele mai multe ori este nevoie să lucrezi cu obiectul `this` pe care îl formează callback-ul. La invocarea callback-ului, `this` va indica obiectul generat de invocarea metodei `eventEmitter.emit()`. Dacă nu vei folosi callback-uri declarate cu `function`, nu vei avea acces la `this`. Metoda permite și pasarea mai multor argumente funcțiilor cu rol de callback.
 
@@ -39,7 +39,7 @@ myEmitter.emit('event', 'a', 'b');
 
 Folosirea funcțiilor săgeată va indica un obiect gol pentru `this`.
 
-Toate funcțiile callback sunt apelate în manieră sincronă, una după alta în ordinea în care au fost introduse. Documentația Node menționează faptul că ordinea introducerii este determinantă pentru execuția funcțiilor. Menține o logică curată! Reține faptul că de fiecare dată când vei emite un eveniment, funcția sau funcțiile receptor vor fi apelate în ordinea înregistrării lor.
+Toate funcțiile callback sunt apelate în manieră sincronă, una după alta în ordinea în care au fost introduse. Documentația Node.js menționează faptul că ordinea introducerii este determinantă pentru execuția funcțiilor. Menține o logică curată! Reține faptul că de fiecare dată când vei emite un eveniment, funcția sau funcțiile receptor vor fi apelate în ordinea înregistrării lor.
 
 Transformarea modului sincron în asincron se poate face prin aplicarea utilitarelor `setImmediate()` și `process.nextTick()`.
 

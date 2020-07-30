@@ -1,7 +1,6 @@
 # Query.prototype.exec()
 
-Aceasta este metoda, care aplicată pe un obiect `Query`, se va face interogarea bazei de date MangoDB.
-Această metodă returnează un `Promise`.
+Aceasta este metoda, care aplicată pe un obiect `Query`, se va face interogarea bazei de date MongoDB. Această metodă returnează un `Promise`.
 
 Drept parametri poate primi un `String` sau un `Function`, care să indice o anumită operațiune, dar și un callback.
 

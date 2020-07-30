@@ -59,7 +59,6 @@ app.use(function(req, res, next) {
 app.get('/', function (req, res) {
   res.send('Bine ai venit pe rădăcina site-ului.');
 })
-
 ```
 
 Calea este un string reprezentând:
@@ -118,73 +117,73 @@ app.use(['/abcd', '/xyza', /\/lmn|\/pqr/], function (req, res, next) {
 
 1. Funcție de middleware care poate fi definită și montată local.
 
-  ```javascript
-  // Funcție definită și atașată pe loc
-  app.use(function (req, res, next) {
-    next();
-  })
-  ```
-  Routerul este și el un middleware care trebuie atașat aplicației Express.
+```javascript
+// Funcție definită și atașată pe loc
+app.use(function (req, res, next) {
+  next();
+})
+```
+Routerul este și el un middleware care trebuie atașat aplicației Express.js.
 
-  ```javascript
-  // definire router
-  var router = express.Router();
-  // tratarea cererilor pe rădăcină
-  router.get('/', function (req, res, next) {
-    next();
-  });
-  // atașarea routerului la aplicația Express
-  app.use(router);
+```javascript
+// definire router
+var router = express.Router();
+// tratarea cererilor pe rădăcină
+router.get('/', function (req, res, next) {
+  next();
+});
+// atașarea routerului la aplicația Express
+app.use(router);
 
-  ```
-  Cu Express.js poți crea oricâte aplicații dorești. Acestea pot fi atașate unei alteia cu rol *central* folosind `use`.
+```
+Cu Express.js poți crea oricâte aplicații dorești. Acestea pot fi atașate unei alteia cu rol *central* folosind `use`.
 
-  ```javascript
-  //  inițierea altei aplicații Express
-  var subApp = express();
-  subApp.get('/', function (req, res, next) {
-    next();
-  })
-  app.use(subApp);
-  ```
+```javascript
+//  inițierea altei aplicații Express
+var subApp = express();
+subApp.get('/', function (req, res, next) {
+  next();
+})
+app.use(subApp);
+```
 
 2. Poate fi constituit un array
 
-  Unul din modelele posibile este gruparea middleware-ului folosit pentru o cale într-un array. Ceea ce se obține este o grupare logică a lanțului de prelucrare pe o anumită cale. Ceea ce trebuie ținut în vedere este ca array-ul să fie pasat primul sau să fie singurul lucru care este pasat.
+Unul din modelele posibile este gruparea middleware-ului folosit pentru o cale într-un array. Ceea ce se obține este o grupare logică a lanțului de prelucrare pe o anumită cale. Ceea ce trebuie ținut în vedere este ca array-ul să fie pasat primul sau să fie singurul lucru care este pasat.
 
-  ```javascript
-  var r1 = express.Router();
-  r1.get('/', function (req, res, next) {
-    next();
-  })
+```javascript
+var r1 = express.Router();
+r1.get('/', function (req, res, next) {
+  next();
+})
 
-  var r2 = express.Router();
-  r2.get('/', function (req, res, next) {
-    next();
-  })
+var r2 = express.Router();
+r2.get('/', function (req, res, next) {
+  next();
+})
 
-  app.use('/', [r1, r2]);
+app.use('/', [r1, r2]);
+```
 
-  ```
 3. Combinatii
 
-  Toate modalitățile de lucru menționate anterior pot combinate.
+Toate modalitățile de lucru menționate anterior pot combinate.
 
-  ```javascript
-  function mw1(req, res, next) { next() };
-  function mw2(req, res, next) { next() };
+```javascript
+function mw1(req, res, next) { next() };
+function mw2(req, res, next) { next() };
 
-  var r1 = express.Router();
-  r1.get('/', function (req, res, next) { next() });
+var r1 = express.Router();
+r1.get('/', function (req, res, next) { next() });
 
-  var r2 = express.Router();
-  r2.get('/', function (req, res, next) { next() });
+var r2 = express.Router();
+r2.get('/', function (req, res, next) { next() });
 
-  var subApp = express();
-  subApp.get('/', function (req, res, next) { next() });
+var subApp = express();
+subApp.get('/', function (req, res, next) { next() });
 
-  app.use(mw1, [mw2, r1, r2], subApp)
-  ```
+app.use(mw1, [mw2, r1, r2], subApp)
+```
 
 ## `app.use()`
 

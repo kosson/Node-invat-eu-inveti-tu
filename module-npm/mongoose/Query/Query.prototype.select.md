@@ -2,7 +2,7 @@
 
 Metoda se aplică pe un obiect `Query`.
 
-Metoda specifică câmpurile care trebuie incluse sau excluse din înregistrare. Cu ajutorul metodei realizezi ceea ce se numește o „proiecție”. O *proiecție* trebuie să fie incluzivă sau excluzivă. Acest lucru înseamnă că poți lista câmpurile pe care le dorești incluse. Această mențiune le va exclude pe toate celelalte. Se poate și invers. Poți menționa doar câmpurile pe care dorești să fie excluse.
+Metoda specifică câmpurile care trebuie incluse sau excluse din fiecare înregistrare a setului adus din bază. Cu ajutorul metodei realizezi ceea ce se numește o „proiecție”. O *proiecție* trebuie să fie incluzivă sau excluzivă. Acest lucru înseamnă că poți lista câmpurile pe care le dorești incluse. Această mențiune le va exclude pe toate celelalte. Se poate și invers. Poți menționa doar câmpurile pe care dorești să fie excluse.
 
 Această metodă returnează un obiect de tip `Query` la care se realizează și legătura `this`.
 
@@ -40,3 +40,7 @@ query.select('+foo'); // Anulează `select: false` al câmpului `foo` fără a e
 query.select({ a: 1, b: 1 });
 query.select({ c: 0, d: 0 });
 ```
+
+## Resurse
+
+- [Query.prototype.select()|Mongoose, version 5.9.26](https://mongoosejs.com/docs/api/query.html#query_Query-select)

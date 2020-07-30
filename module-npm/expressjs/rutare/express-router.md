@@ -1,6 +1,6 @@
 # `express.Router()`
 
-Se comportă ca o miniaplicație care rulează în izolare. Obiectul `express` are o metodă care permite instanțierea de orutere. Poți seta rute pe această aplicație, apelând o instanță a acesteia și apoi să definind rute pe aceea. Rutarea este foarte utilă pentru compartimentarea aplicațiilor complexe.
+Se comportă ca o miniaplicație care rulează în izolare. Obiectul `express` are o metodă care permite instanțierea de rutere. Poți seta rute pe această aplicație, apelând o instanță a acesteia și apoi să definind rute pe aceea. Rutarea este foarte utilă pentru compartimentarea aplicațiilor complexe.
 
 Un posibil scenariu implică următorii pași:
 
@@ -86,7 +86,7 @@ apiRouter.get('/', function(req, res) {
 });
 ```
 
-După ce ai scris toate rutele aici trebuie să folosești routerul sau routerele, dacă sunt mai multe cu middleware-ul Express.
+După ce ai scris toate rutele aici trebuie să folosești routerul sau routerele, dacă sunt mai multe cu middleware-ul Express.js.
 
 ```js
 app.use('/api', apiRouter);

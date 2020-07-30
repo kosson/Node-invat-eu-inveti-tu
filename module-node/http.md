@@ -95,7 +95,7 @@ http.createServer((request, response) => {
 }).listen(8080);
 ```
 
-## Obiectul response
+## Obiectul `response`
 
 Acest obiect este o instanță a lui clasei `ServerResponse`, care generează un obiect. Acest obiect este creat de serverul HTTP, nu de utilizator. Clasa `ServerResponse` implementează, dar nu moștenește din interfața `Writable Stream`. Obiectul acesta este un `EventEmitter`.
 

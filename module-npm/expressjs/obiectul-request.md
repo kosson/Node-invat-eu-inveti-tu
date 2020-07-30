@@ -1,8 +1,8 @@
 # Obiectul request
 
-Acest obiect reprezintă cererea HTTP. Obiectul are proprietăți corespondente *query string*, parametri, *body*, headere HTTP ș.a.m.d. Prin convenție acesta este denumit **req** (request), fiind primul parametru pasat unui middleware.
+Acest obiect reprezintă cererea HTTP. Obiectul are proprietăți corespondente *query string*, parametri, *body*, headere HTTP ș.a.m.d. Prin convenție acesta este denumit **req** (*request*), fiind primul parametru pasat unui middleware.
 
-Acest obiect este o variantă îmbunătățită a propriului obiect request (vezi [Class: http.IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)). Urmând documentația Node, vom afla că `http.Server` va crea un obiect `IncomingMessage`. Acest obiect este pasat ca prim argument, fie unui eveniment `request`, fie unuia `response`. Acest obiect poate fi utilizat pentru a accesa starea răspunsului, headerele și datele.
+Acest obiect este o variantă îmbunătățită a propriului obiect request (vezi [Class: http.IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)). Urmând documentația Node.js, vom afla că `http.Server` va crea un obiect `IncomingMessage`. Acest obiect este pasat ca prim argument, fie unui eveniment `request`, fie unuia `response`. Acest obiect poate fi utilizat pentru a accesa starea răspunsului, headerele și datele.
 
 Acest obiect implementează interfața `Readable Stream`, fiind un obiect *stream*, de fapt. Precizarea este importantă deoarece putem *asculta* evenimente `data` sau `end`. Nu uita că în spate, avem de fapt modulul `http` a lui NodeJS.
 
@@ -21,7 +21,7 @@ Corpul unui mesaj este transmis în *chunks*. În NodeJS, fragmentele de date nu
 
 ## req.app
 
-Această proprietate a obiectului `req` este o referință către obiectul `app`, adică către instanța Express care este utilizată de funcția middleware.
+Această proprietate a obiectului `req` este o referință către obiectul `app`, adică către instanța Express.js care este utilizată de funcția middleware.
 
 ## req.body
 
@@ -38,3 +38,19 @@ app.post('/profile', function (req, res, next) {
   console.log(req.body);
   res.json(req.body);
 })
+
+## req.method
+
+Această proprietate indică metoda HTTP folosită de cerere.
+
+## req.protocol
+
+Această proprietate indică protocolul folosit în cerere, de exemplu http sau https.
+
+## req.get()
+
+Folosind `req.get('host')` ai acces la stringul care indică host-ul și portul pe care s-a fpcut cererea.
+
+## req.originalUrl
+
+Proprietatea indică calea pe care s-a făcut cererea.

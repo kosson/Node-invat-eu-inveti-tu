@@ -13,12 +13,17 @@ const schema = new mongoose.Schema({ name: String });
 const User = mongoose.model('User', schema);
 
 // Mongoose nu va apela middleware-ul pentru că a fost declarat după compilarea modelului
-schema.pre('save', () => console.log('Facem ceva înainte de save?!'));
+schema.pre('save', function (next) {
+  console.log('Facem ceva înainte de save?! Afișăm ', this.name);
+  next();
+});
 
 new User({ name: 'test' }).save();
 ```
 
-Declară tot middleware-ul și plugin-urile înainte de a executa `mongoose.model()`. Din acest motiv există o problemă în momentul în care decizi să creezi o schemă și să exporți modelul compilat din interiorul aceluiași fișier.
+Poți accesa valori ale documentului constituit în baza schemei folosind legătura `this.numeProprietateDinSchemă`. Pentru că un hook este un middleware, trebuie să-i pasăm referința la `next` și să apelăm la finalul execuției codului `next()` pentru a trece pe următorul middleware.
+
+Declară tot middleware-ul și plugin-urile înainte de a executa `mongoose.model()` pentru a genera modelul. Din acest motiv există o problemă în momentul în care decizi să creezi o schemă și să exporți modelul compilat din interiorul aceluiași fișier. Cel mai bine ar fi să exporți schema și să constitui modelul pe care să-l alimentezi cu date acolo unde este necesar în aplicație.
 
 ```javascript
 const schema = new mongoose.Schema({ name: String });
@@ -27,6 +32,8 @@ const schema = new mongoose.Schema({ name: String });
 // nu mai poți adăuga vreun middleware la prezenta schemă.
 module.exports = mongoose.model('User', schema);
 ```
+
+În cazul în care exporți modelul și nu doar schema, în momentul în care faci require în alte părți ale codului, nu vei mai putea adăuga middleware la schemă.
 
 În cazul în care folosești acest șablon de structurare a codului, trebuie să declari un plugin la nivel global, care să fie apelat pentru a fi executat pe toate schemele. Este echivalentul apelării lui `.plugin(fn)` pe fiecare schemă pe care o creezi.
 
@@ -59,7 +66,7 @@ Mai jos avem exemplul unui scenariu în care executăm middleware atunci când �
 
 ```javascript
 Resursa.pre('remove', function hRemoveCb(next) {
-    const Coment = monoose.model('coment'); // acces direct la model fără require
+    const Coment = mongoose.model('coment'); // acces direct la model fără require
     Coment.remove({ // -> Parcurge întreaga colecție a comentariilor
         // -> iar dacă un `_id`  din întreaga colecție de comentarii se potrivește cu id-urile de comentariu din întregistrarea resursei (`$in: this.Coment`), șterge-le.
         _id: {$in: this.Coment} // se va folosi operatorul de query `in` pentru a șterge înregistrările asociate

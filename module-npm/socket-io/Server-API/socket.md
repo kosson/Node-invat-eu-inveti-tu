@@ -1,4 +1,4 @@
-## Obiectul `socket`
+# Obiectul `socket` al serverului
 
 Un `socket` este un obiect instanțiat în baza clasei [`Socket`](https://socket.io/docs/server-api/#Socket), care are rolul să comunice cu browserul clientului. Numele clasei nu implică faptul că există vreo legătură cu socket-ul TCP/IP.
 
@@ -23,52 +23,80 @@ socket.on('connection', function(socket){
 })
 ```
 
-Un `socket` este utilizat pentru a gestiona clienții care se conectează și trebuie înțeles ca o reprezentare a clientului. Un `socket` ține de un anumit `namespace`, iar cel din oficiu este `/`. Pentru a asigura comunicarea, clasa `Socket` folosește o subclasă numită `Client`. Această clasă nu interacționează cu socket-urile TCP/IP.
+Un `socket` este utilizat pentru a gestiona clienții care se conectează și trebuie înțeles ca **o reprezentare a clientului conectat**. Un `socket` ține de un anumit `namespace`, iar cel din oficiu este `/`. Pentru a asigura comunicarea, clasa `Socket` folosește o subclasă numită `Client`. Această clasă nu interacționează cu socket-urile TCP/IP.
 
 Clasa `Socket` moștenește de la `EventEmiter`, suprascrie metoda `emit`, dar nu modifică restul metodelor `EventEmiter`. Toate metodele sunt ale lui `EventEmiter`.
 
-### Proprietățile obiectului `socket`
+## Proprietățile obiectului `socket`
 
-#### `socket.id`
+### Proprietatea `socket.id`
 
 Acesta este un identificator al sesiunii de comunicare. Această informație vine din subclasa `Client`. Este un `String` care identifică sesiunea de `socket`. Valoarea va fi disponibilă după ce evenimentul `connect` a fost declanșat. Valoarea va fi actualizată după evenimentul `reconnect`.
 
 ```javascript
-const socket = io('http://localhost');
+const serverio = io('http://localhost');
 
-console.log(socket.id); // undefined
+console.log(serverio.id); // undefined
 
-socket.on('connect', () => {
+serverio.on('connect', (socket) => {
   console.log(socket.id); // 'G5p5...'
 });
 ```
 
-#### `socket.rooms`
+### Proprietatea `socket.rooms`
 
-Acesta este un obiect care ține evidența camerelor (*rooms*) în care se află clientul.
+Acesta **este un obiect** care ține evidența camerelor (*rooms*) în care se află clientul.
 
 ```javascript
-io.on('connection', (socket) => {
+serverio.on('connection', (socket) => {
     socket.join('camera 007', () => {
         let rooms = Object.keys(socket.rooms);
+        // obții un array cu numele camerelor în care se află socket-ul conectat
         console.log(rooms);
     });
 });
 ```
 
-#### `socket.client`
+### Proprietatea `socket.client`
 
-Aceasta este o referință către obiectul `Client`.
+Aceasta este o referință către obiectul `Client` din spatele conexiunii.
 
-#### `socket.conn`
+### Proprietatea `socket.conn`
 
 Este o referință către conexiunea `Client` (obiectul `Socket` a lui `engine.io`). Acesta permite accesul direct la nivelul de transport IO, care în mare parte abstractizează socketul TCP/IP real.
 
-#### `socket.request`
+### Proprietatea `socket.request`
 
-Este un getter care are un model de funcționare precum al unui proxy. Returnează o referință către obiectul `request`, care vine chiar de la subclasa `Client`. Este foarte util pentru a accesa headerele unei cereri cum ar fi `Cookie` sau `User-Agent`.
+Este un getter care are un model de funcționare precum al unui proxy. Returnează o referință către obiectul `request`, care vine chiar de la subclasa `Client`. Este foarte util pentru a accesa headerele unei cereri cum ar fi `Cookie` sau `User-Agent`. Este foarte util atunci când aplicația este protejată CSRF: Cross-Site Request Forgery.
 
-#### `socket.handshake`
+De exemplu, în client setezi ca în fiecare cerere socket.io să fie trimis și tokenul `_csrf`.
+
+```javascript
+var csrfToken = '';
+
+if(document.getElementsByName('_csrf')[0].value) {
+    csrfToken = document.getElementsByName('_csrf')[0].value;
+}
+
+var pubComm = io('/redcol', {
+    upgrade: true,
+    query: {['_csrf']: csrfToken}
+});
+```
+
+Acest lucru este necesar pentru că de cele mai multe ori, clientul va face polling, ceea ce implică o serie nesfârșită de cereri GET și POST-uri. În cazul în care nu tratezi cazul special al csrf-ului vei avea erori în server pentru toate rutele protejate.
+
+Mai este și cazul în care ai nevoie de acces la cookie-uri pentru a obține informații utile serverului. Cookie-urile pot fi extrase din `socket.request.headers.cookie`.
+
+```javascript
+const cookie = require('cookie'); // https://www.npmjs.com/package/cookie
+
+io.on('connection', (socket) => {
+  const cookies = cookie.parse(socket.request.headers.cookie || '');
+});
+```
+
+### Proprietatea `socket.handshake`
 
 Handshack-ul se petrece la momentul în care se stabilește comunicarea între client și server. Acest obiect, care este inclus în datele care vin din client, oferă detaliile de conexiune.
 
@@ -102,9 +130,9 @@ io.on('connection', (socket) => {
 
 Trebuie punctat faptul că în obiectul `query`, care este membru al obiectului `handshake`, poți găsi datele specifice unei anumite cereri către server. De exemplu, `id`-ul unui utilizator sau al unei resurse.
 
-#### `socket.use(fn)`
+### Metoda `socket.use(fn)`
 
-În anumite scenarii este nevoie de folosirea unui middleware de fiecare dată când se primește un mesaj (un `Packet`). În acest scop se va folosi metoda `use` care va primi drept callback o funcție ce primește drept parametri socket-ul și o funcție pentru a deferi execuția către următorul middleware.
+În anumite scenarii este nevoie de folosirea unui middleware de fiecare dată când se primește un mesaj (un `Packet`). În acest scop, se va folosi metoda `use` care va primi drept callback o funcție ce primește drept parametri socket-ul și o funcție pentru a deferi execuția către următorul middleware.
 
 ```javascript
 io.use(function (socket, next) {
@@ -117,6 +145,7 @@ Funcția pasată trebuie considerată un middleware. Această funcție este exec
 
 ```javascript
 io.on('connection', (socket) => {
+    // folosirea unui middleware pentru fiecare packet
     socket.use((packet, next) => {
         if (packet.ceva === true) return next();
         next(new Error('A ieșit prost'));
@@ -124,11 +153,11 @@ io.on('connection', (socket) => {
 });
 ```
 
-#### `socket.send([...args][, ack])`
+### Metoda `socket.send([...args][, ack])`
 
 Trimite un eveniment `message`.
 
-#### `socket.emit(eventName[,..args][,ack])`
+### `socket.emit(eventName[,..args][,ack])`
 
 Această metodă suprascrie `EventEmitter.emit` și returnează un obiect `socket`. Metoda emite un eveniment în `socket`-ul identificat de nume.
 
@@ -178,7 +207,7 @@ function() {
 }
 ```
 
-#### `socket.on(eventName, callback)`
+### Metoda `socket.on(eventName, callback)`
 
 Această metodă este moștenită din funcția constructor `EventEmitter`. Drept argumente primește un `String`, care este numele evenimentului și o funcție cu roll de callback, care primește la rândul său datele de la cel care le-a emis.
 
@@ -192,13 +221,13 @@ socket.on('news', (data) => {
 socket.on('news', (arg1, arg2, arg3) => {
   // ...
 });
-// poate trimite date emitrului ca acknowledgement
+// poate trimite date emiter-ului drept acknowledgement
 socket.on('news', (data, callback) => {
   callback(0);
 });
 ```
 
-##### Exemplu de lucru curent
+#### Exemplu de lucru curent
 
 ```javascript
 // din client
@@ -212,7 +241,7 @@ function joinRoom(roomName) {
 }
 
 /* SERVERUL */
-var {io,namespaces} = require('./server');
+var {io, namespaces} = require('./server');
 
 // PRIMA CONECTARE va fi făcută pe RĂDĂCINA! (/)
 io.on('connection', (socket) => {
@@ -229,14 +258,14 @@ io.on('connection', (socket) => {
     // pe eventul data trebuie sa asculte userul la prima conectare
 });
 
-// CONECTĂRI ULTERIOARE PE ENDPOINTURILE ALESE DE CLIENT
+// CONECTĂRI ULTERIOARE PE ENDPOINT-URILE ALESE DE CLIENT
 // ascultarea dinamică a conexiunilor cu LOOP prin namespaces pentru a vedea cine cui namespace apartine.
 namespaces.forEach(function manageNsp (namespace) {
     io.of(namespace.endpoint).on('connection', (nsSocket) => {
         console.log(`User ${nsSocket.id} joined ${namespace.endpoint}`); // vezi cine s-a conectat
         nsSocket.emit('nsRoomLoad', namespaces[0].rooms);
         // pentru toate namespace-urire primise, clientul trebuie să
-        // aterizeze undeva. Va ateriza în primul namespace din toate trimise
+        // aterizeze undeva. Va ateriza în primul namespace din toate cele trimise
         // care va avea atașat toate camerele disponibile pentru acel ns
 
         // integrarea userului în camera pe care a ales-o!
@@ -252,7 +281,7 @@ namespaces.forEach(function manageNsp (namespace) {
 Manualul Socket.io pune la dispoziție și o paletă de cazuri pentru metoda `emit`.
 
 ```javascript
-io.on('connect', onConnect);
+serverio.on('connect', onConnect);
 
 function onConnect(socket){
 
@@ -269,16 +298,16 @@ function onConnect(socket){
   socket.to('game1').to('game2').emit('Salutare tuturor!', "facem un joc?");
 
   // trimit tuturor clienților din camera 'game', plus mie însumi
-  io.in('game').emit('start', 'vom iniția o altă partidă imediat');
+  serverio.in('game').emit('start', 'vom iniția o altă partidă imediat');
 
   // trimit tuturor clienților din namespace-ul 'myNamespace', plus mie însumi
-  io.of('myNamespace').emit('pehol', 'începem campionatul imediat');
+  serverio.of('myNamespace').emit('pehol', 'începem campionatul imediat');
 
   // trimit mesaj unei anumite camere dintr-un namespace anume, plus mie însumi
-  io.of('myNamespace').to('marte').emit('simulare', 'incepem simularile pedologice');
+  serverio.of('myNamespace').to('marte').emit('simulare', 'incepem simularile pedologice');
 
   // trimitere mesaj unui anume socketid (mesaj privat)
-  io.to(<socketid>).emit('contact', 'Salut, te-am văzut la cinema.');
+  serverio.to(<socketid>).emit('contact', 'Salut, te-am văzut la cinema.');
 
   // trimite mesaj cu mesaj de confirmare
   socket.emit('pingpong', 'ce crezi despre socket?', function (răspuns) {});
@@ -293,83 +322,97 @@ function onConnect(socket){
   socket.binary(false).emit('simple', 'Pe simple, nu trimit binare');
 
   // trimite mesaje tuturor clienților din acest nod (cazul folosirii mai multora)
-  io.local.emit('salut', 'trimit pe acest nod');
+  serverio.local.emit('salut', 'trimit pe acest nod');
 
   // trimite tuturor clienților conectați
-  io.emit('acesta va ajunge la toți clienții conectați pe acest server');
+  serverio.emit('acesta va ajunge la toți clienții conectați pe acest server');
 };
 ```
 
-#### `socket.join(room[, callback])`
+### Metoda `socket.join(room[, callback])`
 
-Metoda adaugă un socket într-o cameră specificată ca `String` în primul argument. Al doilea parametru este o funcție cu rol de callback, care poate prelucra erorile apărute (*error signature*).Metoda returnează obiectul `socket` pe care se poate face chaining.
+Metoda adaugă un socket într-o cameră specificată ca `String` în primul argument. Al doilea parametru este o funcție cu rol de callback, care poate prelucra erorile apărute (*error signature*). Metoda returnează obiectul de tip `Socket` pentru a se putea face chaining mai departe.
 
 ```javascript
-io.on('connection', (socket) => {
-  socket.join('room 237', () => {
+serverio.on('connection', (socket) => {
+  socket.join('camera 007', () => {
     let rooms = Object.keys(socket.rooms);
     console.log(rooms); // [ <socket.id>, 'room 237' ]
-    io.to('room 237').emit('a new user has joined the room'); // broadcast to everyone in the room
+    // ai putea să-i anunți pe toți cei din cameră că a apărut un nou utilizator
+    serverio.to('camera 007').emit('Ni s-a adăugat ', socket.id);
   });
 });
 ```
 
-Mecanismele care permit alăturarea unui socket într-un *room* sunt asigurate de un `Adapter`, care este atașat la un obiect `Server`. `Adapter`-ul din oficiu este [socket.io-adapter](https://github.com/socketio/socket.io-adapter), fiind rezident în memorie.
+Mecanismele care permit intrarea unui socket într-un *room* sunt asigurate de un `Adapter`, care este atașat la un obiect `Server`. `Adapter`-ul din oficiu este [socket.io-adapter](https://github.com/socketio/socket.io-adapter), fiind rezident în memorie la runtime.
 
-**Fiecare socket întră automat într-un room propriu definit de id**. Acest fapt permite o ușoară expediere a mesajelor către alte socketuri.
-
-```javascript
-io.on('connection', (socket) => {
-  socket.on('mesaje', (id, msg) => {
-    // trimite un mesaj privat altui socket id
-    socket.to(id).emit('luna-plina', msg);
-  });
-});
-```
-
-#### `socket.join(rooms[, callback])`
+### Metoda `socket.join(rooms[, callback])`
 
 Folosind această metodă, un socket se poate alătura mai multor camere specificate în array-ul pasat drept prim parametru. Al doilea parametru este o funcție cu rol de callback, care poate prelucra erorile apărute (*error signature*).
 
-Metoda returnează obiectul `socket` pe care se face chaining.
-
-#### `socket.leave(room[, callback])`
-
-Este metoda folosită pentru a părăsi un *room*. Al doilea parametru este o funcție cu rol de callback, care poate prelucra erorile apărute (*error signature*).
-
-Metoda returnează obiectul `socket` pe care se face chaining. În momentul în care socket-ul se deconectează, vor fi părăsite și toate *room*-urile.
-
-Această metodă
-
-#### `socket.to(room)`
-
-Metoda trimite un mesaj către socketurile dintr-un *room*. Socketul care a emis mesajul, va fi exclus în a primi. Când se face broadcasting, nu se face acknowledgement.
-Metoda primește drept parametru un `String` care este numele unui *room*.
-
-Metoda returnează obiectul `socket` pe care se face chaining.
+Metoda returnează obiectul de tip `Socket` pe care se face chaining mai departe.
 
 ```javascript
-io.on('connection', (socket) => {
-
-  // către un singur room
-  socket.to('others').emit('an event', { some: 'data' });
-
-  // către multiple rooms
-  socket.to('room1').to('room2').emit('hello');
-
-  // un mesaj privat către alt socket
-  socket.to(/* another socket id */).emit('hey');
-
-  // WARNING: `socket.to(socket.id).emit()` will NOT work, as it will send to everyone in the room
-  // named `socket.id` but the sender. Please use the classic `socket.emit()` instead.
+serverio.on('connection', (socket) => {
+  socket.join(['camera 1', 'camera 2'], () => {
+    const rooms = Object.keys(socket.rooms);
+    // este un array al tuturor camerelor în care a fost inclus socketul conectat
+    serverio.to('camera 1').to('camera 2').emit('A intrat ', socket.id);
+  });
 });
 ```
 
-#### `socket.in(room)`
+### Metoda `socket.leave(room[, callback])`
+
+Este metoda folosită pentru a părăsi un *room*. Al doilea parametru este o funcție cu rol de callback, care poate prelucra erorile apărute (*error signature*).
+
+Metoda returnează obiectul `socket` pe care se face chaining. În momentul în care socket-ul experimentează o deconectare, vor fi părăsite și toate *room*-urile.
+
+```javascript
+serverio.on('connection', (socket) => {
+  socket.leave('camera 007', () => {
+    serverio.to('camera 007').emit(`utilizatorul ${socket.id} a ieșit!`);
+  });
+});
+```
+
+### Metoda `socket.to(room)`
+
+Metoda creează un modificator pentru toate evenimentele emit care vor urma. Mesajele care vor urma, vor fi *transmise* socket-urilor conectare dintr-o anumită cameră. Socketul conectat care emite evenimentul va fi exlus din lista celor care primesc mesajul. Când se face broadcasting (*transmisiune*), nu se face acknowledgement. Metoda primește drept parametru un `String` care este numele unui *room*.
+
+Metoda returnează obiectul `socket` pe care se poate face chaining mai apoi.
+
+```javascript
+serverio.on('connection', (socket) => {
+
+  // transmisiune către un singur room
+  socket.to('oCamerăAnume').emit('mesaje', { ceva: 'date' });
+
+  // transmisiune către mai multe camere odată
+  socket.to('camera 1').to('camera 2').emit('Salutare!');
+
+  // un mesaj privat către alt socket
+  socket.to(idUlUnuiSocketConectatDeja).emit('Salut!');
+});
+```
+
+În cazul în care folosești `socket.to(idUlUnuiSocketConectatDeja).emit('Salut!');`, mesajul va fi primit doar de către destinatar. Cel care emite mesajul, nu-l va vedea. Acesta este cazul în care se constituie o cameră din id-ul unui socket. Este ca și cum ai propria ta cameră în care poți primi mai multe socket-uri conectate. Trimiterea unui mesaj într-un astfel de scenariu este echivalent cu trimiterea mesajului tuturor celor conectați la respectiva cameră cu minusul major că cel care emite mesajul, nu poate să vadă ce a trimis. Rezolvarea vine din utilizarea lui `serverio.to(socket.id).emit('ceva')`.
+
+**Fiecare socket întră automat într-un room propriu definit de id**. Acest fapt permite o ușoară expediere a mesajelor către alte socketuri. De fapt, realizezi o comunicare unu la unu; un chat privat. Metodele de realizare a unui schimb de mesaje unu la unu implică folosirea serverului și nu a socket-ului.
+
+```javascript
+// trimit tuturor clienților din namespace-ul 'myNamespace', plus mie însumi
+serverio.of('myNamespace').emit('pehol', 'începem campionatul imediat');
+
+// trimit mesaj unei anumite camere dintr-un namespace anume, plus mie însumi
+serverio.of('myNamespace').to('marte').emit('simulare', 'incepem simularile pedologice');
+```
+
+### Metoda `socket.in(room)`
 
 Este sinonim lui `socket.to(room)`.
 
-#### `socket.compress(value)`
+### `socket.compress(value)`
 
 Este o metodă care menționează dacă se va face o compresie a datelor la momentul emiterii. Metoda returnează obiectul `Socket` pe care se poate face chaining.
 
@@ -379,23 +422,29 @@ io.on('connection', (socket) => {
 });
 ```
 
-#### `socket.disconnect(close)`
+### `socket.disconnect(close)`
 
 Metoda deconectează clientul, dacă valoarea `Boolean` pasată este `true`, este închisă conexiunea. Altfel, deconectează doar namespace-ul.
 
-### Modificatori
-
-#### `broadcast`
-
-Este un modificator al unui emit, care va trimite un mesaj tuturor socketurilor, mai puțin celui care a trimis.
-
 ```javascript
 io.on('connection', (socket) => {
-  socket.broadcast.emit('an event', { ceva: 'date' });
+  setTimeout(() => socket.disconnect(true), 5000);
 });
 ```
 
-#### `volatile`
+## Modificatori
+
+### `broadcast`
+
+Este un modificator al unui `emit()`, care va trimite un mesaj tuturor socketurilor, mai puțin celui care a trimis.
+
+```javascript
+io.on('connection', (socket) => {
+  socket.broadcast.emit('nume eveniment', { ceva: 'date' });
+});
+```
+
+### `volatile`
 
 Acest modificator indică faptul că mesajul va pierdut dacă socketul client nu-l poate primi din diferite cauze.
 
@@ -405,7 +454,7 @@ io.on('connection', (socket) => {
 });
 ```
 
-#### `binary`
+### `binary`
 
 Cu acest modificator indici faptul că datele sunt binare. Dacă valoarea pasată drept argument este `true`, datele care vor fi trimise sunt binare. În caz contrar, pui valoarea `false`.
 
@@ -416,9 +465,9 @@ io.on('connection', function(socket){
 });
 ```
 
-### Evenimente
+## Evenimente
 
-#### `disconnect`
+### `disconnect`
 
 Acest eveniment are o metodă callback, care va fi executată la momentul în care se petrece deconectarea unui client.
 
@@ -440,7 +489,7 @@ Motivele (`reason`) pot fi următoarele:
 | `ping timeout` | de la client | Clientul a încetat să mai răspundă la pinguri în intervalul specificat prin configurarea lui `pingTimeout` |
 | `transport close` | de la client | Clientul a încetat să mai trimită date |
 
-#### `error`
+### `error`
 
 Este un obiect de eroare, care este constituit atunci când apare o eroare.
 
@@ -452,7 +501,7 @@ io.on('connection', (socket) => {
 });
 ```
 
-#### `disconnecting`
+### `disconnecting`
 
 Acest eveniment are în callback un argument care oferă motivul pentru care s-a petrecut deconectarea.
 Acest eveniment apare atunci când un client este pe cale să fie deconectat, dar încă nu a părăsit o cameră.
@@ -466,6 +515,15 @@ io.on('connection', (socket) => {
 });
 ```
 
-### Restul metodelor
+## Restul metodelor
 
 Trebuie reținut faptul că obiectul `socket` moștenește toate metodele puse la dispoziție de constructorul [EventEmitter](https://nodejs.org/api/events.html).
+
+
+## Client
+
+Clasa `Client` reprezintă o conexiune a lui `engine.io`. Un `Client` poate fi asociat cu mai multe `Socket`-uri multiplexate care aparțin diferitelor `Namespace`-uri.
+
+## Resurse
+
+- [Socket | server-api](https://socket.io/docs/server-api/#Socket)

@@ -2,23 +2,23 @@
 
 Modelele generate în baza schemelor, folosesc câteva metode pentru a realiza CRUD-uri:
 
-- Model.deleteMany()
-- ModeldeleteOne()
-- Modelfind()
-- ModelfindById()
-- ModelfindByIdAndDelete()
-- ModelfindByIdAndRemove()
-- ModelfindByIdAndUpdate()
-- ModelfindOne()
-- ModelfindOneAndDelete()
-- ModelfindOneAndRemove()
-- ModelfindOneAndReplace()
-- ModelfindOneAndUpdate()
-- ModelreplaceOne()
-- ModelupdateMany()
-- ModelupdateOne()
+- `Model.deleteMany()`
+- `ModeldeleteOne()`
+- `Modelfind()`
+- `ModelfindById()`
+- `ModelfindByIdAndDelete()`
+- `ModelfindByIdAndRemove()`
+- `ModelfindByIdAndUpdate()`
+- `ModelfindOne()`
+- `ModelfindOneAndDelete()`
+- `ModelfindOneAndRemove()`
+- `ModelfindOneAndReplace()`
+- `ModelfindOneAndUpdate()`
+- `ModelreplaceOne()`
+- `ModelupdateMany()`
+- `ModelupdateOne()`
 
-Toate aceste metode în momentul în care sunt executate, returnează câte un obiect `Query` generat de Mongoose. Acestor query-uri poți să le pasezi un callback semnalându-i lui Mongoose să execute asincron operațiunea și apoi să paseze rezultatul callback-ului când a terminat. Query-urile au și o metodă `then` care poate fi folosită pentru a le trata ca promisiuni.
+În momentul în care sunt executate, toate aceste metode returnează câte un obiect `Query` generat de Mongoose. Acestor query-uri poți să le pasezi un callback semnalându-i lui Mongoose să execute asincron operațiunea și apoi să paseze rezultatul callback-ului când a terminat. Query-urile au și o metodă `then` care poate fi folosită pentru a le trata ca promisiuni.
 
 Atunci când execuți un query folosind un callback, îi pasezi ca prim argument un obiect cu proprietăți care vor fi folosite pentru a face selecția, apoi un filtru, dacă se dorește și la final callback-ul care în Mongoose primește doi parametri: `err` și `rezultatul`.
 

@@ -1,8 +1,9 @@
 # HTTP authentication
 
-Protocolul HTTP oferă o schemă de autentificare de bază: *Basic*. Reține faptul că HTTP este un protocol care nu are stare (stateless).
+Protocolul HTTP oferă o schemă de autentificare de bază: *Basic*. Reține faptul că HTTP este un protocol care nu are stare (*stateless*).
 
 > HTTP oferă un cadru de autentificare simplu challenge-response care poate fi utilizate de un server pentru a testa cererea unui client și pentru un client să ofere informații de autentificare. Folosește un token case-insensitive ca mijloc de a identifica schema de autentificare urmat de informații suplimentare necesare autentificării folosind acea schemă. Aceasta poate fi o listă de parametri delimitați prin virgule sau simple secvențe de caractere care permit codarea de informație base64.
+
 Parametrii de autentificare sunt perechi nume=valoare [...].
 
 Să presupunem că un utilizator dorește să acceseze o resursă la care nu poate avea acces pentru că încă nu a fost autentificat. În acest caz, serverul de origine va răspunde cu un mesaj 401 (Unauthorized) pentru a solicita utilizatorului autentificarea. Va mai fi inclus un câmp `WWW-Authenticate` în header care va conține parte a solicitărilor necesare autentificării pentru acea resursă.
@@ -40,9 +41,9 @@ Un posibil răspuns de la client către server este utilizatorul separat de paro
 Basic QXp1cmVEaWFtb25kOmh1bnRlcjI=
 ```
 
-## Aplicație NodeJS
+## Aplicație Node.js
 
-Pentru a experimenta cu aceste headere, propun următorul server construit cu NodeJS și Express.
+Pentru a experimenta cu aceste headere, propun următorul server construit cu Node.js și Express.js
 
 ```javascript
 const express = require('express')

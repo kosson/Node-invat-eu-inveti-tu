@@ -4,7 +4,7 @@ Acest obiect reprezintă cererea HTTP. Obiectul are proprietăți corespondente 
 
 Acest obiect este o variantă îmbunătățită a propriului obiect request (vezi [Class: http.IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)). Urmând documentația Node.js, vom afla că `http.Server` va crea un obiect `IncomingMessage`. Acest obiect este pasat ca prim argument, fie unui eveniment `request`, fie unuia `response`. Acest obiect poate fi utilizat pentru a accesa starea răspunsului, headerele și datele.
 
-Acest obiect implementează interfața `Readable Stream`, fiind un obiect *stream*, de fapt. Precizarea este importantă deoarece putem *asculta* evenimente `data` sau `end`. Nu uita că în spate, avem de fapt modulul `http` a lui NodeJS.
+Acest obiect implementează interfața `Readable Stream`, fiind un obiect *stream*, de fapt. Precizarea este importantă deoarece putem *asculta* evenimente `data` sau `end`. Nu uita că în spate, avem de fapt modulul `http` a lui Node.js.
 
 ```javascript
 app.get('/produse/:id', function clbkGetProdId (err, req, res, next) {
@@ -17,7 +17,7 @@ app.get('/produse/:id', function clbkGetProdId (err, req, res, next) {
 });
 ```
 
-Corpul unui mesaj este transmis în *chunks*. În NodeJS, fragmentele de date numite *chunks* sunt obiecte `Buffer`.
+Corpul unui mesaj este transmis în *chunks*. În Node.js, fragmentele de date numite *chunks* sunt obiecte `Buffer`.
 
 ## req.app
 
@@ -38,6 +38,7 @@ app.post('/profile', function (req, res, next) {
   console.log(req.body);
   res.json(req.body);
 })
+```
 
 ## req.method
 
@@ -49,7 +50,7 @@ Această proprietate indică protocolul folosit în cerere, de exemplu http sau 
 
 ## req.get()
 
-Folosind `req.get('host')` ai acces la stringul care indică host-ul și portul pe care s-a fpcut cererea.
+Folosind `req.get('host')` ai acces la stringul care indică host-ul și portul pe care s-a făcut cererea.
 
 ## req.originalUrl
 

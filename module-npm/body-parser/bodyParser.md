@@ -57,10 +57,10 @@ Are ca efect parsarea de html într-un string.
 ## bodyParser.json(options)
 
 Este un middleware care parsează doar json. Acceptă un `body` codat Unicode și oferă arhivare/dezarhivare automată gzip.
-Astfel, se va popula un nou obiect body cu datele parsate la cererea obiectului care urmează după middleware; adică `req.body`.
+Astfel, se va popula un nou obiect `body` cu datele parsate la cererea obiectului care urmează după middleware; adică `req.body`.
 
 ## bodyParser.urlencoded({extended: true})
-Este constituit un nou obiect ce conține datele parsate la momentul în care sunt solicitate de vreun obiect de după middleware, adică req.body. Acest obiect va conține perechi cheie-valoare. Valorile pot fi stringuri sau array-uri atunci când extended este false sau de orice tip atunci când extended este true.
+Este constituit un nou obiect ce conține datele parsate la momentul în care sunt solicitate de vreun obiect de după middleware, adică `req.body`. Acest obiect va conține perechi cheie-valoare. Valorile pot fi string-uri sau array-uri atunci când `extended` este `false` sau de orice tip atunci când `extended` este `true`.
 
 Un exemplu simplu:
 
@@ -82,3 +82,7 @@ app.use(function (req, res) {
   res.end(JSON.stringify(req.body, null, 2))
 })
 ```
+
+## Relația cu Express.js
+
+Începând cu versiunea [4.16](https://github.com/expressjs/express/releases/tag/4.16.0), `body-parser` a fost reintegrat: `Add express.json and express.urlencoded to parse bodies`.

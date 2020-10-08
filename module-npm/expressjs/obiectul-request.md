@@ -19,13 +19,17 @@ app.get('/produse/:id', function clbkGetProdId (err, req, res, next) {
 
 Corpul unui mesaj este transmis în *chunks*. În Node.js, fragmentele de date numite *chunks* sunt obiecte `Buffer`.
 
-## req.app
+## Proprietăți
+
+Obiectul request are câteva proprietăți prestabilite, dar dacă este necesar să trimitem unui middleware care urmează în lanțul de prelucrare date, putem introduce proprietăți arbitrare. Drept exemplu, este ceea ce face middleware-ul specializat Passport.js, care îmbogățește proprietățile lui request cu cele specifice lui necesare autentificării, de exemplu.
+
+### req.app
 
 Această proprietate a obiectului `req` este o referință către obiectul `app`, adică către instanța Express.js care este utilizată de funcția middleware.
 
-## req.body
+### req.body
 
-Este un obiect generat de middleware-ul `express.urlencoded()` sau `express.json()` a cărui proprietăți sunt culese din valorile existente în `name` pentru fiecare element de form, iar valoarea fiind cea introdusă de utilizator în form.
+Este un obiect generat de middleware-ul `express.urlencoded()` sau `express.json()` ale cărui proprietăți sunt culese din valorile existente în `name` pentru fiecare element de form, valoarea fiind cea introdusă de utilizator în form.
 
 ```javascript
 var express = require('express');
@@ -40,18 +44,18 @@ app.post('/profile', function (req, res, next) {
 })
 ```
 
-## req.method
+### req.method
 
 Această proprietate indică metoda HTTP folosită de cerere.
 
-## req.protocol
+### req.protocol
 
-Această proprietate indică protocolul folosit în cerere, de exemplu http sau https.
+Această proprietate indică protocolul folosit în cerere, de exemplu `http` sau `https`.
 
-## req.get()
+### req.get()
 
 Folosind `req.get('host')` ai acces la stringul care indică host-ul și portul pe care s-a făcut cererea.
 
-## req.originalUrl
+### req.originalUrl
 
 Proprietatea indică calea pe care s-a făcut cererea.

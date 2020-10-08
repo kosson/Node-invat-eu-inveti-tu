@@ -67,7 +67,7 @@ app.enable('trust proxy');
 
 ## view cache
 
-Această setare este implicit pusă la valoarea false de către Express. Ceea ce face este să permită motorului de gestiune a șabloanelor să rețină o formă deja procesată pentru a oferi direct fără a mai citi din nou șablonul. Șabloanele sunt compilate de fiecare dată când sunt citite, iar acest lucru poate avea un impact negativ asupra performanțelor.
+Această setare este implicit pusă la valoarea `false` de către Express. Ceea ce face este să permită motorului de gestiune a șabloanelor să rețină o formă deja procesată pentru a oferi direct fără a mai citi din nou șablonul. Șabloanele sunt compilate de fiecare dată când sunt citite, iar acest lucru poate avea un impact negativ asupra performanțelor.
 
 Dacă setarea `env` este pe `production`, atunci `view cache` va fi activat din oficiu.
 

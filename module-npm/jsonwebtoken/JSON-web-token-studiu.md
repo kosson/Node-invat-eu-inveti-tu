@@ -70,7 +70,7 @@ Identifică cui i se adresează. Este opțională și poate fi și un URI.
 
 ##### "exp" (Expiration Time) Claim
 
-Identifică timpul după care JWT-ul va expira. Acest lucru va indica serverului limita de la care nu va mai permite accesul la resurse pe baza JWT-ului. Este opțional.
+Identifică perioada după care JWT-ul va expira. Acest lucru va indica serverului limita de la care nu va mai permite accesul la resurse pe baza JWT-ului. Este opțional.
 
 ##### "nbf" (Not Before) Claim
 
@@ -96,7 +96,12 @@ Pentru a verifica un token JWT, se va genera din nou o semnătură folosind head
 
 Mai întâi, pentru a putea utiliza API-ul ai nevoie de a trimite credențialele la un endpoint dedicat loginului. API-ul verifică credențialele și emite un token, care este returnat utilizatorului. Utilizatorul va atașa tokenul primit tuturor cererilor făcute fără să mai trimită credențialele. Pentru fiecare cerere, serverul verifică autenticitatea tokenului primit, iar dacă aceasta este confirmată, oferă celui care a făcut cererea resursele dorite.
 
+### Pas 1 - Crearea JWT
+
+Tokenul JWT este creat de server, folosind o cheie secretă care este ținută într-o zonă privată. Atunci când serverul va primi o cheie dintr-un JWT de la un client (semnătură), o va confrunta cu cea privată.
+
 ## Referințe
 
 - [A Brief Introduction to Securing Applications with JWT](https://livecodestream.dev/post/2020-07-31-a-brief-introduction-to-securing-applications-with-jwt/)
 - [A Practical Guide to JWT Authentication with NodeJS](https://livecodestream.dev/post/2020-08-11-a-practical-guide-to-jwt-authentication-with-nodejs/)
+- [Passport JS User Authentication (Node + Passport + Express + Angular)](https://www.youtube.com/playlist?list=PLYQSCk-qyTW2ewJ05f_GKHtTIzjynDgjK)

@@ -186,5 +186,5 @@ res.redirect('/inapoi?ceva=10&altceva=unu');
 
 ## Resurse
 
-[HTTP headers (MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers)
-[HTTP Header Field Registrations](https://tools.ietf.org/html/rfc4229)
+- [HTTP headers (MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers)
+- [HTTP Header Field Registrations](https://tools.ietf.org/html/rfc4229)

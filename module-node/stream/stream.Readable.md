@@ -30,6 +30,14 @@ Toate stream-urile `Readable` pornesc în modul pauză. Curgerea datelor poate f
 - apelarea metodei `resume()` pe stream,
 - apelarea metodei `pipe()` pentru a trimite datele unui stream `Writable`.
 
+```javascript
+const fs = requite('fs');
+const fisierDinCareCitesti = fs.createReadStream('./numeFisier.txt');
+fisierDinCareCitesti.on('data', (chunk) => {
+  console.log(chunk.toString()); // sau orice alte transformări
+});
+```
+
 Dacă este necesar, stream-ul `Readable` poate fi pus în modul pauză folosind una din următoarele metode:
 
 - apelarea metodei `pause()` dacă nu există pipe-uri,

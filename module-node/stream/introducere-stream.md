@@ -1,6 +1,6 @@
 # Stream-uri
 
-Dacă am asemui stream-urile cu apa, am putea spune că locul de unde vine apa este *upstream* (*din deal*), iar unde ajunge *downstream* (*în vale*). Din punct de vedere al distribuției în timp, ne-am putea imagina că un stream este un array (bytes dispuși unul după alții) distribuit în timp, nu în memorie. Analogia cu array-ul servește să ne imaginăm că în locul indexului pe care îl folosim pentru a parcurge array-ul, de fapt avem o fereastră de date (*data buffer*) care își schimbă conținutul până la epuizarea datelor acelui stream.
+Dacă am asemui stream-urile cu apa, am putea spune că locul de unde vine apa este *upstream* (*din deal*), iar unde ajunge *downstream* (*în vale*). Din punct de vedere al distribuției în timp, ne-am putea imagina că un stream este un array (bytes dispuși unul după alții) distribuit în timp, nu în memorie. Analogia cu array-ul servește să ne imaginăm că în locul indexului pe care îl folosim pentru a parcurge array-ul, de fapt avem o fereastră de date (*data buffer*) care își schimbă conținutul până la epuizarea datelor acelui stream. Un alt mod de a înțelege stream-urile ar fi utilitate dovedită prin posibilitatea unui sistem de a consuma o cantitate limitată de date dintr-un volum pentru care nu are capacitate de prelucrare in integrum.
 
 ## Interfața Stream
 

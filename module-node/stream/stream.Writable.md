@@ -1,6 +1,18 @@
 # Clasa `stream.Writable`
 
-Sunt o abstractizare a ceea ce putem înțelege a fi o *destinație*. Sunt stream-urile în care se pot scrie date.
+Sunt o abstractizare a ceea ce putem înțelege a fi o *destinație*. Sunt stream-urile în care se pot scrie date. Cel mai simplu exemplu de stream `Writable` este un obiect `response`, precum în exemplul de mai jos:
+
+```javascript
+const server = require('http').createServer();
+server.on('request', function (req, res) {
+  res.write('Salut, ');
+  res.write('Ionuț!');
+  res.end();
+});
+server.listen(3000);
+```
+
+În cazul apelării serverului - `curl http://localhost:3000`, acesta va răspunde cu `Salut, Ionuț`.
 
 Posibilele stream-uri `Writable`:
 
@@ -16,10 +28,11 @@ Posibilele stream-uri `Writable`:
 Unele dintre aceste stream-uri sunt `Duplex`. Streamurile *Duplex* sunt readable dar și writable. Un exemplu rapid ar fi socketurile de rețea.
 
 ```javascript
-const unStream = obtineUnStream();
+const fs = require('fs');
+const unStream = fs.createWriteStream('./unFisier.txt');
 unStream.write('ceva date');
 unStream.write('mai adug ceva date');
-unStream.end('am terminat de scris datele');
+unStream.end('am terminat de scris datele'); // întotdeauna închide
 ```
 
 #### Evenimentele stream-urilor writable
@@ -112,3 +125,7 @@ const file = fs.createWriteStream('exemplu.txt');
 file.write('salutare, ');
 file.end('popor!');// nu mai poți scrie nimic
 ```
+
+## Resurse
+
+- [Working with Node.js Streams | Poorshad Shaddel](https://medium.com/javascript-in-plain-english/working-with-nodejs-streams-a0d35aca0cc0)

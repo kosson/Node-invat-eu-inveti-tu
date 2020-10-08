@@ -31,7 +31,7 @@ adminRouter.get('/posts', function(req, res){
 app.add('/administrator', adminRouter);
 ```
 
-Trebuie reținut faptul că putem avea oricâte rutere avem nevoie. Pentru fiecare zonă a aplicației putem avea un router diferit. Acest lucru este posibil pentru că un router se comportă ca un middleware în sine. Toate aceste rutere pot fi adăugate aplicației pasând referința către miniaplicație într-un `app.use('/', numeMiniAppCuRouter)`.
+Trebuie reținut faptul că putem avea oricâte routere avem nevoie. Pentru fiecare zonă a aplicației putem avea un router diferit. Acest lucru este posibil pentru că un router se comportă ca un middleware în sine. Toate aceste rutere pot fi adăugate aplicației pasând referința către miniaplicație într-un `app.use('/', numeMiniAppCuRouter)`.
 
 ## Ordinea rutelor
 

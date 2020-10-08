@@ -15,6 +15,7 @@ app.listen('3000', function () {
   console.log('Am pornit serverul pe portul 3000')
 });
 ```
+
 ## Obiectul `app`
 
 Obiectul `app` este cel care va gestiona rutele pe care o vor lua cererile. Obiectul `app` este o instanță a clasei `express`. Acest obiect odată instanțiat, oferă metode echivalente metodelor HTTP. De exemplu, pentru a trata o cerere GET, poți folosi metoda `app.get('/produse', nume_callback)`. Prin apelarea lui `express()` vei avea acces la obiectul `app` în fiecare cerere și răspuns (`req.app`).
@@ -42,7 +43,7 @@ Funcțiile callback cu rol de middleware pot executa cod care să trasforme date
 app.use(express.static(__dirname + '/public'));
 ```
 
-În Express, middleware-ul este *consumat* cu `use()` atunci când dorim ca rutele să fie gestionate prin funcția pasată drept callback. Toate cererile vor fi procesare de middleware-uri în ordinea în care au fost introduse în fișier.
+În Express.js, middleware-ul este *consumat* cu `use()` atunci când dorim ca rutele să fie gestionate prin funcția pasată drept callback. La momentul în care este prelucrată o ceree, mai întâi de toate vor fi executate middleware-urile introduse în lanț cu `use()` și abia după, middleware-ul introdus ca parametru în rută - `app.get('/', numeMidlleware, (req, res, next) => {})`. Toate cererile vor fi procesare de middleware-uri în ordinea în care au fost introduse în fișier.
 
 ```javascript
 const express = require('express');

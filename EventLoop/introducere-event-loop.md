@@ -20,7 +20,7 @@ Comportamentul descris mai sus, gestionat de un singur fir de execuție are avan
 
 Întrebarea este cine așteaptă după cine. Pentru a oferi un răspuns, trebuie investigat cum se pornește bucla. Înainte de a începe investigația, trebuie spus că o buclă nu este perpetuă. Acest mecanism devine inactiv de îndată ce *liste de așteptare a callback-urilor* este goală și *stiva apelurilor* este goală.
 
-Așa cum se vede din exemplul propus de Camilo Reyes în articolul său *The Node.js Event Loop: A Developer's Guide to Concepts & Code* publicat la Sitepoint, activitatea buclei poate fi blocată, dar deja API-ul `setTimeout` se află deja în coada de așteptare.
+Așa cum se vede din exemplul propus de Camilo Reyes în articolul său *The Node.js Event Loop: A Developer's Guide to Concepts & Code* publicat la Sitepoint, activitatea buclei poate fi blocată, dar deja callback-ul API-ul `setTimeout` se află deja în coada de așteptare.
 
 ```javascript
 setTimeout(
@@ -33,61 +33,59 @@ while (Date.now() < blochezBuclaPentru) {}
 
 Ceea ce se petrece este că întreg codul sincron este executat ceea ce va conduce la formarea stivei care va fi procesată. În exemplul de mai sus, callback-ul apucă să fie plasat în lista de așteptare a callback-urilor - *job queue* prin apelarea API-ului `setTimeout`, care deleagă sistemul de operare să calculeze cinci secunde. Apoi, imediat, se blochează firul execuției pentru două secunde, dar între timp sistemul de operare încă cronometrează chiar dacă bucla este blocată. În două secunde se deblochează bucla, ceea ce este mai puțin decât numărul de secunde în cronometrare. Acest lucru face ca la momentul în care cronometrul sistemului ajunge la cinci, bucla să fie disponibilă pentru a plasa callback-ul în stiva apelurilor pentru a fi executat. Chiar dacă firul principal este blocat, bucla nu este dezactivată, ci este activă.
 
-În cazul în care am bloca firul de execuție și după am programa un callback, cât timp este blocat firul de execuție, nu se va putea face acest lucru. După deblocare, sistemul de operare va începe cronometrarea, după care callback-ul va fi pus în stiva care este goală și va fi executat. Deci, timpului cronometrat este din momentul în care firul de execuție este liber.
+După deblocarea firului, sistemul de operare va începe cronometrarea mimilisecundelor, după care callback-ul va fi pus în stiva care este goală și va fi executat. Deci, timpului cronometrat este din momentul în care firul de execuție este liber.
 
-Există un lucru foarte interesant care trebuie reținut de fiecare dată când pornești execuția unui program în Node.js. Fișierul de JavaScript pe care îl execuți cu Node.js pentru prima dată, va face parte din secvența de bootstrapping a lui Node.js. Acest lucru înseamnă că event loop-ul nu este pornit decât după ce întregul cod al acestui prim fișier este executat. Acest lucru înseamnă că toate cozile de așteptare, fie că vorbim de microtask-uri, fie că de cea a callback-urilor API-urilor vor fi populate, urmând să fie executate la debutul buclei. În cazul în care avem callback-uri în cod, acestea vor beneficia de apelarea în *event loop*.
-
-Astfel, în următorul exemplu, abia `// al_doilea.js` va rula promisiunea în *event loop*.
-
-```javascript
-// primul.js
-new Promise(function (resolve, reject) {
-  console.log('o promisiune nou-nouță');
-  resolve();
-}).then(() => {
-  console.log('primul then apare mai târziu');
-})
-async function ceva () {
-  console.log('interesant este când apare');
-}
-ceva().then(() => {
-  console.log('când apare primul then?');
-});
-process.nextTick(() => {
-  console.log('apar imediat după rularea codului JavaScript');
-});
-queueMicrotask(() => {
-  console.log('eu apar ceva mai târziu...');
-});
-```
-
-În acest exemplu, funcția din promisiune este executată imediat, dar `then` va fi executat de *event loop*. Ca o regulă generală, funcțiile sunt executate la momentul bootstrapping-ului, indiferent că sunt pasate unui constructor ori sunt declarate direct. Apoi vor fi executate în ordine oricare `process.nextTick(() => {console.log('ceva')})` declarat. Din motive istorice, `process.nextTick()` nu înseamnă chiar următorul *tick* de buclă. De fapt înseamnă „rulează codul la finalul executării codului JavaScript”. Trebuie menționat faptul că `nextTick` are cea mai înaltă prioritate. Acest cod va rula înaintea codului aflat în *microtask queue*.
-
-Atunci și numai atunci, va fi apelat codul. Din acest motiv orice `process.nextTick` am avea în codul executat la momentul bootstrapping-ului, va fi executat după ce întregul cod JavaScript va fi executat. Putem spune că `process.nextTick()` și `queueMicrotask()` nu sunt executate în *event loop*. Restul, `setImmediate`, `setTimeout` și `setInterval` rulează în *event loop*.
-
-Ca importanță, urmează prelucrarea codului din *microtask queue*, fiind codul din `then`-uri. În **microtask**-uri sunt introduse și callback-urile pasate metodelor specifice promisiunilor (*resolve*, *reject* și *finally*). Atenție mare aici, codul `then`-urilor este executat înaintea oricărui `queueMicrotask` (introdus recent pentru a oferi un mecanism similar lui Promise.resolve; rularea a unui fragment de cod ca și cum ai avea au un `then` al unei promisiuni) doar dacă promisiunea se rezolvă pe loc, adică dacă are o parte de execuție asincronă codată. Dacă pui un `resolve()` și rezolvi instant, atunci `then`-urile vor avea precedență. Pur și simplu, codul `then`-urilor se execută sincron pentru că nu au codată partea de asincron.
-
-În Node.js există două microtask-uri. Prima gestionează callback-urile programate cu `process.nextTick()`, iar cea de-a doua procesează promisiunile. Callback-urile din microtask-uri are precedență în fața callback-urilor normale din cod. Callback-urile programate cu `process.nextTick()` au precedență față de cele din microtask-ul promisiunilor.
-
-Modulele ES6 sunt încărcate abia după ce event loop-ul a pornit. Modulele (`.mjs`) sunt de fapt promisiuni, care sunt executate dintr-o promisiune.
-
-Și `al_doilea.js`:
+Există un lucru foarte interesant care trebuie reținut de fiecare dată când pornești executarea unui program în Node.js. Fișierul de JavaScript pe care îl evaluezi cu Node.js pentru prima dată, va face parte din secvența de bootstrapping a lui Node.js. Ne aflăm în faza de `pooling`. Acest lucru înseamnă că event loop-ul nu este pornit decât după ce întregul cod al acestui prim fișier este executat. Acest lucru înseamnă că toate cozile de așteptare, fie că vorbim de microtask-uri, fie că de cea a callback-urilor API-urilor, vor fi populate, urmând să fie executate la debutul primului ciclu al buclei. Să investigăm următorul exemplu:
 
 ```javascript
 const {readFile} = require('fs');
-readFile(nume_fisier, () => {
+
+new Promise(function (resolve, reject) {
+  console.log('o promisiune nou-nouță'); // 1
+  resolve();
+}).then(() => {
+  console.log('primul then apare mai târziu'); // 4
+})
+
+async function ceva () {
+  console.log('interesant este când apare'); // 2
+}
+ceva().then(() => {
+  console.log('când apare primul then?'); // 5
+});
+
+new Promise((resolve, reject) => {
+  resolve();
+}).then(() => {
+  console.log('a doua promisiune rezolvată'); // 6
+});
+
+readFile('nume_fisier', () => {
+  console.log('Acesta este duca citirea fișierului');
   new Promise(function (resolve, reject) {
-    console.log('o promisiune nou-nouță')
+    console.log('o promisiune din readFile'); // 7
     resolve()
   }).then(() => {
-    console.log('primul then')
+    console.log('then din readFile'); // 8
   })
 })
+
+process.nextTick(() => {
+  console.log('apar imediat după rularea codului JavaScript'); // 3
+});
 ```
 
-Adu-ți mereu aminte faptul că primul fragment de cod care este introdus în *callstack* este o funcție `main()` în care rulează întreaga aplicație. Apoi, rând pe rând vor intra în evaluare expresiile, iar funcțiile vor fi introduse în *callstack* pe măsură ce codul se execută.
+În acest exemplu, callback-ul promisiunii este executat imediat, dar cel din `then` va fi introdus în coada de așteptare a microtask-urilor specifice, fiind executat de *event loop*. Ca o regulă generală, toate funcțiile sunt executate la momentul bootstrapping-ului, indiferent că sunt pasate unui constructor ori sunt declarate direct. Apoi vor fi executate în ordine oricare callback declarat cu `process.nextTick()`. Din motive istorice, `process.nextTick()` nu înseamnă chiar următorul *tick* de buclă. De fapt înseamnă „rulează codul la finalul executării codului JavaScript”. Trebuie menționat faptul că `process.nextTick()` are cea mai înaltă prioritate. Callback-urile programate cu `process.nextTick()` vor rula înaintea celor din *microtask queue*-uri.
 
 Conform documentației Node.js, bucla parcurge așa-numite *faze*, unde va efectua operațiunile specifice acelei faze și apoi vor executa toate callback-urile din lista de așteptare a fazei până când acestea vor fi epuizate sau a fost atins numărul maxim de callback-uri. Imediat după, bucla avansează la următoarea fază.
+
+Orice `process.nextTick()` am avea la momentul bootstrapping-ului, va fi executat după ce întregul cod JavaScript va fi evaluat. Ca importanță, urmează prelucrarea codului din *microtask queue*-ul callback-urilor promisiunilor (*resolve*, *reject* și *finally*) și a funcțiilor asincrone. Atenție mare aici, dacă pui un `resolve()` și rezolvi instant, atunci callback-urile `then`-urilor vor avea precedență. În Node.js există două microtask-uri. Prima gestionează callback-urile programate cu `process.nextTick()`, iar cea de-a doua procesează promisiunile. Callback-urile din microtask-uri au precedență în fața callback-urilor API-urilor Node.js. Callback-urile programate cu `process.nextTick()` au precedență față de cele din microtask-ul promisiunilor.
+
+Consultarea și programarea spre executare a callback-urilor acesteia se petrece la începerea operațiunilor buclei. Consultarea microtask-urilor constituie faza de polling. Apoi urmează faza în care bucla evenimentelor trimite în stivă spre executare callback-urile API-urilor. După executarea acestora, bucla repornește din nou în faza de polling.
+
+În cazul exemplului nostru, după executarea întregului cod din faza de polling, bucla intră în faza de verificare pentru cod care reflectă operațiuni I/O (`readFile`), care imediat ce se încheie, programează callback-ul pentru executare.
+
+Modulele ES6 sunt încărcate abia după ce event loop-ul a pornit. Modulele (`.mjs`) sunt de fapt promisiuni, care sunt executate dintr-o promisiune. Adu-ți mereu aminte faptul că primul fragment de cod care este introdus în *callstack* este o funcție `main()` în care rulează întreaga aplicație. Apoi, rând pe rând vor intra în evaluare expresiile, iar funcțiile vor fi introduse în *callstack* pe măsură ce codul se execută.
 
 Dacă este întâlnit apelul la un *timer* sau al unui API, Node.js va face ceea ce putem numi o adevărată *programare* a codului. În funcție de tipul apelului, callback-urile sunt introduse în *cozi de așteptare* specifice respectivului API de la care așteaptă un răspuns. Imediat ce apare răspunsul, funcția cu rol de callback așteaptă să intre în callstack, dacă acesta este gol pentru a fi executată. În acest scenariu, rolul buclei este acela de a trimite în *callstack* funcțiile cu rol de callback.
 
@@ -108,7 +106,7 @@ Ambele oferă o imagine clară a parcursului etapelor prin care trece tratarea u
 Succesiunea fazelor de funcționare a buclei:
 
 1. executarea callback-urilor din timerele `setTimeout()` și `setInterval()`;
-2. executarea callback-urilor I/O în așteptare (*pending callbacks*), care au fost amânate dintr-un ciclu anterior. Un exemplu ar fi trataera erorilor de conexiune (`ERRCONNREFUSED`);
+2. executarea callback-urilor I/O în așteptare (*pending callbacks*), care au fost amânate dintr-un ciclu anterior. Un exemplu ar fi tratarea erorilor de conexiune (`ERRCONNREFUSED`);
 3. o fază de pregătire necesară la nivel intern (*idle/prepare*) în care sunt rulate callback-uri ce țin de mecanismul buclei;
 4. [*faza poll*](https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#poll) care implică procesarea evenimentelor I/O în relație cu sistemul de operare cum ar fi citirea de fișiere, scriere, citire/scriere stream-uri (orice ar fi în thread pool);
 5. *faza check* - executarea callback-urilor setate în `setImmediate()`;
@@ -154,51 +152,15 @@ Imediat ce s-a încheiat faza *poll*, se vor executa callback-urile pentru toate
 
 Dacă un socket sau o funcție callback sunt oprite brutal (evenimentul `close` sau `socket.destroy`), va fi emis evenimentul `close`. Dacă acest lucru eșuează, eroarea rezultată va fi tratată printr-un `process.nextTick()`. În acest moment se încheie un ciclu complet al *buclei*. Dacă nu mai există nicio cerere din cele menționate, bucla intră într-o stare de așteptare și se va porni în momentul în care apar evenimente.
 
-#### Funcționarea lui process.nextTick()
+## Funcționarea lui process.nextTick()
 
-Diferența dintre `setImmediate()` și `process.nextTick()` este că ultimul rulează înaintea tuturor evenimentelor I/O, pe când `setImmediate()` rulează după ultimul eveniment I/O, care este deja în task queue (*callback queue*). Din perspectiva priorității execuției codului, primul care este executat, dacă este întâlnit în cod, este `process.nextTick(funcție)` căruia îi pasăm un callback cu tot codul care trebuie evaluat. Callback-ul este introdus într-o listă (*nextTick queue*) dedicată tratării funcțiilor callback din `process.nextTick`. Modulele interne ale Node.js folosesc această metodă.
+Diferența dintre `setImmediate()` și `process.nextTick()` este că ultimul rulează înaintea tuturor evenimentelor I/O, pe când `setImmediate()` rulează după ultimul eveniment I/O, care este deja în task queue (*callback queue*). Din perspectiva priorității execuției codului, primul care este executat, dacă este întâlnit în cod, este `process.nextTick(funcție)` căruia îi pasăm un callback cu tot codul care trebuie evaluat. Callback-ul este introdus într-o listă (*nextTick queue*) dedicată tratării acestora. Modulele interne ale Node.js folosesc această metodă.
 
 Se folosește API-ul `process.nextTick()`, care amână execuția unei funcții până la următorul ciclu al buclei I/O. Poți considera `process.nextTick()` ca pe un punct de intrare în buclă. Funcționează astfel: se ia un callback ca argument și se introduce în capul *listei de execuție* (task queue) înaintea oricărui eveniment I/O care așteaptă, iar funcția gazdă va returna imediat. Funcția callback va fi invocată de îndată ce bucla începe un nou ciclu (adică când stiva este goală și poate fi trimis spre execuție callback-ul).
 
-### Callback-urile în general
+## Callback-urile în general
 
 În Node.js spre deosebire de varianta rulată de browsere, există un mod diferit de a programa execuția unui callback. Funcțiile cu rol de callback care sunt programate datorită apelării unui API asincron, de exemplu, sunt gestionate un *strat* de cod scris în C++, care introduce aceste funcții în listele specifice API-urilor pentru care așteaptă. De îndată ce callstack-ul este gol, se vor executa callback-urile din listele de așteptare în funcție de prioritatea listei și încărcare. De fiecare dată când un callback va fi apelat în JavaScript, lista microtaskurilor și cea a callback-urilor, vor fi executate și golite. Abia după ce listele sunt golite, bucla poate continua pentru a procesa un alt callback sau funcție care a intrat în callstack.
-
-## Exemplu de cod combinat
-
-```javascript
-const {promisify} = require('util');
-const sleep = promisify(setTimeout);
-
-async function bar (n, s, t) {
-  setImmediate(() => process.stdout.write(s));
-  await sleep(n);
-  return t;
-};
-
-async function foo () {
-  process.stdout.write('L');
-  for (let m of await Promise.all([ bar(20, 'N', 'R'), bar(10, 'T', 'E') ])) {
-    process.stdout.write(m);
-  };
-};
-
-sleep(50).then(() => {
-  process.stdout.write('A');
-});
-
-new Promise((res) => {
-  process.stdout.write('H');
-  res('O');
-}).then((m) => process.stdout.write(m)).finally(() => process.stdout.write('M'));
-
-queueMicrotask(() => process.stdout.write(' '));
-process.nextTick(() => process.stdout.write('L'));
-setTimeout(() => process.stdout.write('L'), 100);
-setImmediate(() => process.stdout.write('O'));
-process.stdout.write('E');
-foo();
-```
 
 Un mecanism interesant de investigare a ceea ce se petrece la rulare: `node --trace-event-categories v8,node.async_hooks nume_fisier.js` (https://nodejs.org/api/tracing.html#tracing_trace_events). Rulând astfel codul, vei afla când rulează codul JavaScript.
 

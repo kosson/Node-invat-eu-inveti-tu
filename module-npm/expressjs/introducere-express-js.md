@@ -1,12 +1,12 @@
 # Express.js
 
-Express este o bibliotecă de cod care în combinație cu NodeJS are capacitatea de a servi pagini web și alte resurse. Pe scurt, poți face un server HTTP. Pachetul Express.js poate fi adus de la npmjs.com prin instalarea cu `npm`.
+Express este o bibliotecă de cod care în combinație cu Node.js are capacitatea de a servi pagini web și alte resurse. Pe scurt, poți face un server HTTP. Pachetul Express.js poate fi adus de la npmjs.com prin instalarea cu `npm`.
 
 ```bash
 npm i express
 ```
 
-Pentru a porni, mai întâi trebuie inițiat constructorul `express` prin cerere și apoi constituirea obiectului denumit generic `app`, care are drept sarcină gestionarea cererilor și a răspunsurilor HTTP pe care modului [http](https://nodejs.org/api/http.html#http_http_methods) al lui NodeJS le implementează. Pentru a porni un server HTTP, ai nevoie de cinci linii de cod.
+Pentru a porni, mai întâi trebuie inițiat constructorul `express` prin cerere și apoi constituirea obiectului denumit generic `app`, care are drept sarcină gestionarea cererilor și a răspunsurilor HTTP pe care modului [http](https://nodejs.org/api/http.html#http_http_methods) al lui Node.js le implementează. Pentru a porni un server HTTP, ai nevoie de cinci linii de cod.
 
 ```javascript
 const express = require('express');

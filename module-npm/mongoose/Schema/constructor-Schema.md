@@ -1,6 +1,27 @@
 # Schema()
 
-Acesta este constructorul pentru clasa `Schema`. Obiectele schemă se instanțiază cu `new`. Constuctorul moștenește clasa [EventEmitter](https://nodejs.org/api/events.html#events_class_eventemitter) din NodeJS.
+Acesta este constructorul pentru clasa `Schema`. Obiectele schemă se instanțiază cu `new`. Constructorul moștenește clasa [EventEmitter](https://nodejs.org/api/events.html#events_class_eventemitter) din Node.js.
+
+În momentul în care instanțiezi un model de date folosind o schemă, mongoose va crea automat și o proprietate `_id` de tip `ObjectId`.
+
+```javascript
+const schema = new Schema();
+
+schema.path('_id'); // ObjectId { ... }
+```
+
+În cazul în care dorești, poți declara propriul `_id`, dar de fiecare dată când creezi un model, de fapt creezi un **document** pe care îl alimentezi cu date, trebuie neapărat să-i setezi proprietății `_id` o valoare. În caz contrar, înregistrarea nu va fi salvată.
+
+```javascript
+const schema = new Schema({ _id: Number });
+const Model = mongoose.model('Test', schema);
+
+const doc = new Model();
+await doc.save(); // Throws "document must have an _id before saving"
+
+doc._id = 1;
+await doc.save(); // works
+```
 
 ## Parametri
 

@@ -6,7 +6,7 @@ Dacă pentru un model Mongoose, un obiect `Schema` este cel care îl configureaz
 
 Un `SchemaType` este un obiect de configurare pentru proprietățile unei scheme.
 
-Un `SchemaType` menționează ce tip de date poate avea o cale. Dacă aceasta este de tip getter sau setter și care tipuri de date sunt valide pentru acea cale.
+Un `SchemaType` menționează ce tip de date poate avea o cale. Dacă aceasta este de tip *getter* sau *setter* și care tipuri de date sunt valide pentru acea cale.
 
 ```javascript
 const schema = new Schema({ nume: String });

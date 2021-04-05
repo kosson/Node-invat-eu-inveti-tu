@@ -1,6 +1,31 @@
 # Model.populate()
 
-Această metodă populează referințele dintr-un document cu informația din documentul referit. Metoda returnează un `Promise`.
+Această metodă permite referirea altor documente din alte colecții. Prin această metodă, se va înlocui căile specificate cu documente din alte colecții. Putem popula un singur document, mai multe documente, un simplu obiect, mai multe obiecte simple sau chiar toate obiectele returnate din query.
+
+Metoda returnează un `Promise`. Vom urmări exemplul oferit de documentație.
+
+```javascript
+const mongoose = require('mongoose');
+const Schema   = mongoose.Schema;
+// creez prima schemă
+const personSchema = Schema({
+  _id:     Schema.Types.ObjectId,
+  name:    String,
+  age:     Number,
+  stories: [{ type: Schema.Types.ObjectId, ref: 'Story' }]
+});
+// creez a doua schemă
+const storySchema = Schema({
+  title:  String,
+  author: {  type: Schema.Types.ObjectId, ref: 'Person' },
+  fans:   [{ type: Schema.Types.ObjectId, ref: 'Person' }]
+});
+
+const Story  = mongoose.model('Story',  storySchema);  // generez primul model
+const Person = mongoose.model('Person', personSchema); // generez cel de-al doilea model
+```
+
+Schema `personSchema` are un câmp care face referință către modelul `Story` și care va fi populat cu id-uri de documente `Story`. Câmpul `ref` indică modelul care trebuie folosit pentru populare. Array-ul de identificatori `_id` vor fi id-uri ale documentelor din `Story`.
 
 ## Parametri
 
@@ -99,3 +124,5 @@ Weapon.populate(users, { path: 'weapon' }, function (err, users) {
 ## Referințe
 
 - [Model.populate()](https://mongoosejs.com/docs/api.html#model_Model.populate)
+- https://thecodebarbarian.com/whats-new-in-mongoose-5-12-populate-transform.html
+- https://thecodebarbarian.com/mongoose-schema-design-pattern-store-what-you-query-for.html

@@ -6,6 +6,15 @@ De exemplu, atunci când este citit un fișier cu `fs.ReadStream`, la deschidere
 
 Toate obiectele care emit evenimente sunt instanțe ale clasei `EventEmitter`.
 
+Metodele pe care le pune la dispoziție un obiect `EventEmitter` sunt:
+
+- `on(event, listener)`, fiind o metodă care permite înregistrarea unui nou listener;
+- `once(event, listener)`, fiind înregistrat un listener care după prima apelare este eliminat;
+- `emit(event, [arg1], [arg2], [...])`, fiind posibilă pasarea de argumente suplimentare tuturor funcțiilor listener;
+- `removeListener(event, listener)`, fiind o metodă ce elimină un listener pentru tipul de eveniment specificat.
+
+Toate metodele returnează o instanță `EventEmitter` care permite chaining-ul. Funcțiile care joacă rol de receptor (*listener*) acceptă argumentele care sunt date la momentul emiterii evenimentului.
+
 În momentul în care un obiect `EventEmitter` emite un eveniment, toate funcțiile receptor atașate acelui eveniment, sunt apelate sincron. Dacă funcțiile receptor returnează un rezultat, acesta va fi ignorat.
 
 ```javascript

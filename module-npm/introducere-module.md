@@ -1,6 +1,6 @@
 # Introducere module
 
-Sistemul de modularizare al Node.js este bazat pe implementarea de Singleton-uri. În exemplul următor, expunem o funcție numită `adaugă`. Chiar dacă acest modul este importat în mai multe alte module ale programului, obiectul va fi instanțiat o singură dată.
+În exemplul următor, expunem o funcție numită `adaugă`. Chiar dacă acest modul este importat în mai multe alte module ale programului, obiectul va fi instanțiat o singură dată.
 
 ```javascript
 let ceva = 10;
@@ -11,7 +11,7 @@ module.exports = {
 }
 ```
 
-Acest lucru este posibil pentru că Node.js face un caching al modului cerut de îndată ce a fost instanțiat prima dată. Faptul că ai la îndemână un Singleton, implică posibilitate modificării stării acestuia din mai multe puncte ale programului. Acest comporament nu se va întâmpla dacă folosești funcții cu rol de constructori sau clase. În acest caz ori de câte ori faci `require`, vei instanția un obiect nou.
+Acest lucru este posibil pentru că Node.js face un caching al modului cerut de îndată ce a fost instanțiat prima dată. Faptul că ai la îndemână un Singleton, implică posibilitate modificării stării acestuia din mai multe puncte ale programului. Acest comportament nu se va întâmpla dacă folosești funcții cu rol de constructori sau clase. În acest caz ori de câte ori faci `require`, vei instanția un obiect nou.
 
 ```javascript
 class Ceva {
@@ -38,11 +38,11 @@ Dacă dorești să beneficiezi de un obiect unic, de un Singleton, vei exporta u
 
 Pachetele software scrise de programatorii care contribuie la ecosistemul Node.js, se pot instala folosind `npm install nume_pachet`. Aceste pachete se găsesc într-un depozit pe Internet la http://npmjs.com.
 
-## Căutarea unui pachet
+### Căutarea unui pachet
 
 Dacă ai nevoie de un anume pachet sau funcționalitate, poți iniția o căutare folosind comanda `npm search nume_pachet`.
 
-## Informații despre un pachet
+### Informații despre un pachet
 
 Poți afla mai multe detalii despre un pachet, dacă după instalarea sa lansezi comanda `npm view nume_pachet`. Informațiile pe care le poți obține pot urma următorul tipar pe care îl punem drept exemplu pentru express.
 

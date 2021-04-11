@@ -28,7 +28,7 @@ urla.raspunde('Un ecou...');
  */
 ```
 
-EcmaScript 2015 introduce sintaxa clasei, fiind, de fapt un ambalaj sintactic pentru constructori.
+ECMAScript 2015 introduce sintaxa clasei, fiind, de fapt un ambalaj sintactic pentru constructori.
 
 ```js
 class Tester{

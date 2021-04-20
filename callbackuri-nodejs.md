@@ -64,7 +64,9 @@ Pentru a propaga erorile în callback este nevoie de blocul `try...catch`, altfe
 
 ## Principii de lucru
 
-Nu crea structuri de apeluri callback imbricate creând un așa-numit *callback hell*.
+### Evitarea apelurilor imbricate
+
+Nu crea structuri de apeluri callback imbricate creând un așa-numit *callback hell* sau *pyramid of doom*.
 
 A. Returnează cât mai reprede din callbacks
 
@@ -138,6 +140,8 @@ webminer(process.argv[2], (err, filename, downloaded) => {
 
 B. Abstractizează funcționalitățile
 
+Pentru o funcționare optimă care poate beneficia și de testare, precum și testarea codului, cel mai bine este să abstractizezi sarcinile de lucru. Fiecare sarcină asicronă care implică un callback, ar fi bine să fie abstractizată în propria funcție.
+
 ```javascript
 // abstractizarea funcționalității pentru crearea directorului
 function saveFile (filename, contents, cb) {
@@ -173,3 +177,29 @@ export function webminer (url, cb) {
     });
   });
 }
+```
+
+### Execuția task-urilor în secvențe
+
+Acest model implică câteva modele diferite:
+
+- executarea unui set de task-uri cunoscute fără a propaga datele între acestea;
+- utilizarea rezultatului unui task drept input alteia;
+- iterarea unei colecții în timp ce rulezi o operațiune asincronă pe fiecare element a acesteia.
+
+Iterarea unei colecții aplicând o operațiune asincronă poate fi făcută folosind următorul șablon. Modelul este util atunci când trebuie respectată o anumită ordine.
+
+```javascript
+const tasks = []; // o structură iterabilă cu funcții care se execută asincron
+function iterate (index) {
+  if ( index === tasks.length) {
+    return finish();
+  }
+  const task = tasks[index]; // individualizarea fiecărui task
+  task(() => iterate(index + 1)); // Asigură-te că task-urile sunt executate asincron.
+};
+function finish () {
+  // ce se petrece când iterarea este completă
+};
+iterate(0);
+```

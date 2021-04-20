@@ -572,3 +572,4 @@ Acest model este urmat de pachetele pe care `npm` le gestionează.
 - [Modules: CommonJS modules](https://nodejs.org/api/modules.html)
 - Merită urmărit [răspunsul de pe Stackoverflow](http://stackoverflow.com/questions/5311334/what-is-the-purpose-of-node-js-module-exports-and-how-do-you-use-it).
 - [ECMAScript Modules](https://nodejs.org/api/esm.html)
+- [Super Simple Start to ESModules in Node.js | Kent C. Dodds](https://kentcdodds.com/blog/super-simple-start-to-es-modules-in-node-js)

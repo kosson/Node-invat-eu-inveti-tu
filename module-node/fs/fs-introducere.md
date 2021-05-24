@@ -654,7 +654,7 @@ unStreamReadable.on('data', function (fragment) {
 
 Întreaga resursă de date va fi consumată de `stream`-ul nostru *readable*. De fiecare dată când un fragment din `Buffer` este trimis, se declanșează execuția callback-ului. După prelucrarea fragmentului anterior, se va primi un alt fragment, care va fi prelucrat și tot așa până la consumarea întregii resurse.
 
-### Stream către un fișier - `fs.createWriteStream(path[,options])`
+  ### Stream către un fișier - `fs.createWriteStream(path[,options])`
 
 Această metodă oferă posibilitatea de a constitui un `stream` prin care să trimitem date într-o resursă.
 

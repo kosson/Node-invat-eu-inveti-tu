@@ -9,6 +9,17 @@ Există două tipuri de subdocumente:
 - array-uri de subdocumente și
 - documente unice ca parte a documentului părinte.
 
+```javascript
+const copilSchema = new Schema({nume: String});
+
+const părinteSchema = new Schema({
+  // Subdocument unic
+  copil: copilSchema,
+  // Array de subdocumente
+  copii: [ copilSchema ]
+});
+```
+
 Mai întâi instanțiezi schema sau schemele copiilor, apoi instanțiezi schema mare. În modelarea unei posibile aplicații de gestiune a conținuturilor, pentru fiecare articol introdus lăsăm posibilitatea să fie adăugate comentarii.
 
 ```javascript
@@ -59,6 +70,26 @@ var articol = new Schema({
   diverse: ancilare
 });
 ```
+
+## Diferența dintre subdocumente și căi în adâncime
+
+```javascript
+// Subdocument
+const subdocumentSchema = new mongoose.Schema({
+  child: new mongoose.Schema({ name: String, age: Number })
+});
+const Subdoc = mongoose.model('Subdoc', subdocumentSchema);
+
+// Nested path
+const nestedSchema = new mongoose.Schema({
+  child: { name: String, age: Number }
+});
+const Nested = mongoose.model('Nested', nestedSchema);
+```
+
+## La ce sunt utile subdocumentele
+
+
 
 ## Introducerea unui nou subdocument
 

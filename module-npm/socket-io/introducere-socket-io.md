@@ -86,12 +86,6 @@ const client = io('https://unsite.ro', {
 });
 ```
 
-
-
-
-
-
-
 ## 14. Debugging
 
 Socket.io folosește în scopuri de depanare (debugging), modulul npm `debug`.

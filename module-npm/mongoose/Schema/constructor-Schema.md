@@ -2,11 +2,29 @@
 
 Acesta este constructorul pentru clasa `Schema`. Obiectele schemă se instanțiază cu `new`. Constructorul moștenește clasa [EventEmitter](https://nodejs.org/api/events.html#events_class_eventemitter) din Node.js.
 
-În momentul în care instanțiezi un model de date folosind o schemă, mongoose va crea automat și o proprietate `_id` de tip `ObjectId`.
+Primul parametru al clasei cu rol de constructor `Schema` este un obiect care definește schema. Acest obiect definește care sunt numele câmpurilor, adică a **căilor** așa cum se numesc în Mongoose.
+
+```javascript
+const schemăMică = mongoose.Schema({
+  nume: String,
+  vârstă: Number
+});
+schemăMică.path('nume');   // detalii
+schemăMică.path('vârstă'); // detalii
+```
+
+Dacă dorești să investighezi cum este configurată fiecare *cale*, ai la dispoziție metoda `schema.path()`. Obiectul schemă este pasat drept al doilea parametru atunci când construiești modelul unei înregistrări.
+
+```javascript
+const User = mongoose.model('User', schemăMică);
+```
+
+Pentru a instroduce datele unei noi înregistrări, trebuie mai întâi să instanțiezi un nou obiect model căruia îi pasezi un obiect cu datele care sunt valorile ce populează câmpurile/căile. Mai mult, ceea ce se petrece în spate este o *formatare* a valorilor primite conform configurărilor specificate pentru fiecare câmp la momentul construirii schemei.
+
+În momentul în care instanțiezi un model de date folosind o schemă, Mongoose va crea automat și o proprietate `_id` de tip `ObjectId`.
 
 ```javascript
 const schema = new Schema();
-
 schema.path('_id'); // ObjectId { ... }
 ```
 
@@ -26,8 +44,6 @@ await doc.save(); // works
 ## Parametri
 
 Constructorul poate primi drept prim parametru un `Object`, care descrie *căile* schemei, o altă schemă care este copiată sau chiar un alt obiect schemă deja instanțiat sau un `Array` de scheme sau obiecte.
-
-## Exemplu
 
 ```javascript
 var schemăCopil = new Schema({ name: String });

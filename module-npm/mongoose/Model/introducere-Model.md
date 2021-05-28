@@ -16,7 +16,7 @@ await userDoc.save();
 const userFromDb = await UserModel.findOne({ name: 'Foo' });
 ```
 
-## metode statice și ale modelului hidratat
+## Metode statice și ale modelului hidratat
 
 În Mongoose ai două tipuri de metode care diferă. Unele se pot aplica pe model direct înainte ca acesta să fi fost hidratat cu date precum în cazul unui `find()`, de exemplu. Celelalte sunt metode care se pot aplica după hidratarea cu date.
 

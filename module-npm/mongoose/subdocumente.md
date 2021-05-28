@@ -1,6 +1,6 @@
 # Subdocumente
 
-Subdocumentele sunt documente care sunt introduse în alte documente. Acest lucru în mongoose este echivalent cu introducerea unei scheme în alta. Subdocumentele nu sunt cu nimic mai prejos decât documentele la care vor fi atașate. Și acestea vor putea avea middleware, vor putea beneficia de validare, ș.a.m.d.
+Subdocumentele sunt documente care sunt introduse în alte documente. Acest lucru în Mongoose este echivalent cu introducerea unei scheme în alta. Subdocumentele nu sunt cu nimic mai prejos decât documentele la care vor fi atașate. Și acestea vor putea avea middleware, vor putea beneficia de validare, ș.a.m.d.
 
 Diferența dintre documente și subdocumente este aceea că subdocumentele nu vor fi salvate în bază individual pentru că sunt legate de documentul principal. Doar dacă documentul principal va fi salvat, și subdocumentele vor fi la rândul lor salvate.
 

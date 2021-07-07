@@ -1,10 +1,142 @@
 # Subdocumente
 
-Subdocumentele sunt documente care sunt introduse în alte documente. Acest lucru în Mongoose este echivalent cu introducerea unei scheme în alta. Subdocumentele nu sunt cu nimic mai prejos decât documentele la care vor fi atașate. Și acestea vor putea avea middleware, vor putea beneficia de validare, ș.a.m.d.
+Subdocumentele sunt documente care sunt introduse în alte documente. Acest lucru în Mongoose este echivalent cu introducerea unei scheme în alta - *nested schema*. Subdocumentele nu sunt cu nimic mai prejos decât documentele la care vor fi atașate. Și acestea vor putea avea middleware, vor putea beneficia de validare, ș.a.m.d.
+
+Avantajele sub-documentelor:
+
+- reutilizarea codului în sensul creării schemelor și re-utilizarea acestora în diferite combinații;
+- sub-schemele care sunt incluse în alte scheme beneficiază și ele de mecanismele de validare, middleware, virtuals, tot ce o schemă normală permite;
+- sub-schemele sunt de fapt scheme și acest lucru înseamnă că vor avea `_id` cu singura condiție să nu fie setat la `false` crearea sa.
 
 Diferența dintre documente și subdocumente este aceea că subdocumentele nu vor fi salvate în bază individual pentru că sunt legate de documentul principal. Doar dacă documentul principal va fi salvat, și subdocumentele vor fi la rândul lor salvate.
 
-Există două tipuri de subdocumente:
+Subdocumentele au la rândul lor în dotare middleware-urile `save` și `validate`. Apelarea lui `save()` pe documentul părinte, va declanșa aplicarea lui `save()` pe toate subdocumentele. Același lucru se va petrece și în cazul aplicării middleware-ului `validate()`.
+
+```javascript
+childSchema.pre('save', function (next) {
+  if ('invalid' == this.name) {
+    return next(new Error('Nu este un user valid'));
+  }
+  next();
+});
+
+const parent = new Parent({
+  children: [{name: 'invalid'}]
+});
+
+parent.save(function (err) {
+  console.log(err.message) // Nu este un user valid
+});
+```
+
+Middleware-ul `pre('save')` și `pre('validate')` se execută înainte de `pre('save')` la nivelul părintelui și abia după ce s-a rulat `pre('validate')` pe acesta. Această ordine este dictată de faptul că middleware-ul de validare rulează automat înaintea celui de `save()`.
+
+## Diferența dintre sub-documente și căi în adâncime
+
+Mongoose face o diferență între căile în adâncime (*nested paths*) și sub-documentele. În exemplul de mai jos, avem această diferență evidențiată.
+
+```javascript
+// Subdocument
+const subdocumentSchema = new mongoose.Schema({
+  child: new mongoose.Schema({ name: String, age: Number })
+});
+const Subdoc = mongoose.model('Subdoc', subdocumentSchema);
+
+// Nested path
+const nestedSchema = new mongoose.Schema({
+  child: { name: String, age: Number }
+});
+const Nested = mongoose.model('Nested', nestedSchema);
+```
+
+Cele două abordări par similare. Documentele care vor fi introduse în MongoDB vor avea aceeași structură. Există diferențe specifice. Folosind exemplul de mai sus, putem explora aceste diferențe.
+
+```javascript
+const doc1 = new Subdoc({});
+doc1.child === undefined; // true
+doc1.child.name = 'test'; // Afișează un TypeError: cannot read property...
+
+const doc2 = new Nested({});
+doc2.child === undefined; // false
+console.log(doc2.child); // Afișează 'MongooseDocument { undefined }'
+doc2.child.name = 'test'; // Funcționează!!!
+```
+
+În cazul subdocumentelor, proprietatea `.child` a documentului, va avea valoarea `undefined`. În cazul documentelor *nested* proprietatea `.child` va indica un *MongooseDocument*. Aici devine interesat pentru că indiferent dacă documentul *nested* are sau nu proprietăți, le poți introduce folosind chiar obiectul `child` drept referință.
+
+Odată cu versiunea 5 a lui Mongoose avem următorul comportament al metodei `set()` aplicată documentului:
+
+- în cazul documentelor *nested*, modificările fuzionează cu datele existente,
+- iar în cazul sub-documentelor, pur și simplu înlocuiește datele.
+
+```javascript
+const doc1 = new Subdoc({ child: { name: 'Luke', age: 19 } });
+doc1.set({ child: { age: 21 } });
+doc1.child; // { age: 21 }
+
+const doc2 = new Nested({ child: { name: 'Luke', age: 19 } });
+doc2.set({ child: { age: 21 } });
+doc2.child; // { name: Luke, age: 21 }
+```
+
+## Setări din oficiu ale sub-documentelor
+
+Căile unui sub-document sunt setate din start la valoarea `undefined`. Acest lucru înseamnă că Mongoose nu va proceda la completarea valorilor precizate la proprietățile `default`, până când calea sub-documentului este completată cu date.
+
+```javascript
+const subdocumentSchema = new mongoose.Schema({
+  child: new mongoose.Schema({
+    name: String,
+    age: {
+      type: Number,
+      default: 0
+    }
+  })
+});
+const Subdoc = mongoose.model('Subdoc', subdocumentSchema);
+
+// Observă faptul că valoarea lui `age` trecută ca default nu conduce la completarea datelor documentului
+// pentru că `child` are valoarea `undefined`.
+const doc = new Subdoc();
+doc.child; // undefined
+```
+
+În momentul în care setezi `child` cu un obiect, Mongoose va aplica valorile default.
+
+```javascript
+doc.child = {};
+// Mongoose aplică valoarea default pentru `age`
+doc.child.age; // 0
+```
+
+Mongoose aplică valorile default într-o manieră recursivă, ceea ce înseamnă că poți aplica un mic tertip pentru a completa valorile default. Acesta constă din setarea căii sub-documentului la un obiect gol.
+
+```javascript
+const childSchema = new mongoose.Schema({
+  name: String,
+  age: {
+    type: Number,
+    default: 0
+  }
+});
+const subdocumentSchema = new mongoose.Schema({
+  child: {
+    type: childSchema,
+    default: () => ({})
+  }
+});
+const Subdoc = mongoose.model('Subdoc', subdocumentSchema);
+
+// Note that Mongoose sets `age` to its default value 0, because
+// `child` defaults to an empty object and Mongoose applies
+// defaults to that empty object.
+const doc = new Subdoc();
+doc.child; // { age: 0 }
+```
+
+## Tipuri de sub-documente
+
+Există două tipuri de sub-documente:
 
 - array-uri de subdocumente și
 - documente unice ca parte a documentului părinte.
@@ -20,7 +152,48 @@ const părinteSchema = new Schema({
 });
 ```
 
-Mai întâi instanțiezi schema sau schemele copiilor, apoi instanțiezi schema mare. În modelarea unei posibile aplicații de gestiune a conținuturilor, pentru fiecare articol introdus lăsăm posibilitatea să fie adăugate comentarii.
+Mai întâi instanțiezi schema sau schemele copiilor, apoi instanțiezi schema mare.
+
+## Id-urile sub-documentelor
+
+Fiecare sub-document are un `_id` din oficiu. Array-urile de document din Mongoose au o metodă specială numită `id` cu ajutorul căreia poți face o căutare a unui document dintr-un array al acestora (*MongooseArray*) constituit pentru fiecare document părinte pentru a găsi unul după id-ul oferit drept argument.
+
+```javascript
+const doc = parent.children.id(_id);
+```
+
+Trebuie precizat faptul că subdocumentele vor avea `_id` propriu. Dacă nu dorești acest lucru, poți să precizezi explicit.
+
+```javascript
+const EntitateCopilSchema = mongoose.Schema({
+  superputere: String
+}, {_id : false});
+const EntitatePărinteSchema = mongoose.Schema({
+  nume: String,
+  superputeri: [EntitateCopilSchema]
+});
+```
+
+O altă metodă de a preciza explicit că nu dorești atribuirea de `_id` unui subdocument este să precizezi explicit în sub-schemă.
+
+```javascript
+const EntitatePărinteSchema = mongoose.Schema({
+  nume: String,
+  superputeri: [{
+    _id: false,
+    superputere: {type: String}
+  }]
+});
+```
+
+## Adăugarea de sub-documente în array-uri
+
+Metode ale `MongooseArray` așa cum sunt `push()`, `unshift()`, `addToSet`
+
+
+## Exemplu exploratoriu
+
+Să explorăm un exemplu. În modelarea unei posibile aplicații de gestiune a conținuturilor, pentru fiecare articol introdus lăsăm posibilitatea să fie adăugate comentarii.
 
 ```javascript
 var mongoose = require('mongoose'),
@@ -57,7 +230,7 @@ articolNou.save(function () {
 });
 ```
 
-Începând cu Mongoose 4.2.0 dacă ai un singur subdocument, acesta poate fi atașat la cel mare prin menționarea directă.
+Începând cu Mongoose 4.2.0 dacă ai un singur sub-document, acesta poate fi atașat la cel mare prin menționarea directă.
 
 ```javascript
 var ancilare = new Schema({
@@ -71,29 +244,13 @@ var articol = new Schema({
 });
 ```
 
-## Diferența dintre subdocumente și căi în adâncime
-
-```javascript
-// Subdocument
-const subdocumentSchema = new mongoose.Schema({
-  child: new mongoose.Schema({ name: String, age: Number })
-});
-const Subdoc = mongoose.model('Subdoc', subdocumentSchema);
-
-// Nested path
-const nestedSchema = new mongoose.Schema({
-  child: { name: String, age: Number }
-});
-const Nested = mongoose.model('Nested', nestedSchema);
-```
-
 ## La ce sunt utile subdocumentele
 
 
 
 ## Introducerea unui nou subdocument
 
-În momentul în care ai deja un document, care poate accepta subdocumente, poți introduce subdocumentele.
+În momentul în care ai deja un document, care poate accepta sub-documente, poți introduce sub-documentele.
 
 ```javascript
 // resursa-red.js

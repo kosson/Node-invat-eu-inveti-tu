@@ -1,15 +1,15 @@
 # Stream-uri
 
-Dacă am asemui stream-urile cu apa, am putea spune că locul de unde vine apa este *upstream* (*din deal*), iar unde ajunge *downstream* (*în vale*). Din punct de vedere al distribuției în timp, ne-am putea imagina că un stream este un array (bytes dispuși unul după alții) distribuit în timp, nu în memorie. Analogia cu array-ul servește să ne imaginăm că în locul indexului pe care îl folosim pentru a parcurge array-ul, de fapt avem o fereastră de date (*data buffer*) care își schimbă conținutul până la epuizarea datelor acelui stream. Un alt mod de a înțelege stream-urile ar fi utilitate dovedită prin posibilitatea unui sistem de a consuma o cantitate limitată de date dintr-un volum pentru care nu are capacitate de prelucrare in integrum.
+Dacă am asemui *stream*-urile cu apa, am putea spune că locul de unde vine apa este *upstream* (*din deal*), iar unde ajunge *downstream* (*în vale*). Din punct de vedere a distribuției în timp, ne-am putea imagina că un *stream* este un array (bytes dispuși unul după alții) distribuit în timp, nu în memorie. Analogia cu array-ul servește să ne imaginăm că în locul indexului pe care îl folosim pentru a parcurge array-ul, de fapt avem o fereastră de date (*data buffer*) care își schimbă conținutul până la epuizarea respectivului stream. Un alt mod de a înțelege stream-urile ar fi utilitate dovedită prin posibilitatea unui sistem de a consuma o cantitate limitată de date dintr-un volum pentru care nu avem capacitate de prelucrare. Pot fi și alte cazuri în care avem nevoie să creăm un *buffer* de date între un emițător al respectivelor date și un consumator al lor. Un *buffer* poate fi perceput ca un recipient care se interpune între emițător și consumator cu scopul de a menține constant debitul consumatorului, dar și pe cel al emițătorului. Uneori consumatorul nu poate procesa atât de rapid datele pe cât de repede sunt emise ș.a.m.d. În acel moment bufferul începe să se umple până când ajunge la o limită pe care o numim *highWaterMark*. În cazul în care datele ating această limită și o depășesc unoeori, putem cere emițătorului din amonte (*upstream*) să se oprească din introducerea datelor până când acestea sunt consumate. Limita `highWaterMark` este un prag, nu o limitare peste care nu se poate trece.
 
 ## Interfața Stream
 
-În Node, interfața `Stream` este implementată de modulul `stream`. Acest modul oferă un API care poate fi implementat de mai multe obiecte în Node.js, care doresc să implementeze interfața `stream`. Exemple de `stream`-uri în NodeJS:
+În Node, interfața `Stream` este implementată de modulul `stream`. Acest modul oferă un API care poate fi implementat de mai multe obiecte în Node.js. Stream-urile își găsesc utilitatea în multe dintre modulele Node.js chiar. Câteva exemple:
 
 -   un apel HTTP,
 -   o proprietate `process.stdout`.
 
-Stream-urile pot fi folosite pentru a citi, pentru a scrie sau ambele operațiuni în același timp. Fii foarte atentă la memorie pentru că gestionând streamuri cu `fs`, nu vei putea manipula fișiere de mari dimensiuni.
+Stream-urile pot fi folosite pentru a citi (*Readable streams*), pentru a scrie (*Writable streams*) sau ambele operațiuni în același timp (*Duplex streams* și *Transform streams*). Fii foarte atentă la memorie pentru că gestionând streamuri folosindu-te de modulul `fs`, nu vei putea manipula fișiere de mari dimensiuni.
 
 Toate stream-urile în Node.js lucrează exclusiv cu șiruri de caractere și obiecte `Buffer` constituite cu ajutorul array-ului specializat `Uint8Array`.
 
@@ -152,139 +152,6 @@ server.listen(8888);
 ```
 
 Stream-ul `res` este un obiect `Writable`, care expune metode precum `write()` și `end()`. Aceste metode sunt folosite pentru a scrie date în stream. Stream-urile `Readable` folosesc clasa `EventEmitter` pentru a *anunța* aplicația cu privire la momentul în care datele sunt disponibile pentru a fi citite din stream.
-
-## Async iterators
-
-În acest moment, poți itera un stream, fapt care este posibil datorită compatibilității stream-urilor cu protocolul de iterare. Un exemplu rapid ar fi prelucrarea unui fișier de mari dimensiuni folosid protocolul de iterare.
-
-```javascript
-const {createReadStream} = require('fs');
-async function prelucreaza () {
-  const streamDate = createReadStream('/fisier_mare.csv'),
-        chunk;
-  for (chunk of streamDate) {
-    // prelucrează fiecare linie de csv aici.
-  }
-  // încheierea lui for produce end pentru stream
-}
-prelucreaza();
-```
-
-În cazul în care vei aplica un `brake` în `for`, stream-ul va fi distrus automat.
-
-Un alt exemplu, indică modul în care poți folosi generatoarele, de fapt async iteratoarele pentru a procesa un stream. Async iteratoarele permit await-uri, dar și yield-uri și pot fi parcurse folosind `for...await`.
-
-```javascript
-const {promisify} = require('util');
-const intarziere = promisify(setTimeout);
-
-async function* genereaza () {
-  yield 'salut';
-  await intarzie(100);
-  yield ' '
-  await intarzie(100);
-  yield 'popor';
-}
-
-async function consumator (iterator) {
-  let fragmente = '',
-      chunk;
-  for await (chunk of iterator) {
-    fragmente += chunk;
-  }
-  return fragmente;
-};
-
-consumator(genereaza()).then(console.log);
-```
-
-Ceea ce mai permit async iteratoarele este să transformi elementele dintr-un iterator. Următorul exemplu poți să-l introduci într-un `pipeline`.
-
-Un exemplu interesant este propus de Stephen Belanger în prezentarea sa „Async Iterators: A New Future for Streams” de la Node+JS Interactive 2019.
-
-```javascript
-const pipe = require('async-iterator-pipe');
-
-// sparge fișierul pe linii
-async function* lineSplit (iterator) {
-  let buffer = Buffer.alloc(0); // creează un buffer intermediar
-
-  // adaugă chunk-uri în bufferul intermediar până când apare newline char - 0x0a
-  for await (let chunk of iterator) {
-    buffer = Buffer.concat([buffer, chunk]),
-
-    let position = buffer.indexOf(0x0a); // lucrează cu, codul de caracter pentru a evita transformarea bufferului intermediar în string
-
-    // câtî vreme va fi găsit un caracter newline, va tăia până la acest caracter și va face yield.
-    while (position >= 0) {
-      yield buffer.slice(0, position); // fă yield la fragmentul până în newline
-
-      buffer = buffer.slice(position + 1); // mută pointerul imedit după newline
-      position = buffer.indexOf(0x0a);
-    };
-  };
-  if (buffer) {
-    yield buffer;
-  }
-};
-
-// fă parsing pe liniile de CSV
-async function* csv (iterator) {
-  let keys;
-  for await (let line of iterator) {
-    const values = line.toString().split(',');
-    if(!keys){
-      keys = values;
-      continue;
-    }
-    const data = {};
-    for (let i = 0; i < values.length; i++) {
-      data[keys[i]] = values[i];
-    };
-    yield data;
-  };
-};
-
-// transformă fiecare obiect generat dintr-o linie CSV într-un JSON
-async function* toJSON (iterator) {
-  for await (let item of iterator) {
-    yield JSON.stringify(item);
-  };
-};
-
-async function* upperCaseTransform (iterator) {
-  for await (let element of iterator) {
-    yield element.toString().toUpperCase();
-  }
-};
-
-const fs = require('fs');
-pipe(
-  fs.createReadStream('/fisier_mare.csv'),
-  lineSplit,
-  csv,
-  toJSON,
-  process.stdout
-);
-
-```
-
-Începând cu Node.js 12 poți crea un stream dintr-un generator. Magia rezidă în folosirea lui `Readable.from` căruia îi pasezi un iterator sau un async iterator ori un array și îl va converti automat într-un stream.
-
-```javascript
-const {Readable, pipeline} = require('stream');
-const {createWriteStream} = require('fs');
-
-function* genereaza () {
-  yield 'salut';
-  yield 'popor';
-}
-
-const streamDate = Readable.from(genereaza()); // MAGIC!
-pipeline(streamDate, createWriteStream('/fisier_imens.csv'), (err) => {
-  if (err) console.log(err);
-});
-```
 
 ## Referințe
 

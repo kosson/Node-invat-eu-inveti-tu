@@ -1,6 +1,10 @@
 # Clasa `stream.Writable`
 
-Sunt o abstractizare a ceea ce putem înțelege a fi o *destinație*. Sunt stream-urile în care se pot scrie date. Cel mai simplu exemplu de stream `Writable` este un obiect `response`, precum în exemplul de mai jos:
+Sunt o abstractizare a ceea ce putem înțelege a fi o *destinație*. Sunt stream-urile cu care se pot scrie date, de exemplu. Aceste stream-uri preiau datele de la aplicație și le striu într-o anumită destinație. Pentru a preveni pierderea datelor în cazul în care destinația nu are capacitatea de procesare care să țină pasul cu volumul datelor, acestea vor fi scrise într-un `Buffer`.
+
+Aplicație --Writable stream--> | Buffer | -> File.
+
+Cel mai simplu exemplu de stream `Writable` este un obiect `response`, precum în exemplul de mai jos:
 
 ```javascript
 const server = require('http').createServer();
@@ -18,7 +22,7 @@ Posibilele stream-uri `Writable`:
 
 - HTTP requests, pe partea de client,
 - HTTP responses, pe partea de server,
-- `fs` - stream-urile *write*,
+- `fs` - stream-urile *write* (`fs.createWriteStream`),
 - stream-uri `zlib`,
 - stream-uri `crypto`,
 - socket-uri TCP,

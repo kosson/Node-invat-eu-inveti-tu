@@ -1,6 +1,6 @@
-# stream.pipeline
+# Pipeline
 
-Această metodă a fost adăugată în modulul `streams` începând cu Node versiunea 10. În versiunea 13.10.0 a fost adăugat suportul pentru generatorii `async`. În versiunea 14.0.0 callback-ul (`pipeline(..., cb)`) va aștepta să fie emis evenimentul `close` înainte de a declanșa execuția callback-ului
+Această metodă - `stream.pipeline` a fost adăugată în modulul `streams` începând cu Node.js versiunea 10. În versiunea 13.10.0 a fost adăugat suportul pentru generatorii `async`. În versiunea 14.0.0 callback-ul (`pipeline(..., cb)`) va aștepta să fie emis evenimentul `close` înainte de a declanșa execuția callback-ului.
 
 Semnătura posibilă `stream.pipeline(source[, ...transforms], destination, callback)`. Metoda va returna un stream.
 

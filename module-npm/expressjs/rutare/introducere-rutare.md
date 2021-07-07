@@ -2,6 +2,8 @@
 
 Un apel către serverul motorizat de Express, va conține o cale de la care agentul așteaptă o resursă. Express, are nevoie de un gestionar de rute, care să poată gestiona solicitarea. O rută se mai numește **endpoint**. Trebuie precizat faptul că o aplicație Express odată pornită, va asculta toate apelurile. Fiecare cerere venită la server va fi tratată conform unui lanț de middleware și rute definite.
 
+Rutele vor fi gestionate în ordinea în care sunt create.
+
 Rutarea se face folosind metodele obiectului `app` care corespund verbelor/[metodelor HTTP](https://expressjs.com/en/4x/api.html#app.METHOD): `app.get()`, `app.post()` ș.a.m.d. Poți folosi `app.all()` pentru a gestiona toate metodele HTTP și `app.use()` pentru a specifica middleware-uri materializate prin funcții cu rol de callback. Putem spune că o funcție pasată unui `app.use()` se va comporta în sine ca un ruter.
 
 O metodă de rutare poate avea mai multe funcții cu rol de callback ([middleware](https://expressjs.com/en/guide/using-middleware.html)), care vor trata în cascadă cererea HTTP.

@@ -1,6 +1,17 @@
 # Clasa `stream.Readable`
 
-Stream-urile `Readable` pot fi considerate a fi sursa datelor. Toate stream-urile care citesc implementează interfața pe care o definește clasa `stream.Readable`. Documentația oficială menționează câteva exemple:
+Stream-urile `Readable` pot fi considerate a fi sursa datelor. Un stream *Readable* poate fi folosit pentru a citi datele dintr-o sursă așa cum este un descriptor de fișier, de exemplu. Datele care încep să fie citite pot fi stocate într-un `Buffer` în stream-ul `Readable` dacă aplicația care consumă datele o face mai greu.
+
+```text
+Fișier --Readable stream--> | Buffer | -> aplicație
+```
+
+Câteva exemple de utilizare a stream-urilor `Readable`:
+
+- `fs.createReadStream`,
+- `http.IncomingMessage`
+
+Toate stream-urile care citesc implementează interfața pe care o definește clasa `stream.Readable`. Documentația oficială menționează câteva exemple:
 
 - răspunsuri HTTP la client,
 - cererile care ajung la server,

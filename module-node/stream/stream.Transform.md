@@ -1,6 +1,15 @@
 ### Clasa `stream.Transform`
 
-Stream-urile de transformare sunt acele stream-uri `Duplex` care implementează interfețele `Readable` și `Writable`. De exemplu, streamurile `zlib` și `crypto` sunt de tip `Transform`.
+Stream-urile de transformare sunt acele stream-uri `Duplex` care implementează interfețele `Readable` și `Writable`. Ceea ce le face deosebite este faptul că partea `Readable` este conectată de `Writable`.
+
+```text
+                          Transform stream
+          ↗- scrie   --→|Buffer write------|----↓
+aplicație               |------------------|  crypto
+          ↖-- citește --|-------Buffer read|----⤶
+```
+
+De exemplu, streamurile `zlib` și `crypto` sunt de tip `Transform`. Un alt exemplu este `stream.PassThrough` care permite pasarea biților fără nicio modificare.
 Rezultatul este obținut din input-ul supus unei prelucrări. Aceste stream-uri implementează clasele `Readable` și `Writable`.
 
 Manualul oferă drept exemplu modulele `zlib` și `crypto`.
@@ -101,7 +110,7 @@ streamDeInput.pipe(implementareDePrelucrareTransform()).pipe(streamDeOutput).on(
 Metoda `push` poate fi apelată de zero sau mai multe ori pentru a genera mai multe rezultate diferite pentru fiecare *chunk* individual.
 Reține faptul că la prelucrarea unui *chunk* este posibil să nu avem rezultate, care să fie împinse mai departe.
 
-Funcția callback va fi apelată după ce fragmentul de date curent va fi consumat complet. Apelarea metodei `_transform()` nu poate fi făcută în paralel pentru că stream-urile implementează un mecanism de prelucrare secvețială - o coadă de așteptare. În schimb, funcția callback poate fi apelată sincron sau asyncron.
+Funcția callback va fi apelată după ce fragmentul de date curent va fi consumat complet. Apelarea metodei `_transform()` nu poate fi făcută în paralel pentru că stream-urile implementează un mecanism de prelucrare secvențială - o coadă de așteptare. În schimb, funcția callback poate fi apelată sincron sau asyncron.
 
 #### Argumentele
 

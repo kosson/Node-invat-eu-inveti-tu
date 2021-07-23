@@ -1,10 +1,10 @@
 # Clasa FileHandle
 
-Un obiect `FileHandle` este un wrapper pentru un file descriptor numeric. Aceste obiecte sunt distincte de file descriptori.
+Un obiect `FileHandle` este un wrapper pentru un file descriptor numeric. Aceste obiecte sunt distincte de file descriptori. Pentru a instanția un obiect `FileHandle`, se va folosi metoda `open` a lui `fsPromises` - `fsPromises.open()`. Toate obiectele `FileHandle` sunt `EventEmitter`-e.
 
 Dacă un FileHandle nu este închis folosind `filehandle.close()`, va închide automat file descriptorul și va emite un warning de proces, fiind astfel prevenite scurgerile de memorie.
 
-Aceste obiecte sunt create intern de metoda `fsPromise.open()`.
+Aceste obiecte sunt create intern de metoda `fsPromise.open()`. API-ul `fs/promises` oferă metode asincrone pentru gestionarea fișierelor sistemului de operare. Acestea returnează promisiuni.
 
 ## Metoda `filehandle.appendFile(data, options)`
 
@@ -34,7 +34,7 @@ Metoda returnează o promisiune care în caz de succes va fi rezolvată fără a
 Returnează o promisiune care va fi rezolvată atunci când file descriptorul va fi închis. Dacă apare vreo eroare la închidere, promisiunea va fi rejected.
 
 ```javascript
-const fsPromises = require('fs').promises;
+const fsPromises = require('fs').promises; // versiunea 10.1.0
 async function openAndClose() {
   let filehandle;
   try {
@@ -44,11 +44,20 @@ async function openAndClose() {
       await filehandle.close();
   }
 }
+// sau noua sintaxă
+import { open } from 'fs/promises'; // versiune 14.0.0
+
+let filehandle;
+try {
+  filehandle = await open('thefile.txt', 'r');
+} finally {
+  await filehandle?.close();
+}
 ```
 
 ## Metoda `filehandle.datasync()`
 
-Metoda returnează o promisune care în caz de succes va fi rezolvată fără argumente.
+Metoda returnează o promisiune care în caz de succes va fi rezolvată fără argumente.
 
 ## Proprietatea `filehandle.fd`
 
@@ -56,7 +65,7 @@ Aceasta este un file descriptor gestionat de un obiect FileHandle.
 
 ## Metoda `filehandle.read(buffer, offset, length, position)`
 
-Metoda poate fi folosită pentru citirea datelor dintr-un fișier. În cazul rezolvării cu succes, promisiunea oferă un obiect care are o proprietate `bytesRead` care specifică numprul de bytes care au fost citiți și o proprietate `buffer`, care este o referință către argumentul `buffer` care a fost pasat.
+Metoda poate fi folosită pentru citirea datelor dintr-un fișier. În cazul rezolvării cu succes, promisiunea oferă un obiect care are o proprietate `bytesRead` care specifică numărul de bytes care au fost citiți și o proprietate `buffer`, care este o referință către argumentul `buffer` care a fost pasat.
 
 Argumentul `buffer` poate fi un `Buffer` sau un `UintInt8Array`, fiind bufferul în care vor fi scrise datele.
 Argumentul `offset` este locul din buffer de la care se va porni scrierea datelor.
@@ -129,4 +138,3 @@ doTruncate().catch(console.error);
 ## Metoda `filehandle.writeFile(data, options)`
 
 ## Metoda `filehandle.writev(buffers[, position])`
-

@@ -1,5 +1,7 @@
 # Clasa `fs.WriteStream`
 
+Această clasă extinde `stream.Writable`. Pentru a crea o instanță `fs.WriteStream`, vei folosi metoda `fs.createWriteStream()`.
+
 ## Evenimentul `close`
 
 Acest eveniment este emis atunci când file descriptorul este închis.
@@ -9,7 +11,6 @@ Acest eveniment este emis atunci când file descriptorul este închis.
 Este emis atunci când este deschis fișierul și este un număr al file descriptorul.
 
 ## Evenimentul `ready`
-
 
 Este emis atunci când `fs.WriteStream` este gata să fie folosit.
 

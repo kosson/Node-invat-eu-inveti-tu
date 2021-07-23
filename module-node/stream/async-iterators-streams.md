@@ -1,6 +1,6 @@
-# Async iterators
+# Stream-uri async iterators
 
-În acest moment, poți itera un stream, fapt care este posibil datorită compatibilității stream-urilor cu protocolul de iterare. Un exemplu rapid ar fi prelucrarea unui fișier de mari dimensiuni folosid protocolul de iterare.
+În acest moment, poți itera un stream, fapt care este posibil datorită compatibilității stream-urilor cu protocolul de iterare. Un exemplu rapid ar fi prelucrarea unui fișier de mari dimensiuni folosind protocolul de iterare.
 
 ```javascript
 const {createReadStream} = require('fs');

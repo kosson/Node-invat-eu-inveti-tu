@@ -4,12 +4,12 @@ Dacă am asemui *stream*-urile cu apa, am putea spune că locul de unde vine apa
 
 ## Interfața Stream
 
-În Node, interfața `Stream` este implementată de modulul `stream`. Acest modul oferă un API care poate fi implementat de mai multe obiecte în Node.js. Stream-urile își găsesc utilitatea în multe dintre modulele Node.js chiar. Câteva exemple:
+În Node.js, interfața `Stream` este implementată de modulul `stream`. Acest modul oferă un API care poate fi implementat de mai multe obiecte în Node.js. Stream-urile își găsesc utilitatea în multe dintre modulele Node.js chiar. Câteva exemple:
 
 -   un apel HTTP,
 -   o proprietate `process.stdout`.
 
-Stream-urile pot fi folosite pentru a citi (*Readable streams*), pentru a scrie (*Writable streams*) sau ambele operațiuni în același timp (*Duplex streams* și *Transform streams*). Fii foarte atentă la memorie pentru că gestionând streamuri folosindu-te de modulul `fs`, nu vei putea manipula fișiere de mari dimensiuni.
+Stream-urile pot fi folosite pentru a citi (*Readable streams*), pentru a scrie (*Writable streams*) sau ambele operațiuni în același timp (*Duplex streams* și *Transform streams*). Cel mai adesea vei întâlni modulul `fs` care folosește stream-urile. Fii foarte atent(ă) la memorie, pentru că gestionând streamuri folosindu-te de modulul `fs`, nu vei putea manipula fișiere de mari dimensiuni.
 
 Toate stream-urile în Node.js lucrează exclusiv cu șiruri de caractere și obiecte `Buffer` constituite cu ajutorul array-ului specializat `Uint8Array`.
 
@@ -35,7 +35,7 @@ streamR.pipe(process.stdout);
 
 ## Detalii de API
 
-Modulul `stream` a fost gândit să respecte modelul de moștenire prototipal din JavaScript. Acest lucru permite posibile extensii ale celor patru clase de bază: `stream.Writable`, `stream.Readable`, `stream.Duplex` și `stream.Transform`.
+Modulul `stream` a fost gândit să respecte modelul de moștenire prototipală din JavaScript. Acest lucru permite posibile extensii ale celor patru clase de bază: `stream.Writable`, `stream.Readable`, `stream.Duplex` și `stream.Transform`.
 
 ```javascript
 const { Writable } = require('stream');
@@ -76,9 +76,9 @@ Node.js oferă patru tipuri de stream-uri:
 
 Mai mult, acest modul include câteva funcții cu rol de utilitare: `pipeline`, `finished` și `Readable.from`.
 
-### Object Mode
+## Rularea în object mode
 
-Stream-urile binare nu pot prelucra altceva decât stringuri și buffere. Streamurile pot fi create în `objectMode` cu scopul de a transforma *chunk*-ul într-un obiect.
+Stream-urile binare nu pot prelucra altceva decât string-uri și buffere. Stream-urile pot fi create în `objectMode` cu scopul de a transforma *chunk*-ul într-un obiect.
 
 ```javascript
 var through2 = require('through2');
@@ -92,13 +92,13 @@ unStream.write({salutari: 'de la Mamaia'});
 
 Unele implementări de `stream` pot folosi și `null`, care va avea o semnificație specială. Astfel de streamuri operează într-un mod special numit *object mode* (au opțiunea `objectMode` la momentul creării stream-ului).
 
-Node.js poate ține în memorie doar 1.67Gb. Dacă ai o resursă dincolo de această limitare, o eroare `heap out of memory` va fi emisă. Această limitate poate fi depășită.
+Node.js poate ține în memorie doar 1.67Gb de date. Dacă ai o resursă dincolo de această limitare, o eroare `heap out of memory` va fi emisă. Această limitate poate fi depășită, dacă se dorește.
 
-### Buffering
+## Buffering-ul
 
 Streamurile `Readable` și cele `Writable` vor stoca datele într-un **buffer** intern (o zonă tampon în memorie), care poate fi accesat folosind `writable.writableBuffer` sau cu `readable.readableBuffer`.
 
-Dimensiunea datelor care sunt *prinse* în buffer depinde de opțiunea `highWaterMark` pasată constructorului de stream. Pentru stream-urile normale, opțiunea `highWaterMark` specifică numărul total de bytes.
+Dimensiunea datelor care sunt *prinse* în *buffer* depinde de valoarea opțiunii `highWaterMark` pasată constructorului de stream. Pentru stream-urile normale, opțiunea `highWaterMark` specifică numărul total de bytes.
 
 Pentru stream-urile care operează în **object mode**, opțiunea `highWaterMark` specifică numărul total de obiecte.
 
@@ -108,11 +108,15 @@ Datele sunt introduse într-un stream `Readable` atunci când implementarea apel
 
 Datele vor alimenta stream-urile `Writable` în momentul în care metoda `writable.write(chunk)` este apelată în mod repetat. Câtă vreme dimensiunea buffer-ului intern de scriere este sub pragul impus de `highWaterMark`, toate apelurile la `writable.write()` vor returna valoarea `true`. În momentul în care buffer-ul intern va atinge sau chiar depăși pragul, va fi returnată valoarea `false`.
 
-Una din specificitățile API-ului `stream` și în special metoda `stream.pipe()` este necesitatea de a limita nivelul datelor din procesul de buffering la unul acceptabil pentru o bună funcționare, atât al furnizorilor de date ca surse, cât și a consumatorilor, fără a depăși limitele de memorie disponibile.
+Una din specificitățile API-ului `stream` și în special pentru metoda `stream.pipe()` este necesitatea de a limita nivelul datelor la momentul când se face buffering la unul acceptabil pentru o bună funcționare, atât al furnizorilor de date ca surse, cât și a consumatorilor, fără a depăși limitele de memorie disponibile.
 
 Deoarece stream-urile `Duplex` și `Transform` sunt deopotrivă `Readable` și `Writable`, fiecare păstează separat buffere interne folosite pentru scriere și citire. Deci, cele două operează independent ceea ce permite o curgere eficientă a datelor.
 
-#### Servere web
+## Folosirea stream-urilor
+
+În Node.js stream-urile constituie o parte importantă legată de prelucrarea datelor. Stream-urile stau la baza ciclurilor cerere-răspuns în cazul apelurilor HTTP, de exemplu. Modulul `fs` al Node.js este o altă zonă în care stream-urile sunt intens utilizate. De exemplu `stream.Writable` este extinsă prin clasa `fs.WriteStream`, care este instanțiată prin `fs.createWriteStream()`.
+
+### Servere web
 
 De exemplu, serverele `http` folosesc stream-urile.
 

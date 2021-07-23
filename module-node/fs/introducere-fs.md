@@ -2,8 +2,6 @@
 
 Acest modul oferă un adevărat API prin care se realizează interacțiunea cu sistemul de fișiere al mașinii gazdă. Operațiunile de lucru cu sistemul de fișiere pot avea un aspect sincron și unul asincron, privind la modul în care se pot desfășura operațiunile. Ceea ce face Node.js este un ambalaj al funcțiilor POSIX.
 
-Pentru a folosi acest modul, trebuie să-l ceri cu `require('fs')`.
-
 Node.js oferă două variante pentru majoritatea operațiunilor cu sistemul de operare. Una este sincronă și alternativa fiind asincronă. Pentru a nu bloca *event loop*, este recomandată folosirea variantei asincrone întotdeauna. În cazul utilizării asincrone, va trebui introdus un callback, care să acompanieze acțiunea. Ca exemplu, avem o acțiune de ștergere a unui director.
 
 ```javascript
@@ -28,11 +26,11 @@ try {
   fs.unlinkSync('/tmp/hello');
   console.log('Gata, l-am șters!');
 } catch (err) {
-  // handle the error
+  // gestionezi eroarea
 }
 ```
 
-Documentația atrage atenția asupra ordinii operațiunilor asicrone în cazul în care am avea situații în care ar trebui să fie urmat un algoritm de lucru. Prin natura operațiunilor asincrone, nu poți ști care operațiune se va încheia mai repede decât alta. Pentru a putea fi asigurat un anumit nivel de predictibilitate, se recomandă ca operațiunile care urmează uneia, să fie puse în callback-ul primei.
+Documentația atrage atenția asupra ordinii operațiunilor asicrone în cazul în care am avea situații în care ar trebui să fie urmat un algoritm de lucru. Prin natura operațiunilor asincrone, nu poți ști care se va încheia mai repede decât alta. Pentru a putea fi asigurat un anumit nivel de predictibilitate, se recomandă ca operațiunile care urmează uneia, să fie puse în callback-ul primei.
 
 ```javascript
 fs.rename('/tmp/hello', '/tmp/world', (err) => {
@@ -502,7 +500,7 @@ fs.chmod('datele.csv', 0o775, (err) => {
 
 ### Modurile în care se poate afla un fișier
 
-Modul este o mască care indică permisiunile unui fișier.
+Modul este o *mască* care indică permisiunile unui fișier.
 
 | Constantă              | Reprezentare octală | Descriere                                                    |
 | ---------------------- | ------------------- | ------------------------------------------------------------ |
@@ -609,68 +607,6 @@ fs.copyFile('sursă.txt', 'destinație.txt', COPYFILE_EXCL, callback);
 ## Modificarea datei unui fișier `fs.utimes(path, atime, mtime, callback)`
 
 Metoda va modifica data fișierului specificat prin calea primită ca prim argument.
-
-## Streamuri cu `fs`
-
-Modulul `fs` oferă posibilitatea de a lucra cu stream-uri. Astfel, pot fi create streamuri read și write.
-
-### Crearea unui stream dintr-un fișier cu `fs.createReadStream()`
-
-Este o metodă a modului `fs` care *consumă* o resursă folosind bufferul. Metoda acceptă drept prim parametru o cale către resursă, care poate fi un șir de caractere, un obiect URL sau chiar un buffer.
-
-Al doilea parametru poate fi un string sau un obiect care poate avea următorii membri pentru setarea stream-ului:
-
--   *flags* (string) - default: `r`,
--   *encoding* (string) - default: `null`,
--   *fd* (număr întreg) - default: `null`,
--   *mode* (număr întreg) - default: `0o666`,
--   *autoClose* (boolean) - default: `true`,
--   *start* (număr întreg),
--   *end* (număr întreg) - default: `Infinity`,
--   *highWaterMark*, fiind un număr întreg cu un default: 64 * 1024.
-
-Dacă al doilea parametru este un șir, acesta va specifica schema de codare a caracterelor. Cel mai uzual este `utf8`. Spre deosebire de un stream clasic, cel returnat de această metodă are un `hightWaterMark` de 64 de kb.
-
-Dacă în opțiuni sunt menționate limitele de bytes de la care să pornească citirea și la care să se oprească (`start` și `end`). Ambele limite includ valoarea de la care pornesc și încep numărătoarea de la `0`.
-În cazul în care este menționat în opțiuni un file descriptor (`fd`), dar este omisă valorarea `start` sau are valoarea `undefined`, se va citi secvențial de la poziția curentă în care se află fișierul.
-
-În cazul în care este prezent un file descriptor, metoda va ignora argumentul `path` folosind file descriptorul. Acest lucru implică faptul că nu va fi emis niciun eveniment `open`, iar `fd` ar trebui să fie blocking (de ex. tastatură sau placa de sunet). Cele non blocking ar trebui pasate lui `net.Socket`.
-
-Metoda `fs.createReadStream()` oferă posibilitatea de a citi un stream de date dintr-un fișier.
-
-```javascript
-var fs = require('fs');
-var unStreamReadable = fs.createReadStream(__dirname + '/fisier.csv', 'utf8');
-```
-
-Pentru că toate stream-urile sunt instanțe ale clasei `EventEmitter`, va trebui să avem o funcție pe care să o folosim pe post de receptor, care va asculta dacă au venit date pe stream sau nu. Dacă standardul de codare al caracterelor nu este menționat, atunci, ceea ce vei citi din buffer sunt reprezentarea a datelor așa cum sunt ele stocate în buffer. Odată menționat, de exemplu, `utf8`, poți vedea în clar textul din fișier.
-
-```javascript
-unStreamReadable.on('data', function (fragment) {
-  // fragment reprezintă date acumulate în buffer.
-  // fă ceva cu fragmentul de date
-});
-```
-
-Întreaga resursă de date va fi consumată de `stream`-ul nostru *readable*. De fiecare dată când un fragment din `Buffer` este trimis, se declanșează execuția callback-ului. După prelucrarea fragmentului anterior, se va primi un alt fragment, care va fi prelucrat și tot așa până la consumarea întregii resurse.
-
-  ### Stream către un fișier - `fs.createWriteStream(path[,options])`
-
-Această metodă oferă posibilitatea de a constitui un `stream` prin care să trimitem date într-o resursă.
-
-Drept prim parametru trebuie să indicăm o *cale* care poate fi un `string`, un `Buffer` sau un URL. Al doilea parametru poate fi un obiect sau un `string` cu opțiuni.
-
-```javascript
-var fs   = require('fs');
-var date = 'aceste caractere vor fi scrise într-un fișier';
-var wStr = fs.createWriteStream('ceva.txt');
-wStr.write(date, (err) => {
-    if (err) {throw err};
-    console.log('datele au fost scrise');
-});
-```
-
-De fiecare dată când scriptul va fi rulat, dacă fișierul deja există, conținutul acestuia va fi suprascris. Dacă fișierul nu există, acesta va fi creat.
 
 ## Lucrul cu file descriptorii
 

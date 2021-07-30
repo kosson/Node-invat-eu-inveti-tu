@@ -64,6 +64,51 @@ socket.on('disconnect', () => {
 });
 ```
 
+Un exemplu mai elaborat prin care dorești să ții evidența conexiunilor.
+
+```javascript
+const socketUrl = 'http://localhost:9000';
+
+let connectButton;
+let disconnectButton;
+let socket;
+let statusInput;
+let tokenInput;
+
+const connect = () => {
+  socket = io(socketUrl, {
+    autoConnect: false,
+  });
+
+  socket.on('connect', () => {
+    console.log('Conectat');
+    statusInput.value         = 'Connected';
+    connectButton.disabled    = true;
+    disconnectButton.disabled = false;
+  });
+
+  socket.on('disconnect', (reason) => {
+    console.log(`Deconectat: ${reason}`);
+    statusInput.value         = `Deconectat: ${reason}`;
+    connectButton.disabled    = false;
+    disconnectButton.disabled = true;
+  })
+
+  socket.open();
+};
+
+const disconnect = () => {
+  socket.disconnect();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  connectButton = document.getElementById('connect');
+  disconnectButton = document.getElementById('disconnect');
+  statusInput = document.getElementById('status');
+  tokenInput = document.getElementById('token');
+});
+```
+
 ### Metoda `socket.connect()`
 
 Este un sinonim pentru metoda `socket.open()`.

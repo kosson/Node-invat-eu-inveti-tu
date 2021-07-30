@@ -1,6 +1,6 @@
 # Strategia passport-jwt
 
-Acest pachet lucrează foarte bine în tandem cu `jsonwebtoken`.
+Acest pachet lucrează în tandem cu pachetul `jsonwebtoken`.
 
 Pași:
 

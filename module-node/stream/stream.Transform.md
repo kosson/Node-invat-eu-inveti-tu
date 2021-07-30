@@ -1,5 +1,7 @@
 ### Clasa `stream.Transform`
 
+În cazul în care ai nevoie de un stream cu ajutorul căruia să transformi datele primite, vei apela la `Transform`.
+
 Stream-urile de transformare sunt acele stream-uri `Duplex` care implementează interfețele `Readable` și `Writable`. Ceea ce le face deosebite este faptul că partea `Readable` este conectată de `Writable`.
 
 ```text
@@ -24,11 +26,26 @@ Pentru a lucra cu un stream `Transform` este nevoie să instanțiezi clasa cu `n
 const { Transform } = require('stream');
 
 class ImplementareaMeaTransform extends Transform {
-  constructor(options) {
-    super(options);
-    // ...
+  constructor(char) {
+    super();
+    this.replaceChar = char;
+  }
+
+  _transform (chunk, encoding, cb) {
+    const transformedChunk = chunk.toString().replace(/[a-z]|[A-Z]/g, this.replaceChar); // înlocuirea caracterelor cu cel trimis ca argument.
+    this.push(transformedChunk);
+    cb();
+  }
+
+  _flush (cb) {
+    this.push('Ceva care să fie adăugat la final');
+    cb();
   }
 }
+
+const replacingCharsStream = new ImplementareaMeaTransform('X');
+
+process.stdin.pipe(replacingCharsStream).pipe(process.stdout).on('error', console.error);
 ```
 
 Pentru a face o punte cu practicile anterioare ES6, vom menționa exemplul oferit de manual pentru a înțelege mai adânc, de fapt ceea ce se petrece.
@@ -38,11 +55,12 @@ const { Transform } = require('stream');
 const util = require('util');
 
 function ImplementareaMeaTransform(options) {
-  if (!(this instanceof MyTransform))
-    return new MyTransform(options);
+  if (!(this instanceof ImplementareaMeaTransform)) {
+      return new ImplementareaMeaTransform(options);
+  }
   Transform.call(this, options);
 }
-util.inherits(MyTransform, Transform);
+util.inherits(ImplementareaMeaTransform, Transform);
 ```
 
 De cele mai multe ori, veți vedea o implementare simplă în care se instanțiază clasa prin constructor.
@@ -50,7 +68,7 @@ De cele mai multe ori, veți vedea o implementare simplă în care se instanția
 ```javascript
 const { Transform } = require('stream');
 
-const myTransform = new Transform({
+const unTransformSimplu = new Transform({
   transform(chunk, encoding, callback) {
     // ...
   }
@@ -180,3 +198,7 @@ function createRecord (data) {
     });
 }
 ```
+
+## Resurse
+
+- [Implementing a transform stream](https://nodejs.org/api/stream.html#stream_implementing_a_transform_stream)

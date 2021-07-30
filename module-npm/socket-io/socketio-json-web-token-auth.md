@@ -1,6 +1,18 @@
 # Introducere autentificare
 
-Mecanismul de autentificare via socket-uri folosind JSON Web Tokens este folosit în cazul în care ai nevoie de o singură sesiune de comunicare, care să fie autentificată unic. Uneori, vezi cazul jocurilor, este necesar ca utilizatorul să se poată conecta o singură dată prin socketuri.
+Mecanismul de autentificare via socket-uri folosind JSON Web Tokens este folosit în cazul în care ai nevoie de o singură sesiune de comunicare, care să fie autentificată unic. Uneori, vezi cazul jocurilor, este necesar ca utilizatorul să beneficieze de o conexiune unică indiferent câte sesiuni de browsing are deschise.
+
+Socket.io are un mecanism intern care generează un id aferent unui socket care va fi utilizat pentru a identifica conexiunea clientului. Valoarea va fi disponibilă după ce evenimentul `connect` a fost declanșat. Valoarea va fi actualizată după evenimentul `reconnect`.
+
+```javascript
+const serverio = io('http://localhost');
+
+console.log(serverio.id); // undefined
+
+serverio.on('connect', (socket) => {
+  console.log(socket.id); // 'G5p5...'
+});
+```
 
 Mai întâi de toate, clientul trebuie să facă un cont pentru aplicație. Această etapă este necesară pentru a avea informații de bază necesare verificării ulterioare a clientului la momentul logării și autentificării.
 

@@ -2,7 +2,16 @@
 
 Acest modul oferă un adevărat API prin care se realizează interacțiunea cu sistemul de fișiere al mașinii gazdă. Operațiunile de lucru cu sistemul de fișiere pot avea un aspect sincron și unul asincron, privind la modul în care se pot desfășura operațiunile. Ceea ce face Node.js este un ambalaj al funcțiilor POSIX.
 
-Node.js oferă două variante pentru majoritatea operațiunilor cu sistemul de operare. Una este sincronă și alternativa fiind asincronă. Pentru a nu bloca *event loop*, este recomandată folosirea variantei asincrone întotdeauna. În cazul utilizării asincrone, va trebui introdus un callback, care să acompanieze acțiunea. Ca exemplu, avem o acțiune de ștergere a unui director.
+```javascript
+// API-ul bazat pe promisiuni
+import * as fs from 'fs/promises'; // ESM
+const fs = require('fs/promises'); // CJS
+// folosirea API-ului sincron și asincron
+import * as fs from 'fs'; // ESM
+const fs = require('fs'); // CJS
+```
+
+Node.js oferă mai multe variante de lucru pentru majoritatea operațiunilor cu sistemul de operare. Una este sincronă dar poți folosi metodele în modelul asincron și mai nou folosind promisiunile. Pentru a nu bloca *event loop*, este recomandată folosirea variantei asincrone întotdeauna. În cazul utilizării asincrone, va trebui introdus un callback, care să acompanieze acțiunea. Ca exemplu, avem o acțiune de ștergere a unui director.
 
 ```javascript
 const fs = require('fs');
@@ -17,7 +26,7 @@ fs.unlink('/cale/director', (err) => {
 
 În cazul operațiunilor asincrone, primul argument pasat funcțiilor cu rol de callback, este unul rezervat semnalării cazurilor de excepție. Dacă operațiunea s-a încheiat cu succes, valoarea primului argument va fi `null` sau `undefined`. Aceasta este chiar o marcă a modului în care lucrează Node.js.
 
-În cazul operațiunilor sincrone, pentru a *prinde* erorile, se poate folosi constructul `try...catch`.
+În cazul operațiunilor sincrone, pentru a *prinde* erorile, se poate folosi `try...catch`.
 
 ```javascript
 const fs = require('fs');
@@ -196,13 +205,14 @@ Argumentul `offset` indică partea de buffer care va fi scrisă, iar `length` es
 Argumentul `possition` indică de unde să se înceapă scrierea datelor relativ cu începutul fișierului.
 
 Funcția cu rol de callback primește următoarele argumente:
-- err,
-- bytesWritten, specifică câți bytes au fost scriși din buffer.
-- buffer
+
+- `err`,
+- `bytesWritten`, specifică câți bytes au fost scriși din buffer,
+- `buffer`.
 
 ### Metoda `fs.write(fd, string[, position[, encoding]], callback)[src]`
 
-Această metodă va scrie un string în fișierul specificat de fd.
+Această metodă va scrie un string în fișierul specificat de file descriptor.
 
 ### Metoda `fs.writev(fd, buffers[, position], callback)`
 
@@ -215,7 +225,7 @@ Metoda este folosită pentru a scrie un fișier.
 Primul argument pasat metodei este un string, un `Buffer`, un `URL` sau un număr întreg, care este cel al unui file descriptor.
 Al doilea argument pasat sunt chiar datele care vor fi scrise în fișier. Acestea pot fi un șir de caractere, un Buffer, un `TypedArray` sau un `DataView`.
 
-Opțional poate fi pasat un șir de caractere ce menționează standardul de codar al caracterelor.
+Opțional poate fi pasat un șir de caractere ce menționează standardul de codare al caracterelor.
 
 ```javascript
 fs.writeFile('ceva.txt', 'Salut Node.js', 'utf8', callback);

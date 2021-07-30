@@ -56,7 +56,7 @@ Dacă este necesar, stream-ul `Readable` poate fi pus în modul pauză folosind 
 
 #### Evenimentul `close`
 
-Acest eveniment este emis în momentul în care stream-ul sau oricare dintre resursele pe care le-a angajat (un *file descriptor*) au fost *închise*. Evenimentul indică faptul că nu vor mai fi emise alte evenimente și nu se vor face alte calcule. Un stream `Readable` va emite întotdeauna acest eveniment, dacă au fost setate cu opțiunea `emitClose`.
+Acest eveniment este emis în momentul în care stream-ul sau oricare dintre resursele pe care le-a angajat (un *file descriptor*) au fost *închise*. Evenimentul indică faptul  posibilăcă nu vor mai fi emise alte evenimente și nu se vor face alte calcule. Un stream `Readable` va emite întotdeauna acest eveniment, dacă au fost setate cu opțiunea `emitClose`.
 
 #### Evenimentul `data`
 

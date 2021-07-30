@@ -2,7 +2,7 @@
 
 Un `socket` este un obiect instanțiat în baza clasei [`Socket`](https://socket.io/docs/server-api/#Socket), care are rolul să comunice cu browserul clientului. Numele clasei nu implică faptul că există vreo legătură cu socket-ul TCP/IP.
 
-Un socket aparține unui `Namespace`. `Namespace`-ul din oficiu este `/`. În interiorul fiecărui `Namespace`, se pot defini canale arbirare, numite `room`. Obiectul `socket` poate să se alăture sau să părăsească un `room`.
+Un socket aparține unui `Namespace`. `Namespace`-ul din oficiu este `/`. În interiorul fiecărui `Namespace`, se pot defini canale arbitrare, numite `room`. Obiectul `socket` poate să se alăture sau să părăsească un `room`.
 
 Pentru a comunica cu browserul clientului, folosind un obiect de comunicare instanțiat în baza clasei `Client`, care asigură comunicarea.
 

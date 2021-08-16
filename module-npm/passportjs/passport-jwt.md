@@ -14,5 +14,8 @@ Pași:
 
 ## Resurse
 
-- [passport-jwt](http://www.passportjs.org/packages/passport-jwt/)
+- [passport-jwt | passport.org](http://www.passportjs.org/packages/passport-jwt/)
 - [Passport JWT Strategy Flow (Node + Passport + Express) | Zach Gollwitzer | YouTube](https://www.youtube.com/watch?v=o6mSdG09yOU&list=PLYQSCk-qyTW2ewJ05f_GKHtTIzjynDgjK&index=9)
+- [03 - 05 Passport JWT Authentication Strategy | DFSW Labs](https://www.youtube.com/watch?v=wRREunBwBUw)
+- [How JWT Works - Client and Server | Steve Griffith - Prof3ssorSt3v3](https://www.youtube.com/watch?v=QCCmWNlEkdY)
+- [JWT Authentication Tutorial - Node.js | Web Dev Simplified](https://www.youtube.com/watch?v=mbsmsi7l3r4)

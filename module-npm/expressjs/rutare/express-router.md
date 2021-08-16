@@ -327,27 +327,6 @@ Atunci când ai de gestionat o întreagă aplicație cu mai multe căi, devine n
 
 ![](../img/RouterExpressPeFisiere.png)
 
-## Metoda `route.use()`
-
-Cu ajutorul metodei `use()` se realizează atașarea de middleware specific unei rute.
-
-```javascript
-var express = require('express');
-var router  = express.Router();
-
-// middleware specific rutei prezente
-router.use(function timeLog (req, res, next) {
-  console.log('Data și ora: ', Date.now());
-  next();
-})
-// calea rădăcină pe ruta servită de acest fișier
-router.get('/', function (req, res) {
-  res.send('Ceva de pe ruta asta');
-})
-
-module.exports = router;
-```
-
 ## Resurse
 
 - [Obiectul router](https://expressjs.com/en/api.html#router)

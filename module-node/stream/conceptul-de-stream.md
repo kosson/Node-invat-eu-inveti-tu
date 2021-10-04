@@ -76,7 +76,23 @@ app.get('/resursa', function (req, res) {
 
 ## Stream-urile se bazează pe evenimente
 
-Stream-urile în Node.js se bazează pe lucrul cu evenimente pentru că stream-urile implementează clasa `EventEmitter`. Pe cale de consecință, atunci când apar datele, poți atașa un *listener*, un callback care să facă ceva cu acele date. Pentru a exemplifica, cel mai bine ar fi să creăm un stream folosind metoda dedicată a modulului `fs` : `fs.createWriteStream`. Mai întâi de a porni este necesar să trecem prin descrierea metodei `fs.createWriteStream`. Această metodă primește următoarele argumente posibile:
+Stream-urile în Node.js se bazează pe lucrul cu evenimente pentru că stream-urile implementează clasa `EventEmitter`. Pe cale de consecință, atunci când apar datele, poți atașa un *listener*, un callback care să facă ceva cu acele date.
+
+|Streamuri Readable| Streamuri Writable|
+| :--: | :--: |
+|**evenimente**|**evenimente**|
+|*data*|*drain*|
+|*end*|*finish*|
+|*error*|*error*|
+|*close*|*close*|
+|*readable*|*pipe/unpipe*|
+|**metode**|**metode**|
+|`pipe()`, `unpipe()`|`write()`|
+|`read()`, `unshift()`, `resume()`|`write()`, `end()`|
+|`pause()`, `isPaused()`|`cork()`, `uncork()`|
+|`setEncoding()`|`setDefaultEncoding()`|
+
+Pentru a exemplifica, cel mai bine ar fi să creăm un stream folosind metoda dedicată a modulului `fs` : `fs.createWriteStream()`. Mai întâi de a porni este necesar să trecem prin descrierea metodei `fs.createWriteStream()`. Această metodă primește următoarele argumente posibile:
 
 - o **cale** care specifică resursa. Această cale poate fi un șir, un buffer sau un obiect url;
 - o opțiune din mai multe posibile sau un obiect în cazul în care dorești mai multe opțiuni să influențeze crearea acestui stream.
@@ -99,7 +115,7 @@ streamDeCitire.on('data', function (fragment) {
   datele += fragment;
 });
 
-streamDeCitire.on('end', function () {
+streamDeCitire.on('end', funzip. You can think of a transform stream as a function where the inputction () {
   console.log(datele);
 });
 ```

@@ -13,6 +13,20 @@ Stream-urile pot fi folosite pentru a citi (*Readable streams*), pentru a scrie 
 
 Toate stream-urile în Node.js lucrează exclusiv cu șiruri de caractere și obiecte `Buffer` constituite cu ajutorul array-ului specializat `Uint8Array`.
 
+## Cum verifici dacă ai un stream
+
+Mai întâi verifici dacă valoarea nu este `null` și este un obiect. Apoi testezi să aibă metoda `pipe()`.
+
+```javascript
+const isStream = val =>
+  val !== null &&
+  typeof val === 'object' &&
+  typeof val.pipe === 'function';
+
+const fs = require('fs');
+isStream(fs.createReadStream('test.txt')); // true
+```
+
 ### Legătura cu `EventEmitter`
 
 **Toate stream-urile sunt instanțe ale clasei `EventEmitter`**.
@@ -57,7 +71,11 @@ Pentru a face orice extensie a unei clase de bază, este nevoie ca noile clase s
 | Scrierea și citirea | `Duplex` | `_read()`, `_write()`, `_writev()`, `_final()`|
 | Lucru cu date scrise, urmată de citirea rezultatului | `Transform` | `_transform()`, `_flush()`, `_final()`|
 
-## Concepte și clase
+O implementare solidă vei găsi în modulul `fs`:
+- `fs.ReadStream()`,
+- `fs.WriteStream`.
+
+## Concepte centrale
 
 Streams lucrează cu trei concepte:
 
@@ -69,9 +87,9 @@ Streams lucrează cu trei concepte:
 
 Node.js oferă patru tipuri de stream-uri:
 
--   `stream.Readable` (este o sursă de date, pate fi creat cu `fs.createReadableStream()`),
--   `stream.Writable` (creat cu `fs.createWriteStream()`),
--   `stream.Duplex` (streamuri care sunt `Readable` și `Writable`),
+-   `stream.Readable` (este o sursă de date, poate fi creat cu `fs.createReadableStream()`),
+-   `stream.Writable` (poate fi creat cu `fs.createWriteStream()`),
+-   `stream.Duplex` (streamuri care sunt `Readable` și `Writable` deopotrivă),
 -   `stream.Transform` (streamuri duplex, care permit transformarea datelor).
 
 Mai mult, acest modul include câteva funcții cu rol de utilitare: `pipeline`, `finished` și `Readable.from`.
@@ -92,7 +110,7 @@ unStream.write({salutari: 'de la Mamaia'});
 
 Unele implementări de `stream` pot folosi și `null`, care va avea o semnificație specială. Astfel de streamuri operează într-un mod special numit *object mode* (au opțiunea `objectMode` la momentul creării stream-ului).
 
-Node.js poate ține în memorie doar 1.67Gb de date. Dacă ai o resursă dincolo de această limitare, o eroare `heap out of memory` va fi emisă. Această limitate poate fi depășită, dacă se dorește.
+Node.js poate ține în memorie doar 1.67Gb de date. Dacă ai o resursă dincolo de această limitare, o eroare `heap out of memory` va fi emisă. Această limitare poate fi modificată, dacă se dorește.
 
 ## Buffering-ul
 
@@ -110,11 +128,11 @@ Datele vor alimenta stream-urile `Writable` în momentul în care metoda `writab
 
 Una din specificitățile API-ului `stream` și în special pentru metoda `stream.pipe()` este necesitatea de a limita nivelul datelor la momentul când se face buffering la unul acceptabil pentru o bună funcționare, atât al furnizorilor de date ca surse, cât și a consumatorilor, fără a depăși limitele de memorie disponibile.
 
-Deoarece stream-urile `Duplex` și `Transform` sunt deopotrivă `Readable` și `Writable`, fiecare păstează separat buffere interne folosite pentru scriere și citire. Deci, cele două operează independent ceea ce permite o curgere eficientă a datelor.
+Deoarece stream-urile `Duplex` și `Transform` sunt deopotrivă `Readable` și `Writable`, fiecare păstrează separat buffere interne folosite pentru scriere și citire. Deci, cele două operează independent ceea ce permite o curgere eficientă a datelor.
 
 ## Folosirea stream-urilor
 
-În Node.js stream-urile constituie o parte importantă legată de prelucrarea datelor. Stream-urile stau la baza ciclurilor cerere-răspuns în cazul apelurilor HTTP, de exemplu. Modulul `fs` al Node.js este o altă zonă în care stream-urile sunt intens utilizate. De exemplu `stream.Writable` este extinsă prin clasa `fs.WriteStream`, care este instanțiată prin `fs.createWriteStream()`.
+În Node.js stream-urile constituie o parte importantă legată de prelucrarea datelor. Stream-urile stau la baza ciclurilor cerere-răspuns în cazul apelurilor HTTP, de exemplu. Modulul `fs` al Node.js este o altă zonă în care stream-urile sunt intens utilizate. De exemplu, `stream.Writable` este extinsă prin clasa `fs.WriteStream`, care este instanțiată prin `fs.createWriteStream()`.
 
 ### Servere web
 
@@ -168,3 +186,4 @@ Stream-ul `res` este un obiect `Writable`, care expune metode precum `write()` �
 - [Node.js Streams - NearForm bootcamp series](https://youtu.be/mlNUxIUS-0Q)
 - [The Node.js Event Loop, Timers, and process.nextTick()](https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/)
 - [Async Iterators: A New Future for Streams - Stephen Belanger](https://youtu.be/YVdw1MDHVZs)
+- [isStream | 30secondsofcode.org](https://www.30secondsofcode.org/js/s/is-stream)

@@ -1,8 +1,11 @@
 # Clasa `stream.Writable`
 
-Sunt o abstractizare a ceea ce putem înțelege a fi o *destinație*. Sunt stream-urile cu care se pot scrie date, de exemplu. Aceste stream-uri preiau datele de la aplicație și le striu într-o anumită destinație. Pentru a preveni pierderea datelor în cazul în care destinația nu are capacitatea de procesare care să țină pasul cu volumul datelor, acestea vor fi scrise într-un `Buffer`.
+Sunt o abstractizare a ceea ce putem înțelege a fi o *destinație*. Sunt stream-urile cu care se pot scrie date, de exemplu. Aceste stream-uri preiau datele de la aplicație și le scriu într-o anumită destinație. Pentru a preveni pierderea datelor în cazul în care destinația nu are capacitatea de procesare care să țină pasul cu volumul datelor, acestea vor fi scrise într-un `Buffer`.
 
-Aplicație --Writable stream--> | Buffer | -> File.
+```mermaid
+graph LR;
+Aplicație --Writable stream--> Buffer([Buffer]) --> File;
+```
 
 Cel mai simplu exemplu de stream `Writable` este un obiect `response`, precum în exemplul de mai jos:
 
@@ -16,7 +19,23 @@ server.on('request', function (req, res) {
 server.listen(3000);
 ```
 
-În cazul apelării serverului - `curl http://localhost:3000`, acesta va răspunde cu `Salut, Ionuț`.
+În cazul apelării serverului folosind `curl`, de exemplu, pentru o comandă `curl http://localhost:3000`, răspunsul va fi `Salut, Ionuț`.
+
+## Cum testezi dacă este un stream Writable
+
+```javascript
+const isWritableStream = val =>
+  val !== null &&
+  typeof val === 'object' &&
+  typeof val.pipe === 'function' &&
+  typeof val._write === 'function' &&
+  typeof val._writableState === 'object';
+
+const fs = require('fs');
+isWritableStream(fs.createWriteStream('test.txt')); // true
+```
+
+## Exemple de stream-uri Writable
 
 Posibilele stream-uri `Writable`:
 
@@ -39,28 +58,28 @@ unStream.write('mai adug ceva date');
 unStream.end('am terminat de scris datele'); // întotdeauna închide
 ```
 
-#### Evenimentele stream-urilor writable
+## Evenimentele stream-urilor writable
 
-##### Evenimentul `close`
+### Evenimentul `close`
 
 Acest eveniment este emis atunci când stream-ul și resursele sale interne (de exemplu un descriptor de fișier) au fost închise. Aceste eveniment odată emis, marchează faptul că nu vor mai fi emise alte evenimente pentru că alte operațiuni nu vor mai fi făcute.
 
 Dacă un stream va fi creat având setată opțiunea `emitClose`, acesta va emite mereu evenimentul `close`.
 
-##### Evenimentul `drain`
+### Evenimentul `drain`
 
-Dacă apelul la `stream.write(chunk)` returnează `false`, evenimentul `drain` va fi emis atunci când este posibilă reluarea scrierii datelor în stream.
+Acest eveniment este semnalul că stream-ul writable poate primi date nou din stream. De exemplu, dacă apelul la `stream.write(chunk)` returnează `false`, evenimentul `drain` va fi emis pentru o posibilă preluare de date noi din stream.
 
-##### Evenimentul `error`
+### Evenimentul `error`
 
 Este un eveniment care este emis atunci când a apărut o eroare în timpul scrierii sau introducerii datelor într-un stream.
 
-##### Evenimentul `finish`
+### Evenimentul `finish`
 
-Evenimentul este emis după apelarea metodei `stream.end()` și după ce toate datele au fost trimise în sistemele din subsidiar.
+Evenimentul este emis după apelarea metodei `stream.end()` și după ce toate datele au fost trimise în sistemele din subsidiar care le/le-au consumat. Pur și simplu indică faptul că datele au fost consumate.
 
 ```javascript
-const streamWriter = genereazaStreamul();
+const streamWriter = genereazaStreamul(); // o funcție care generează un stream
 for (let i = 0; i < 100; i++) {
   streamWriter.write(`salut, #${i}!\n`);
 }
@@ -70,7 +89,7 @@ streamWriter.on('finish', () => {
 });
 ```
 
-##### Evenimentul `pipe`
+### Evenimentul `pipe`
 
 Acest eveniment este emis la apelarea metodei `stream.pipe()` pe un stream readable, adăugând prezentul writable în setul destinațiilor sale.
 
@@ -84,7 +103,7 @@ writer.on('pipe', (src) => {
 reader.pipe(writer);
 ```
 
-##### Evenimentul `unpipe`
+### Evenimentul `unpipe`
 
 Acest eveniment este emis la apelarea metodei `stream.unpipe()` este apelat pe un stream `Readable` eliminând `Writeable`-ul prezent din destinații.
 
@@ -99,15 +118,15 @@ reader.pipe(writer);
 reader.unpipe(writer);
 ```
 
-#### Metodele pentru stream-urile writable
+## Metodele pentru stream-urile writable
 
-##### `writable.cork()`
+### `writable.cork()`
 
 Această metodă forțează toate datele scrise să fie introduse într-o zonă tampon din memorie. Datele din tampon atunci când va fi apelată, fie `stream.uncork()`, fie `stream.end()`.
 
 Intenția primară a metodei este de a evita situația în care scrierea a mai multor fragmente mici de date într-un stream nu conduce la constituirea unui backup în buffer-ul intern, fapt care conduce la penalizarea performanțelor. În aceste situații, implementările care oferă metoda `writable._writev()` poate executa scrieri buffered într-o manieră optimizată.
 
-##### `writable.destroy([error])`
+### `writable.destroy([error])`
 
 Metoda distruge stream-ul imediat. Opțional, va emite evenimentul `error` și apoi un eveniment `close` cu singura excepție a condiției setată de opțiunea `emitClose` prin `false`. După acest apel, alte apeluri la metodele `write()` sau `end()` vor rezulta într-o eroare `ERR_STREAM_DESTROYED`.
 
@@ -117,7 +136,7 @@ Opțional, poate primi drept argument un obiect `Error`.
 
 Metoda returnează legătura `this`.
 
-##### `writable.end([chunk][, encoding][, callback])`
+### `writable.end([chunk][, encoding][, callback])`
 
 Apelarea metodei semnalează faptul că nu vor mai fi scrise date în `Writable`. Argumentele opționale `chunk` și `encoding` permit scrierea unui ultim fragment de date înaintea închiderii `stream`-ului.
 

@@ -8,6 +8,22 @@ Obiectele `Buffer` sunt folosite pentru a reprezenta o secvență de bytes de o 
 
 Clasa `Buffer` este o subclasă a lui `Uint8Array` din JavaScript, dar care este este extinsă.
 
+## btoa - binary to ASCII
+
+Creează un string ASCII codat base-64 în care fiecare caracter al string-ului este considerat ca byte a datelor binare.
+Mai întâi creezi un `Buffer` pentru a prelucra stringul și apoi îi menționezi codarea ca fiind binară. Pentru a returna valoarea în base-64, folosești `toString('base64')`.
+
+```javascript
+const btoa = str => Buffer.from(str, 'binary').toString('base64');
+btoa('test'); // 'dGVzdA=='
+```
+
+## atob
+
+```javascript
+const atob = str => Buffer.from(str, 'base64').toString('binary');
+atob('dGVzdA=='); // 'test'
+```
 
 ## Resurse
 

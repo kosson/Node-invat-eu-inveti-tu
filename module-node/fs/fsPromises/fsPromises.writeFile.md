@@ -2,7 +2,7 @@
 
 Semnătura: `fsPromises.writeFile(file, data[, options])`.
 
-Această metodă este folosită pentru a scriedatele într-un fișier într-o manieră asincronă. Dacă fișierul deja există, acesta va fi înlocuit. În cazul în care ai nevoie de performanțe mai mari la un volum de date mai mare, folosește `fs.createWriteStream()`.
+Această metodă este folosită pentru a scrie datele într-un fișier într-o manieră asincronă. Dacă fișierul deja există, acesta va fi înlocuit. În cazul în care ai nevoie de performanțe mai mari la un volum de date mai mare, folosește `fs.createWriteStream()`.
 
 ## Argumentele
 
@@ -37,4 +37,12 @@ try {
   // When a request is aborted - err is an AbortError
   console.error(err);
 }
+```
+
+## Scrierea unui JSON
+
+```javascript
+import { writeFile } from 'fs/promises';
+const JSONToFile = (obj, filename) => writeFile(`${filename}.json`, JSON.stringify(obj, null, 2));
+JSONToFile({ test: 'ceva aici' }, 'numeFisier');
 ```

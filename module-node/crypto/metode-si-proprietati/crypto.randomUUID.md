@@ -9,7 +9,7 @@ Primește drept parametru un obiect (`options`) cu următoarele proprietăți:
 
 Metoda returnează un șir de caractere, care reprezintă un UUID versiunea 4 care respectă [RFC 4122](https://www.rfc-editor.org/rfc/rfc4122.txt).
 
-UUID-ul este generat folosind un generator de numere criptografic pseudoaleartoriu.
+UUID-ul este generat folosind un generator de numere criptografic pseudoaleatoriu.
 
 ## Resurse
 

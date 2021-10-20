@@ -14,7 +14,7 @@ let nume_middleware = function (request, response, next) {
 }
 ```
 
-Dacă introduci o proprietate nouă în obiectul request, aceasta va putea fi accesată ceva mai departe în middleware-urile care urmează. Poți să-ți imaginezi scenariul în care verifici credențialele unui utilizator și îl trimiți mai departe altui middleware într-o proprietate asemănătoare cu `req.user = {...}`.
+Dacă introduci o proprietate nouă în obiectul `request`, aceasta va putea fi accesată ceva mai departe în middleware-urile care urmează. Poți să-ți imaginezi scenariul în care verifici credențialele unui utilizator și îl trimiți mai departe altui middleware într-o proprietate asemănătoare cu `req.user = {...}`.
 Există o practică de a scrie middleware în module pe care să le imporți și propriu-zis să le interpui în ciclul cerere - răspuns.
 
 Dacă middleware-ul elaborat nu are în intenție să încheie ciclul cerere - răspuns, trebuie musai să apelezi `next()`. Dacă omiți acest pas, cererea nu se va rezolva. Un alt motiv pentru care mai pasezi un callback `next` este pentru a pasa eventualele erori mai departe în lanțul operațiunilor.

@@ -213,3 +213,4 @@ Un mecanism interesant de investigare a ceea ce se petrece la rulare: `node --tr
 - [Node.js Inside Out. A look at Node.js architecture and its impact on code performance | imelgrat.me](https://imelgrat.me/javascript/node-js-inside-out/)
 - [The Node.js Event Loop | nodejs.dev/learn](https://nodejs.dev/learn/the-nodejs-event-loop)
 - [Viewing nodejs event loop from libuv](https://developpaper.com/viewing-nodejs-event-loop-from-libuv/)
+- [Don't Block the Event Loop (or the Worker Pool)](https://nodejs.org/en/docs/guides/dont-block-the-event-loop/)

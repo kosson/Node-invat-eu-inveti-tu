@@ -33,7 +33,7 @@ app.get('/', function clbkRadacina (req, res) {
 
 ## Folosirea middleware-ului
 
-Este considerat a fi *middleware* orice funcție care se interpune între obiectul `request` și formarea obiectului `response`. Aceste funcții interpuse au acces la obiectele `request`, `response` și `next`.
+Este considerat a fi *middleware* orice funcție care se interpune între obiectul `request` și formarea obiectului `response`. Aceste funcții interpuse au acces la obiectele `request`, `response` și la middleware-ul `next`.
 
 ![](img/cerereRaspunsExpress.png)
 

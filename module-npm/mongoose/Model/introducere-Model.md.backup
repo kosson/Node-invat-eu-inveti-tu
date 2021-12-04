@@ -24,7 +24,7 @@ const UserModel = mongoose.model('User', new Schema({ name: String }));
 const userDoc = new UserModel({ name: 'Foo' });
 await userDoc.save(); // poți să-l salvezi după
 
-// Poți folosi un model pentru a crea obiecte Query
+// Poți folosi un model pentru a crea interogări în baza de date:
 const userFromDb = await UserModel.findOne({ name: 'Foo' });
 ```
 

@@ -9,7 +9,7 @@ Această metodă este folosită pentru a scrie datele într-un fișier într-o m
 Metoda poate avea următoarele argumente:
 
 - `file` care poate fi un string, un Buffer, un URL sau un FileHandle,
-- `data` care poate avea următoarele reprezentări: string, Buffer, TypedArray, DataView, Object, AsyncIterable, Iterable, Stream,
+- `data` care poate avea următoarele reprezentări: `String`, `Buffer`, `TypedArray`, `DataView`, `Object`, `AsyncIterable`, `Iterable`, `Stream`,
 - `options` care poate fi un șir de caractere sau un `Object`.
 
 În cazul în care `options` este un `Object`, acesta poate avea următorii membri:

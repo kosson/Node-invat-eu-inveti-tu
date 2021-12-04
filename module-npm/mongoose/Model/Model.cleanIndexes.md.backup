@@ -1,0 +1,9 @@
+# Model.cleanIndexes
+
+Metoda șterge toate indexurile care nu sunt definire în schema modelului. Este folosită de `syncIndexes()`.
+
+Returnează un `Promise` sau un `undefined`. Dacă este menționat un callback returnează `undefined`. În caz contrar, returnează promisiunea.
+
+Drept parametru, opțional, poate primi un callback.
+
+Promisiunea rezultată se rezolvă cu un array al tuturor indexurilor care 

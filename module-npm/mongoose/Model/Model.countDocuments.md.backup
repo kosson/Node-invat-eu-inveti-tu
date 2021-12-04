@@ -1,0 +1,10 @@
+# Model.countDocuments
+
+Numără documentele în baza unui filtru.
+
+```javascript
+Adventure.countDocuments({ type: 'jungle' }, function (err, count) {
+  console.log('there are %d jungle adventures', count);
+})
+```
+

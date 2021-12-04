@@ -19,7 +19,7 @@ try {
 }
 ```
 
-Folosirea metodei `access` pentru verificarea permisiunilor înainte de a apela metoda `open` nu este recomandată pentru că introduce o stare de concurență. Este posibil ca între cele două apeluri vreun proces să modifice fișierul/directorul. Codul aplicației ar trebui să deschidă/citească/modifice fișierul și să gestioneze erorile apărute în cazul în care fișierul nu este disponibil.
+Folosirea metodei `access` pentru verificarea permisiunilor înainte de a apela metoda `open` nu este recomandată pentru că introduce o stare de concurență (*race condition*). Este posibil ca între cele două apeluri vreun proces să modifice fișierul/directorul. Codul aplicației ar trebui să deschidă/citească/modifice fișierul și să gestioneze erorile apărute în cazul în care fișierul nu este disponibil.
 
 ## Argumente
 
@@ -41,8 +41,6 @@ fsPromises.access('/etc/passwd', fs.constants.R_OK | fs.constants.W_OK)
   .then(() => console.log('can access'))
   .catch(() => console.error('cannot access'));
 ```
-
-Nu este recomandată folosirea lui `fsPromises.access()` înaintea lui `fsPromises.open()` pentru că se va introduce o stare de suprapunere a stărilor (*race condition*). Acest lucru se poate petrece deoarece alte procese în sistem ar putea modifica starea fișierului între cele două apeluri.
 
 Codul utilizatorului trebuie să deschidă/citească/scrie fișierul direct și să trateze erorile în cazul în care fișierul nu este disponibil.
 

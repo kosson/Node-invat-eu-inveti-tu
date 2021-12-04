@@ -744,7 +744,7 @@ schema.path('age').default(25);
 schema.path('age').validate(v => v >= 21);
 ```
 
-Această sintaxă este mai rar folosită.
+
 
 ## Resurse
 

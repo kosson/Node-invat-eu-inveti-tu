@@ -1,24 +1,46 @@
 # Căutările (query) folosind Mongoose
 
+Pentru a elabora obiecte de interogare, se va folosi constructorul `Query()`. Acest constructor nu va fi instanțiat direct. Obiectele `Query` sunt generate de metodele obiectului `Model`.
+
+```javascript
+const query = MyModel.find(); // `query` este o instanță a lui `Query`
+query.setOptions({ lean : true });
+query.collection(MyModel.collection);
+query.where('age').gte(21).exec(callback);
+```
+
 Modelele generate în baza schemelor, folosesc câteva metode pentru a realiza CRUD-uri:
 
 - `Model.deleteMany()`
-- `ModeldeleteOne()`
-- `Modelfind()`
-- `ModelfindById()`
-- `ModelfindByIdAndDelete()`
-- `ModelfindByIdAndRemove()`
-- `ModelfindByIdAndUpdate()`
-- `ModelfindOne()`
-- `ModelfindOneAndDelete()`
-- `ModelfindOneAndRemove()`
-- `ModelfindOneAndReplace()`
-- `ModelfindOneAndUpdate()`
-- `ModelreplaceOne()`
-- `ModelupdateMany()`
-- `ModelupdateOne()`
+- `Model.deleteOne()`
+- `Model.find()`
+- `Model.findById()`
+- `Model.findByIdAndDelete()`
+- `Model.findByIdAndRemove()`
+- `Model.findByIdAndUpdate()`
+- `Model.findOne()`
+- `Model.findOneAndDelete()`
+- `Model.findOneAndRemove()`
+- `Model.findOneAndReplace()`
+- `Model.findOneAndUpdate()`
+- `Model.replaceOne()`
+- `Model.updateMany()`
+- `Model.updateOne()`
 
-În momentul în care sunt executate, toate aceste metode returnează câte un obiect `Query` generat de Mongoose.
+În momentul în care sunt executate, toate aceste metode returnează câte un obiect `Query` generat de Mongoose. Clasa `Query` oferă o interfață care permite înlănțuirea metodelor.
+
+```javascript
+const Character = mongoose.model('Character', Schema({
+  name: String,
+  age: Number
+}));
+
+const query = Character.find();
+query instanceof mongoose.Query; // true
+
+// Execute the query
+const docs = await query;
+```
 
 Un query poate fi executat în două moduri:
 - pasezi un callback, caz în care Mongoose va executa apelul în mod asincron și va pasa rezultatul callback-ului;
@@ -92,7 +114,18 @@ Person.
 
 Un `Query` nu va acționa asupra bazei de date în niciun fel. Abia când se aplică `exec()` sau `then()`, se va executa operațiunea în conjuncție cu baza. Metoda `exec()` va lua întregul obiect de interograre și îl va trimite lui MongoDB.
 
-Documentația precizează faptul că indiferent de faptul că avem acces la o metodă `then()` pentru obiectul returnat din apelarea lui `exec()`, obiectul resultat nu este o [promisiune](https://mongoosejs.com/docs/queries.html#queries-are-not-promises). Această funcție este un utilitar necesar integrării în fluxuri de lucru folosind pachetul `co` sau în scenarii `async/await`. Spre deosebire de promisiuni, această metodă `then` poate fi aplicată de mai multe ori pe aceeași interogare. Exemplul oferit în documentație este concludent.
+Documentația precizează faptul că indiferent de faptul că avem acces la o metodă `then()` pentru obiectul returnat din apelarea lui `exec()`, obiectul rezultat nu este o [promisiune](https://mongoosejs.com/docs/queries.html#queries-are-not-promises).
+
+```javascript
+const promise = Character.find().exec();
+promise instanceof Promise; // true
+promise instanceof mongoose.Query; // false
+
+const docs = await promise;
+```
+
+
+Această funcție este un utilitar necesar integrării în fluxuri de lucru folosind pachetul `co` sau în scenarii `async/await`. Spre deosebire de promisiuni, această metodă `then` poate fi aplicată de mai multe ori pe aceeași interogare. Exemplul oferit în documentație este concludent.
 
 ```javascript
 const q = MyModel.updateMany({}, { isDeleted: true }, function() {
@@ -103,7 +136,7 @@ q.then(() => console.log('Update 2'));
 q.then(() => console.log('Update 3'));
 ```
 
-Mai întâi este executată interogare ca urmare a aplicării modelului ce folosește callback, iar ulterior, același obiect la care încă există referință este folosit pentru a face prelucrări ulterioare. Este recomandabil să nu amestecați callback-urile cu promisiunile folosind același obiect query pentru că vei ajunge să dublezi operațiunile.
+Mai întâi este executată interogarea ca urmare a aplicării modelului ce folosește callback. Ulterior, același obiect la care încă există referință este folosit pentru a face alte prelucrări ale datelor. Este recomandabil să nu amestecați callback-urile cu promisiunile folosind același obiect query pentru că vei ajunge să dublezi operațiunile.
 
 ## Modificatori ai obiectului `Query`
 
@@ -162,6 +195,23 @@ Customer.find({ email: /foo\.bar/, age: { $gte: 30 } });
 Customer.find({ email: /foo\.bar/ }).find({ age: { $gte: 30 } });
 ```
 
+Un alt exemplu folosește metoda `where()`.
+
+```javascript
+let docs = await Character.find().
+  // `where()` specifică numele proprietății
+  where('name').
+  // apoi helperul `in()` specifică faptul că `name`
+  // trebuie să fie una din cele două valori menționate în array
+  in(['Jean-Luc Picard', 'Will Riker']);
+
+// Un query echivalent, dar care are filtrul exprimat ca un obiect
+// fără a mai folosi chaining-ul.
+docs = await Character.find({
+  name: { $in: ['Jean-Luc Picard', 'Will Riker'] }
+});
+```
+
 Obiectele `Query` au mai multe helpere, care permit construirea unor operațiuni CRUD complexe (`sort()`, `limit()`, `skip()`).
 
 ```javascript
@@ -176,9 +226,32 @@ const res2 = await Customer.find({}).sort({ name: 1 }).skip(1).limit(1);
 
 Unul din lucrurile importante pe care le face Mongoose este casting-ul valorilor la cele specificate în schema modelului. Acest lucru se face automat.
 
+## Helpere utile
+
+Mai mic/mare decât o anumită valoare: `lt(value)` și `gt(value)`. Valoarea poate fi un număr, un șir de caractere sau o dată calendaristică.
+
+Mai mic/mare sau egal cu o valoare: `lte(value)`, `gte(value)`.
+
+Dacă dorești ca valoarea căutată să fie egală cu una dintre cele care sunt într-un array, folosești `in(arr)`. Opusul îl obții cu `nin(arr)` când în array precizezi valorile care nu trebuie să fie luate în considerare la momentul căutării.
+
+În cazul în care dorești o potrivire strictă cu o anumită valoare, vei folosi `eq(val)`. Cazul contrar este menționat prin `ne(val)`.
+
+În cazul în care dorești să faci o căutare în baza unui regex, vei folosi `regex(re)`.
+
+Poți înlănțui mai mulți helperi `where`.
+
+```javascript
+const docs = await Character.find().
+  // `name` trebuie să aibe o valoare potrivită prin regular expression
+  where('name').regex(/picard/i).
+  // `age` trebuie să fie între 29 și 59
+  where('age').gte(29).lte(59);
+```
+
 ## Referințe
 
 - [Queries|Mongoose](https://mongoosejs.com/docs/queries.html)
 - [How find() Works in Mongoose](http://thecodebarbarian.com/how-find-works-in-mongoose.html)
 - [Query on Embedded/Nested Documents, ](https://docs.mongodb.com/manual/tutorial/query-embedded-documents/).
 - [Query on Nested Field](https://docs.mongodb.com/manual/tutorial/query-embedded-documents/#query-on-nested-field)
+- [An Introduction to Queries in Mongoose | Jun 25, 2019](https://masteringjs.io/tutorials/mongoose/query)

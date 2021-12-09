@@ -22,7 +22,7 @@ Executarea unui `then()` pe obiectul `Query` va avea drept efect apelarea în sp
 query.then((err, rezultat) => {
   console.log(rezultat);
 });
-
+```
 
 Se pot folosi și async/await-urile direct pe obiectul `Query` tocmai pentru că un `await query` va apela în spate `exec()` ce va genera promisiunea necesară.
 

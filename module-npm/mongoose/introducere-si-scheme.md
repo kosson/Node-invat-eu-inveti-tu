@@ -55,3 +55,7 @@ var Resursa = require('./app/models/resursă'); //ai acces la obiectul de tip mo
 ```
 
 Atenție, când faci cererea cu `require` folosește notație `./` pentru ca NodeJS să știe că este vorba despre un modul local.
+
+## Resurse
+
+- [MongoDB Node.JS Driver](https://mongodb.github.io/node-mongodb-native/)

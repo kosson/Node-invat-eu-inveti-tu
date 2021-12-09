@@ -1,8 +1,10 @@
 # Virtual types
 
-Sunt proprietăți ale unui document care nu sunt păstrate în bază, ci sunt constituite ad-hoc așa cum ar putea fi numărul de comentarii al unui articol de blog sau numărul articolelor scrise de un autor.
+Un virtual în Mongoose este o proprietate care nu este stocată într-o înregistrare din bază. Virtuals sunt folosite îndeosebi pentru proprietăți computate ale documentelor. Metoda `Schema.prototype.virtual()` este cea care returnează un obiect de tip `VirtualType`.
 
-Atributele unui document virtual se vor seta prin metoda `virtual()` căreia îi vor fi pasate câmpurile documentului virtual (`Schema.prototype.virtual`).
+Acestea sunt constituite ad-hoc așa cum ar putea fi numărul de comentarii al unui articol de blog sau numărul articolelor scrise de un autor.
+
+Atributele unui document virtual se vor seta prin metoda `virtual()` căreia îi vor fi pasate câmpurile documentului virtual (vezi `Schema.prototype.virtual()`).
 
 ```javascript
 const fullname = schema.virtual('fullname');
@@ -10,6 +12,23 @@ fullname instanceof mongoose.VirtualType // true
 ```
 
 În loc să creezi proprietăți în model, care să necesite aducerea înregistrării din bază, actualizarea sa și apoi salvarea înapoi, mai bine creezi un virtual type.
+
+În exemplul următor este implementată proprietatea `domain` folosind un virtual.
+
+```javascript
+const userSchema = mongoose.Schema({
+  email: String
+});
+// Create a virtual property `domain` that's computed from `email`.
+userSchema.virtual('domain').get(function() {
+  return this.email.slice(this.email.indexOf('@') + 1);
+});
+const User = mongoose.model('User', userSchema);
+
+let doc = await User.create({ email: 'test@gmail.com' });
+// `domain` is now a property on User documents.
+doc.domain; // 'gmail.com'
+```
 
 Proprietățile virtuale se adaugă aplicând metoda `virtual()` pe schema deja instanțiată. Metoda acceptă drept parametru un string care va fi numele proprietății noi pe care o adaugi documentului care va fi constituit mai târziu. Poți spune că o proprietate virtuală este o efemeridă.
 
@@ -66,3 +85,7 @@ console.log(utilizator.nume); // Andreea, salut!
 ```
 
 Pentru mai multe opțiuni pe care le oferă `toObject`, citește și Document.prototype.toObject().
+
+## Resurse
+
+- [Mongoose Virtuals](https://mongoosejs.com/docs/tutorials/virtuals.html)

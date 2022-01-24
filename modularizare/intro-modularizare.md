@@ -530,7 +530,7 @@ import {log as logAlt} from './modul1.mjs';
 
 ### Module CommonJS în cele ESM
 
-Într-un modul ES6 se pot cere module Node.js.
+Într-un modul ESM se pot cere module CommonJS (CJS).
 
 ```javascript
 // modul.mjs
@@ -540,6 +540,117 @@ const fsp = fs.promises;
 ```
 
 Invers nu funcționează, adică să ceri un modul ES6 dintr-unul Node.js pentru că implementarea modului de căutare a celor două diferă.
+
+Din nefericire nu funcționează *named imports*, precum în `import {shuffle} from './lodash.cjs'`. Acest lucru se petrece pentru că scripturile CJS fac evaluarea și definesc *named exports* la momentul în care se execută în timp ce pentru ESM-uri acestea sunt făcute la faza de parsing. Există și o soluție totuși:
+
+```javascript
+import _ from './lodash'; // lodash ca CJS
+const {shuffle} = _;
+```
+
+## Module ESM în CommonJS
+
+CJS nu înțelege ESM dacă se folosește `require()` pentru că modulele ESM se încarcă asincron și beneficiază de *top-level await* (TLA), care înseamnă că se poate face `await` în afara unei funcții `async`.
+
+Ingurul mod în care poți importa module ESM este să utilizezi funcția `import()`, care este una dinamică, într-un context asyncron.
+
+```javascript
+(async () => {
+    const {ceva} = await import('./ceva.mjs');
+})();
+```
+
+În cazul în care ai nevoie ca în fișierul/modulul pe care îl scrii să faci export la codul unui modul, va trebui să aplici un șablon similar cu următorul:
+
+```javascript
+module.exports.ceva = (async () => {
+    const {ceva} = await import('./ceva.mjs');
+    return ceva;
+})();
+```
+
+Există o soluție care ar permite importul modulelor ESM și aceasta de leagă de folosirea în mod dinamic a funcției `import()`. Acest artificiu permite folosirea unor biblioteci de cod care nu mai oferă codul în variantă CJS, ci numai ESM. Este și cazul unei biblioteci de cod folosită pe scară largă: `globby`. Ryan Roemer oferă o soluție în articolul său intitulat *Getting Started with (and Surviving) Node.js ESM*. Aceasta este o perioadă (2020 - 2022) în care o parte din dezvoltatori continuă să opteze pentru scrierea modulelor folosind CJS, dar mulți alții distribuie noi versiuni cu un salt la ESM fără variantă CJS.
+
+Pentru a consuma un modul ESM ar trebui scris un fișier helper în care faci importul ESM și din care exporți folosind `module.exports`, urmând ca mai apoi să faci importul acestui helper pentru a expune API-ul bibliotecii dorite.
+
+```javascript
+module.exports = {
+  // Întregul aPI se modifică complet, logRed devenind async.
+  logRed: async () => {
+    // Dynamic import() funcționează numai în function awaits sau promises
+    // NOTE: Ai putea memoiza `import()` pentru cachare după primul apel
+    const { red } = await import("colors");
+    console.log(red);
+  }
+};
+```
+
+Problema care apare este aceea că o aplicație care este scrisă folosind CommonJS poate să folosească dependințe scrise în ESM doar dacă întregul cod al dependinței este rulat în avans, fapt care se petrece în contextul funcționalității asincrone specifice.
+
+### Adaptarea lui globby
+
+Pachetul `blobby` a făcut un salt de la versiunea 11.0.4 care era CJS, la versiunea 12.0.2, care este ESM fără o versiune CJS.
+
+```javascript
+  "dependencies": {
+    "archiver": "^5.3.0",
+    "chalk": "^4.1.2",
+    "globby": "^12.0.2"
+  }
+```
+
+Pentru a putea continua să operezi aplicația care este scrisă în majoritate folosind EJS, ai putea construi un utilitar care să gestioneze tranziția (`/util/esm-pkgs.js`).
+
+```javascript
+"use strict";
+
+// Acesta este un wrapper pentru import() folosit dinamic pe modulele care sunt numai ESM.
+// Versiuni mai noi de Node.js 12+
+
+let _globby;
+const _getGlobby = async () => {
+  if (!_globby) {
+    _globby = await import("globby");
+  }
+
+  return _globby;
+};
+
+const globby = async (...args) => {
+  const _globbyImpl = await _getGlobby();
+  return _globbyImpl.globby(...args);
+};
+
+// Trebuie să rezolvăm toate importurile dinamine ale ESM-urilor
+// înainte să le folosim unde avem nevoie în cod
+const _resolve = async () => Promise.all([
+  _getGlobby()
+]);
+
+module.exports = {
+  _resolve,
+  globby
+};
+```
+
+Apoi în cod unde avem nevoie să lucrăm cu biblioteca, anterior aveam un import `const globby = require("globby");`, dar acesta se va modifica într-o cerere la adaptor.
+
+```javascript
+const { _resolve, globby } = require("../../lib/util/esm-pkgs");
+```
+
+De consumat, API-ul bibliotecii va putea fi consumat într-un context asincron.
+
+```javascript
+const { _resolve, globby } = require("../../lib/util/esm-pkgs");
+facCevaCareAreNevoieDeAPI_resolve(async () {
+  await _resolve();
+});
+// sau direct biblioteca
+const { globby } = require("../../lib/util/esm-pkgs");
+```
+
+Din nefericire problemele apar ulterior cu toate bibliotecile de cod care aveau nevoie de rularea ca CJS.
 
 ## Module din directoare
 
@@ -573,3 +684,5 @@ Acest model este urmat de pachetele pe care `npm` le gestionează.
 - Merită urmărit [răspunsul de pe Stackoverflow](http://stackoverflow.com/questions/5311334/what-is-the-purpose-of-node-js-module-exports-and-how-do-you-use-it).
 - [ECMAScript Modules](https://nodejs.org/api/esm.html)
 - [Super Simple Start to ESModules in Node.js | Kent C. Dodds](https://kentcdodds.com/blog/super-simple-start-to-es-modules-in-node-js)
+- [Node Modules at War: Why CommonJS and ES Modules Can’t Get Along | Dan Fabulich | Aug 5, 2020](https://redfin.engineering/node-modules-at-war-why-commonjs-and-es-modules-cant-get-along-9617135eeca1)
+- [Getting Started with (and Surviving) Node.js ESM | Ryan Roemer | 9 November 2021](https://formidable.com/blog/2021/node-esm-and-exports/)

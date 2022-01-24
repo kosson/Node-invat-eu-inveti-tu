@@ -19,6 +19,8 @@ Metoda poate avea următoarele argumente:
 - `flag` care este un string. Valoarea din oficiu este `w`,
 - `signal` care este un `AbortSignal` care permite întreruperea scrierii fișierului.
 
+Metoda returnează o promisiune.
+
 ```javascript
 import { writeFile } from 'fs/promises';
 import { Buffer } from 'buffer';

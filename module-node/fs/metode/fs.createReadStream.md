@@ -37,3 +37,33 @@ unStreamReadable.on('data', function (fragment) {
 ```
 
 Întreaga resursă de date va fi consumată de `stream`-ul nostru *readable*. De fiecare dată când un fragment din `Buffer` este trimis, se declanșează execuția callback-ului. După prelucrarea fragmentului anterior, se va primi un alt fragment, care va fi prelucrat și tot așa până la consumarea întregii resurse.
+
+Un exemplu care trimite un fișier către client este oferit chiar de Node.js în articolul *How to use fs.createReadStream?*.
+
+```javascript
+var http = require('http');
+var fs = require('fs');
+
+http.createServer(function(req, res) {
+  // The filename is simple the local directory and tacks on the requested url
+  var filename = __dirname+req.url;
+
+  // This line opens the file as a readable stream
+  var readStream = fs.createReadStream(filename);
+
+  // This will wait until we know the readable stream is actually valid before piping
+  readStream.on('open', function () {
+    // This just pipes the read stream to the response object (which goes to the client)
+    readStream.pipe(res);
+  });
+
+  // This catches any errors that happen while creating the readable stream (usually invalid names)
+  readStream.on('error', function(err) {
+    res.end(err);
+  });
+}).listen(8080);
+```
+
+## Resurse
+
+- [How to use fs.createReadStream? | 2011-08-26](https://nodejs.org/en/knowledge/advanced/streams/how-to-use-fs-create-read-stream/)

@@ -12,7 +12,7 @@ NumeModel.find().match({
 
 În subsidiar, această metodă folosește biblioteca de cod [Sift](https://www.npmjs.com/package/sift), care face posibilă utilizarea operatorilor comuni a lui MongoDB.
 
-Autorul Valeri Karpov indică faptul că un caz ideal de utilizare a acestei metode este acela când dorim să ascumdem anumite rezultate de unii utilizatori, pentru a le vedea doar anumiți. Este oferit exemplul unui articol de blog a cărui comentarii șterse să fie vizibile autorului articolului, dar nu și celorlați utilizatori.
+Autorul Valeri Karpov indică faptul că un caz ideal de utilizare al acestei metode este acela când dorim să ascumdem anumite rezultate de unii utilizatori, pentru a le vedea doar anumiți. Este oferit exemplul unui articol de blog a cărui comentarii șterse să fie vizibile autorului articolului, dar nu și celorlați utilizatori.
 
 ```javascript
 const BlogPost = mongoose.model('BlogPost', blogPostSchema);

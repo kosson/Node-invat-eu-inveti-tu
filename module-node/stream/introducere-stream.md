@@ -187,3 +187,4 @@ Stream-ul `res` este un obiect `Writable`, care expune metode precum `write()` È
 - [The Node.js Event Loop, Timers, and process.nextTick()](https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/)
 - [Async Iterators: A New Future for Streams - Stephen Belanger](https://youtu.be/YVdw1MDHVZs)
 - [isStream | 30secondsofcode.org](https://www.30secondsofcode.org/js/s/is-stream)
+- [Use Streams to Build High-Performing Node.js Applications | Deepal Jayasekara | Feb 2, 2022](https://blog.appsignal.com/2022/02/02/use-streams-to-build-high-performing-nodejs-applications.html)

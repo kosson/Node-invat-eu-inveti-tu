@@ -1,6 +1,8 @@
 # Event loop în Node.js
 
-Node.js rulează un singur fir de execuție pentru codul JavaScript și controlează execuția codului asincron folosind un mecanism de tratare a evenimentelor numit *bucla evenimentelor*, în limba engleză *event loop*. Această buclă este ca o roată de bâlci care nu se oprește până când ultimul client nu s-a dat jos. Acesta este și avantajul pe care îl oferă un *event loop* chiar dacă avem cod care se execută într-un singur fir de execuție. Acest lucru permite tratarea a mai multor apeluri HTTP odată, de exemplu. În Node.js *bucla* este oferită de `libuv`. Dacă sunt folosite mai multe fire de execuție în aplicație, se vor constitui bucle pentru fiecare dintre acestea.
+Node.js rulează un singur fir de execuție pentru codul JavaScript și controlează execuția codului asincron folosind un mecanism de tratare a evenimentelor numit *bucla evenimentelor*, în limba engleză *event loop*. Această buclă este ca o roată de bâlci care nu se oprește până când ultimul client nu s-a dat jos. Acest lucru permite tratarea a mai multor apeluri HTTP odată, de exemplu. Această buclă este mecanismul responsabil pentru gestionarea funcțiilor cu rol de callback.
+
+În Node.js *bucla* este oferită de o componentă numită `libuv`. Dacă sunt folosite mai multe fire de execuție în aplicație, se vor constitui bucle pentru fiecare dintre acestea.
 
 > Bucla evenimentelor este ceea ce permite lui Node.js să performeze operațiuni I/O — în ciuda faptului că JavaScript are un singur fir de execuție — prin delegarea operațiunilor kernelului sistemului ori de câte ori acest lucru este posibil ( [The Node.js Event Loop, Timers, and process.nextTick()](https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/) ).
 
@@ -16,12 +18,44 @@ Pentru executarea unor funcții care au nevoie de putere de calcul așa cum sunt
 
 ![https://twitter.com/TotesRadRichard/status/494959181871316992](images/TheNode.JSSystem.png)
 
+Bucla poate fi privită din perspectiva unei acțiuni care se desfășoară urmând anumite faze. Imaginea de mai sus este aproximativă, fiind contestată de Bert Belder care a lucrat la realizarea `libuv`-ului. Într-o prezentare din 2016, Bert oferă o imagine mai apropiată de realitate.
+
+![](images/BertBelderTrue.png "Bert Belder prezintă etapele așa cum sunt ele în realitate")
+
+Există patru faze care pot fi considerate a fi niște treburi primare (*macro task-uri*) și două faze secundare care gestionează *microtask*-uri.
+
+Bert mai spune faptul că fiecare cutie galbenă are un mecanism similar unei bucle proprii.
+
+![](images/BertBelderJSboxes.png)
+
+Astfel, pentru fiecare callback al codului, se va crea un astfel de mecanism care va fi folosit pentru codul care rulează în callback.
+
+Macrotask-urile sunt:
+- Faza 1: gestionarea callback-urilor unor timeri care au expirat (`setTimeout`, `setInterval`);
+- Faza 2: polling I/O și gestionarea callback-urilor responsabile cu tratarea rezultatelor (sistemul de fișiere, cereri HTTP);
+- Faza 3: gestionarea callback-urilor ce aparțin unor posibile `setImmediate`;
+- Faza 4: gestionarea callback-urilor reponsabile cu închiderea unor resurse ce au fost folosite (descriptori de fișiere, callback-uri setate pe server, procese).
+
+Microtask-urile:
+- gestionarea unor posibile `process.nextTick()`;
+- gestionarea promisiunilor.
+
+Node.js va sări de la faza 4 la faza 1 dacă aplicația așteaptă rezultatul pe care trebuie să-l prelucreze/returneze niște callback-uri sau dacă aștepți răspunsul de la un server HTTP.
+
+Bert Belder menționează o așa-numită funcție unicorn care este cea care gestionează solicitările din codul JS folosind apeluri de sistem (faza 2).
+
+![](images/BertBelderUnicornFunction.png)
+
+Bert mai spune că Node.js atunci când este folosit pentru a crea un server, folosește kernelul mașinii. Acest lucru permite realizarea de mii de conexiuni fără nicio problemă, mai ales când sunt folosite socket-urile.
+
+![](images/BertBelderWhatsDoingWhat.png)
+
 ## Callback-urile API-urilor Node.js
 
 Bucla va procesa întreaga stivă a apelurilor și va trimite treburile legate de I/O sistemului de operare folosind `libuv`. Acest mecanism este responsabil cu aducerea datelor de la distanță, dintr-o bază de date sau de pe hard disk. Ia apel după apel din stiva apelurilor, dacă acestea sunt către API-uri I/O și dă în lucru sarcinile I/O sistemului de operare, punând callback-urile atribuite respectivei sarcini într-o *listă de așteptare*. Aceste callback-uri mai sunt numite și evenimente pentru că au rol de receptoare ce sunt acționate la încheierea unui eveniment care s-a desfășurat asincron.
 
 Acum, că a făcut acest lucru, va trece la următorul apel către un API, care este provenit din *stiva apelurilor* și tot așa până când stiva apelurilor este goală. Concret, în momentul în care o sarcină a fost îndeplinită de sistemul de operare (*kernel*), va trimite rezultatul callback-ului corespondent, care aștepta cuminte în *lista de așteptare* (*job queue* sau *event queue*) și apoi, va plasa callback-ul în stiva de apeluri, dacă aceasta este goală pentru a-l executa.
-
+The concept is very simple.
 Comportamentul descris mai sus, gestionat de un singur fir de execuție are avantajul conservării resurselor sistemului de operare pentru că fiecărui fir pentru un anumit proces i se alocă resurse separate. Numim astfel de comportament/model *rulare asincronă* și de cele mai multe ori este observat la apelarea unei funcții aparținând unui API, care după rezolvare, se va concluziona prin apelarea unui callback. În Node.js, callback-urile trebuie să fie pasate ca ultim argument în metodele API-urilor. Dacă s-ar aplica un astfel de model pentru câteva sute de conexiuni HTTP, să zicem, taxarea resurselor de server ar fi pe măsură într-un model de execuție sincronă. Este observabilă interdependența dintre mecanismul *buclei* (*event loop*) și cel al *stivei apelurilor* (*callstack*).
 
 ### Prioritizarea trimiterii callback-urilor în callstack
@@ -214,3 +248,7 @@ Un mecanism interesant de investigare a ceea ce se petrece la rulare: `node --tr
 - [The Node.js Event Loop | nodejs.dev/learn](https://nodejs.dev/learn/the-nodejs-event-loop)
 - [Viewing nodejs event loop from libuv](https://developpaper.com/viewing-nodejs-event-loop-from-libuv/)
 - [Don't Block the Event Loop (or the Worker Pool)](https://nodejs.org/en/docs/guides/dont-block-the-event-loop/)
+- [Node.js Event Loop: Not So Single-Threaded | Kevin Vogel | Feb 13, 2022](https://blog.bitsrc.io/node-js-event-loop-and-multi-threading-e42e5fd16a77)
+- [The Node.js Event Loop: Not So Single Threaded | Bryan Hughes | 16 oct. 2017](https://www.youtube.com/watch?v=zphcsoSJMvM)
+- [Morning Keynote- Everything You Need to Know About Node.js Event Loop - Bert Belder, IBM | Bert Belder | 2016](https://www.youtube.com/watch?v=PNa9OMajw9w)
+- [Node's Event Loop From the Inside Out | Sam Roberts | 2016](https://www.youtube.com/watch?v=P9csgxBgaZ8)

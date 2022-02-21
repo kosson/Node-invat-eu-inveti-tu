@@ -59,3 +59,4 @@ Atenție, când faci cererea cu `require` folosește notație `./` pentru ca Nod
 ## Resurse
 
 - [MongoDB Node.JS Driver](https://mongodb.github.io/node-mongodb-native/)
+- [Mongoose Tutorials | Mastering JS](https://masteringjs.io/mongoose)

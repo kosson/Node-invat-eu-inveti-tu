@@ -17,8 +17,8 @@ var eventSchema = new mongoose.Schema({
     default: Date.now
   },
   /* Date arbitrare asociate evenimentului
-   * `{}` corespude tipului `Mixed` în mongoose,
-   * deci nu se face nicio validatre pe acest câmp */
+   * `{}` corespunde tipului `Mixed` în mongoose,
+   * deci nu se face nicio validare pe acest câmp */
   data: {}
 });
 
@@ -58,7 +58,7 @@ var clickedEventSchema = new mongoose.Schema(
     to: { type: String, required: true }
   },
   options);
-var ClickedLinkEvent = Event.discriminator('ClickedLink', clickedEventSchema); // seamnă cu un model
+var ClickedLinkEvent = Event.discriminator('ClickedLink', clickedEventSchema); // seamănă cu un model
 
 // PurchasedEvent
 var purchasedSchema = new mongoose.Schema(

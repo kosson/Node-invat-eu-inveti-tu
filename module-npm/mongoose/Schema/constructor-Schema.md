@@ -19,7 +19,7 @@ Dacă dorești să investighezi cum este configurată fiecare *cale*, ai la disp
 const User = mongoose.model('User', schemăMică);
 ```
 
-Pentru a instroduce datele unei noi înregistrări, trebuie mai întâi să instanțiezi un nou obiect model căruia îi pasezi un obiect cu datele care sunt valorile ce populează câmpurile/căile. Mai mult, ceea ce se petrece în spate este o *formatare* a valorilor primite conform configurărilor specificate pentru fiecare câmp la momentul construirii schemei.
+Pentru a introduce datele unei noi înregistrări, trebuie mai întâi să instanțiezi un nou obiect model căruia îi pasezi un obiect cu datele care sunt valorile ce populează câmpurile/căile. Mai mult, ceea ce se petrece în spate este o *formatare* a valorilor primite conform configurărilor specificate pentru fiecare câmp la momentul construirii schemei.
 
 În momentul în care instanțiezi un model de date folosind o schemă, Mongoose va crea automat și o proprietate `_id` de tip `ObjectId`.
 
@@ -90,7 +90,7 @@ Poate avea o valoare `Boolean`. Valoarea din oficiu este `null`.
 
 ## [toObject](https://mongoosejs.com/docs/guide.html#toObject)
 
-Documentele pun la dispoziție această metodă pentru a converti documentele Mongoose în simple obiecte Javascript. Metoda acceptă câteva opțiuni. În loc de a aplica aceste opțiuni la nivel de document, se pot declara la nivel de schemă.
+Documentele Mongoose pun la dispoziție această metodă pentru a converti în simple obiecte Javascript. Metoda acceptă câteva opțiuni. În loc de a aplica aceste opțiuni la nivel de document, se pot declara la nivel de schemă.
 
 Există un truc pentru a putea modifica valorile care vor fi disponibile într-un document după ce a fost generat prin hidratarea cu date a unui model. Această operațiune implică aplicarea metodei `get()` cu un callback ce va face transformarea datelor pe calea unei scheme obținută în prealabil prin aplicarea metodei `path()`. Apoi se activează toți getterii pentru `toObject`.
 

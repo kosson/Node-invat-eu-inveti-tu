@@ -1,6 +1,6 @@
 # Populate
 
-Pentru a înțelege `populate()` trebuie să înțelegem că este răspunsul Mongoose la operatorul de agregare al MongoDB [$lookup](https://docs.mongodb.com/manual/reference/operator/aggregation/lookup/). Documentația MongoDB aduce câteva lămuriri necesare pentru a înțelege modul de operare a lui `populate()`.
+Pentru a înțelege metoda [populate()](https://mongoosejs.com/docs/api.html#model_Model.populate) trebuie să înțelegem că este răspunsul Mongoose la operatorul de agregare al MongoDB [$lookup](https://docs.mongodb.com/manual/reference/operator/aggregation/lookup/). Documentația MongoDB aduce câteva lămuriri necesare pentru a înțelege modul de operare a lui `populate()`.
 
 > Face un **left outer join** pe o colecție `unsharded`, care este în *aceeași* bază de date pentru a căuta în documentele din colecția constituită (*joined*), care va fi supusă procesării. Pentru fiecare document care intră în faza de `$lookup` se adaugă un nou câmp de array al cărui elemente sunt documentele care s-au potrivit criteriilor aflate în colecția *joined*. Faza `$lookup` pasează aceste documente remodelate către etapa următoare (lookup | docs.mongodb.com)[https://docs.mongodb.com/manual/reference/operator/aggregation/lookup/].
 
@@ -10,7 +10,7 @@ Definiția lui `populate()` din documentația originală:
 
 Este posibilă popularea unui singur document, a mai multor documente, a unor simple obiecte, a mai multor obiecte simple sau a tuturor obiectelor care au fost returnate ca urmare a unei interogări.
 
-Documentele returnate atunci când se face popularea, pot fi `remove`able, `save`able, cu singura mențiune că nu trebuie să fie specificată opțiune `lean`. Documentele returnate nu trebuie confundate niciun moment cu sub-documentele. Pentru că atunci când se face o operațiune de ștergere, aceasta se va răsfrânge direct asupra bazei de date, fii foate atentă cu `remove` în scenariul `populate`. Pentru mai multe detalii privind metoda în sine, citește și documentația de la `Query.prototype.populate()`.
+Documentele returnate atunci când se face popularea, pot fi `remove`able, `save`able, cu singura mențiune că nu trebuie să fie specificată opțiunea `lean`. Documentele returnate nu trebuie confundate niciun moment cu sub-documentele. Pentru că atunci când se face o operațiune de ștergere, aceasta se va răsfrânge direct asupra bazei de date, fii foarte atentă cu `remove` în scenariul `populate`. Pentru mai multe detalii privind metoda în sine, citește și documentația de la `Query.prototype.populate()`. Un detaliu tehnic important este acela că `Document#populate()` și `Query#populate()` folosesc de fapt metoda `Model#populate()`. 
 
 ```javascript
 const mongoose = require('mongoose');
@@ -50,9 +50,9 @@ Id-urile care vor fi culese, trebuie să fie id-uri de documente (`_id`) din mod
 
 Atenție, `ref`-urile pot primi următoarele valori: `ObjectId`-uri, `Number`, `String` sau `Buffer`.
 
-## Salvarea referințelor către celelalte documente
+## Salvarea documentelor în baza proprie odată cu salvarea părintelui
 
-Atunci când este nevoie, poți salva `ref`-uri către alte documente. Pur și simplu trebuie să atribui valoarea `_id`-ul.
+Atunci când este nevoie, poți salva `ref`-uri către documente care mai târziu vor fi populate pentru documentul părinte, poți face asta folosind hook-ul `save()`. Pur și simplu trebuie să atribui valoarea `_id`-ul părintelui în câmpul care joacă rolul unui foreign key.
 
 ```javascript
 const autor = new Persoană({
@@ -113,7 +113,7 @@ Carte.findOne({titlu: 'Casino Royale'})
   });
 ```
 
-## Popularea câtorva câmpuri deodată
+## Popularea mai multor câmpuri deodată
 
 Pentru a popula mai multe câmpuri deodată, se va apela metoda `populate` pentru fiecare din câmpuri.
 
@@ -193,7 +193,7 @@ Carte.
 
 ## Popularea mai multor căi deodată
 
-În cazul în care dorești popularea mai multor căi, acest lucru este posibil:
+În cazul în care dorești popularea mai multor căi, acest lucru este posibil apelând repetat în lanț a metodei.
 
 ```javascript
 Carte.find({ titlu: 'Casino Royale' })
@@ -218,7 +218,52 @@ Carte.find({ titlu: 'Casino Royale' })
   exec();
 ```
 
-### Eliminarea înregistrărilor folosind `virtual()` și `match()`
+În cazul în care nu sunt satisfăcute criteriile de la `match`, array-ul `fani` va fi gol.
+
+## limit vs. perDocumentLimit
+
+Funcția `populate` are o opțiune numită `limit`. În cazul următor
+
+```javascript
+Carte.create([
+  { title: 'Casino Royale', fani: [1, 2, 3, 4, 5, 6, 7, 8] },
+  { title: 'Live and Let Die', fani: [9, 10] }
+]);
+```
+dacă se va opta pentru o limită setată la 2, vei remarca că cea de-a doua carte nu returnează niciun fan.
+
+```javascript
+const stories = await Carte.find().populate({
+  path: 'fani',
+  options: { limit: 2 }
+});
+
+stories[0].name; // 'Casino Royale'
+stories[0].fani.length; // 2
+
+// 0 fani!
+stories[1].name; // 'Live and Let Die'
+stories[1].fani.length; // 0
+```
+
+Acest lucru se întâmplă pentru că Mongoose evită să execute câte un query individual pentru fiecare document și face o interogare a cărei limită este produsul dintre numărul de documente și limita menționată.
+
+Pentru a corecta acest comportament ar trebui să setezi limita folosind `perDocumentLimit`. Acesta va avea drept efect interogarea pentru fiecare document distinct din colecție care are cel puțin numărul specificat.
+
+```javascript
+const stories = await Carte.find().populate({
+  path: 'fani',
+  perDocumentLimit: 2
+});
+
+stories[0].name; // 'Casino Royale'
+stories[0].fani.length; // 2
+
+stories[1].name; // 'Live and Let Die'
+stories[1].fani.length; // 2
+```
+
+## Eliminarea înregistrărilor folosind `virtual()` și `match()`
 
 Să presupunem că o anumită resursă are mai multe comentarii. Unele dintre acestea sunt șterse de administrator. Pentru a filtra documentele comentariu care au setat un boolean ce indică ștergerea, ne putem ajuta de un posibil model, care folosește o zonă de documente găsite ca tampon de date implicând `virtual()`.
 
@@ -263,32 +308,38 @@ post = await BlogPost.find().populate({
 
 ## Cum facem legăturile între colecții
 
-Există posibilitatea ca atunci când folosim obiectul `autor`, să descoperim că nu se populează lista cărților. Acest lucru este pentru că încă nu au fost introduse obiecte `carte` în `autor.carti`.
+Există posibilitatea ca atunci când folosim obiectul `autor`, să descoperim că nu se populează lista cărților. Acest lucru este pentru că încă nu au fost introduse obiecte `carte` în `autor.carti` pentru că pur și simplu acestea nu există.
 
 Aici există două abordări:
 
-- lași `autor`-ul să-și cunoască cărțile. De regulă schema ar trebui să rezolve relații de tipul one-to-many prin existența unui pointer către părinte în zona de many (în cazul nostru o înregistrare carte să aibă id-ul autorului).
+- Te asiguri că id-ul `autor`-ul există în cel puțin o carte. De regulă schema ar trebui să rezolve relații de tipul one-to-many prin existența unui pointer către părinte în zona de many (în cazul nostru o înregistrare carte să aibă id-ul autorului).
 - dacă există un motiv întemeiat să constitui un array de pointeri către documentele copil (carti), poți face `push()` documentelor în array precum în următorul exemplu:
 
 ```javascript
-// mai întâi constitui schema autor
-autor.carti.push(cartea1);
+// salvezi o carte pentru care reții id-ul
+primaCarte.save();
+
+// apoi în documentul autor, în array-ul câmpului 
+// cărți faci push la id-ul cărții `primaCarte`
+autor.carti.push(primaCarte);
 autor.save(callback);
 ```
 
-Acest mod permite combinarea căutări cu popularea.
+Acest mod permite o combinație de căutare cu populare într-o singură operațiune.
 
 ```javascript
 Persoana.
   findOne({ nume: 'Ian Fleming' }).
-  populate('carti'). // merge doar dacă am făcut push la ref-uri către copil
+  populate('carti'). // merge doar dacă am făcut push la ref-uri în colecția carti care are autorul
   exec(function (err, persoana) {
     if (err) return handleError(err);
     console.log(persoana);
   });
 ```
 
-În cazul în care setăm pointeri și în `Persoana` către `Carte`, dar și în `Carte` către `Persoana`, fie o parte, fie cealaltă se va desincroniza, adică va trebui să găsim o cale prin care ambele colecții să fie actualizate. În loc de populare, mai eficient ar fi să se facă un `find()` pe cărți.
+În cazul în care setăm pointeri și în `Persoana` către `Carte`, dar și în `Carte` către `Persoana`, fie o parte, fie cealaltă se va desincroniza, adică va trebui să găsim o cale prin care ambele colecții să fie actualizate cu id-ul. 
+
+Soluția propusă ar fi ca în loc de populate, să se facă un `find()` pe cărți în loc de populate pe autor.
 
 ```javascript
 Carte.
@@ -299,9 +350,33 @@ Carte.
   });
 ```
 
-## Popularea unui document
+Un avantaj major al acestei abordări din urmă este acela al obținerii unor documente live, funcționale pe care se pot performa acțiuni cu excepția cazului în care s-a optat pentru returnarea unor documente `lean`. O ultimă precizare este ca acestea să nu fie confundate cu subdocumentele.
+
+## Popularea unui document pe care l-ai obținut deja
 
 În cazul în care deja au un document și dorești să populezi unele căi ale sale, vei folosi metoda `populate()`, pe care `Document` o pune la dispoziție. Pentru mai multe detalii utile, vezi documentația pentru `Document.prototype.populate()`.
+
+```javascript
+// mai întâi obții documentul Mongoose
+const person = await Persoana.findOne({ name: 'Ian Fleming' });
+
+// dacă verifici cazul în care popularea s-a făcut deja:
+person.populated('carti'); // rezultatul este `null`
+
+// mai întâi aplici metoda `populate` pe care `Document` o pune la dispoziție
+await person.populate('carti');
+
+// cand verifici din nou, documentul va fi populat, rezultatul fiind un array de ObjectId-uri
+person.populated('carti');
+person.carti[0].titlu = "Casino Royale";
+```
+
+Documentația spune că `Document#populate()` nu acceptă chaining-ul, fiind necesară apelarea metodei `populate()` de mai multe ori sau pe un array de căi (paths) pentru a le popula pe toate.
+
+```javascript
+await person.populate(['carti', 'fani']);
+person.populated('fani'); // Array de ObjectId-uri
+```
 
 ## Popularea unui model
 

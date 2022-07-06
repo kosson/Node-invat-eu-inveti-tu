@@ -71,15 +71,15 @@ Odată cu versiunea 5 a lui Mongoose avem următorul comportament al metodei `se
 
 ```javascript
 const doc1 = new Subdoc({ child: { name: 'Luke', age: 19 } });
-doc1.set({ child: { age: 21 } });
+doc1.set({ child: { age: 21 } }); //Atenție! Datele sunt înlocuite!
 doc1.child; // { age: 21 }
 
 const doc2 = new Nested({ child: { name: 'Luke', age: 19 } });
-doc2.set({ child: { age: 21 } });
+doc2.set({ child: { age: 21 } }); // Opereză doar pe valoarea proprietății dorite
 doc2.child; // { name: Luke, age: 21 }
 ```
 
-## Setări din oficiu ale sub-documentelor
+## Setările din oficiu pentru sub-documente
 
 Căile unui sub-document sunt setate din start la valoarea `undefined`. Acest lucru înseamnă că Mongoose nu va proceda la completarea valorilor precizate la proprietățile `default`, până când calea sub-documentului este completată cu date.
 
@@ -95,8 +95,8 @@ const subdocumentSchema = new mongoose.Schema({
 });
 const Subdoc = mongoose.model('Subdoc', subdocumentSchema);
 
-// Observă faptul că valoarea lui `age` trecută ca default nu conduce la completarea datelor documentului
-// pentru că `child` are valoarea `undefined`.
+// Observă faptul că valoarea lui `age` trecută ca default nu conduce 
+// la completarea datelor documentului pentru că `child` are valoarea `undefined`.
 const doc = new Subdoc();
 doc.child; // undefined
 ```

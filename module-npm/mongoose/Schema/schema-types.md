@@ -1,14 +1,14 @@
 # SchemaTypes
 
-Un câmp care conține date, adică o proprietate a viitoarei înregistrări, în Mongoose se numește cale (*path*).
+Un câmp care conține date, adică o proprietate a viitoarei înregistrări, în Mongoose se numește [[cale]] (*path*). MongoDB este o bază de date care nu impune o schemă pentru datele care sunt introduse. Mongoose este un ODM (Object Data Modeling) care oferă posibilitatea de a modela datele unei aplicații Nodejs.
 
-În Mongoose, un `SchemaType` este un obiect cu ajutorul căruia configurezi datele care vor fi introduse pe o anumită cale. Pe lângă definirea tipului de date, poți menționa dacă are getteri/setteri și care sunt valorile considerate valide pentru respectiva cale.
+În Mongoose, un `SchemaType` este un obiect cu ajutorul căruia configurezi cum trebuie să arate datele și care sunt regulile pe care trebuie să le respecte când vor ajunge într-un  viitor document. Reține faptul că documentele se mapează direct pe datele din MongoDB.  Privește-l ca pe un configurator al datelor unei căi. Pe lângă definirea tipului de date, poți menționa dacă are getteri/setteri și care sunt valorile considerate valide pentru respectiva cale.
 
-O schemă Mongoose este un obiect de configurare pentru un model Mongoose. Cu ajutorul unei scheme nu vei putea gestiona datele din MongoDB. Pentru aceasta vei folosi un model.
+Cu ajutorul unei scheme nu vei putea gestiona datelele din MongoDB. În acest scop vei folosi un model.
 
 ```javascript
-var mongoose = require('mongoose');
-var ObjectId = mongoose.Schema.Types.ObjectId;
+const mongoose = require('mongoose');
+const {Schema} = mongoose;
 const schema = new Schema({
   name: String
 });
@@ -17,7 +17,7 @@ schema.path('name') instanceof mongoose.Schema.Types.String; // true
 schema.path('name').instance; // 'String'
 ```
 
-`SchemaType` folosește un obiect `SchemaTypeOptions` pentru a configura un *path*. Fiecare cale este o instanță `SchemaType`:
+`SchemaType` folosește un obiect `SchemaTypeOptions` pentru a configura un *path*. Fiecare cale este o instanță a unui obiect `SchemaType`:
 
 ```javascript
 const schema = new Schema({ name: String });
@@ -37,9 +37,10 @@ Clasa `SchemaType` este o clasă care este extinsă mai departe de tipurile de b
 * `mongoose.Schema.Types.Array`
 * `mongoose.Schema.Types.Decimal128`
 * `mongoose.Schema.Types.Map`
+* `mongoose.Schema.Types.Schema`
 
 ```javascript
-const schema = Schema({ name: String, age: Number });
+const schema = new Schema({ name: String, age: Number });
 
 schema.path('name') instanceof mongoose.SchemaType; // true
 schema.path('name') instanceof mongoose.Schema.Types.String; // true
@@ -48,13 +49,41 @@ schema.path('age') instanceof mongoose.SchemaType; // true
 schema.path('age') instanceof mongoose.Schema.Types.Number; // true
 ```
 
+## Diferența dintre un SchemaType și un type
 
-
-Un *SchemaType* este diferit de un *type* care indică tipul valorii - `age: { type: Number, min: 18, max: 65 }`. *SchemaType* este o clasă.
+Un obiect *SchemaType* este diferit de proprietarea *type* care este folosit pentru a indica tipul valorii într-un obiect de configurare, precum: `age: { type: Number, min: 18, max: 65 }`. *SchemaType* este o clasă.
 
 
 ```javascript
 mongoose.ObjectId !== mongoose.Types.ObjectId
+```
+
+Atunci când este folosită proprietatea `type`, acesta indică în contextul obiectului de configurare care este tipul valorii acceptate în viitorul model care va primi datele.
+
+```javascript
+const mongoose = require('mongoose');
+const {Schema} = mongoose;
+const schema = new Schema({
+  name: {
+    type: String,
+    required: true
+  }
+});
+```
+
+Observă faptul că la investigarea tipului folosind `schema.path('name').instance;` va fi returnat tipul câmpului care este `String`. În cazul special în care dorești ca datele unei căi să fie un obiect care să aibă o proprietate denumită `type` va trebui să o definești.
+
+```javascript
+const mongoose = require('mongoose');
+const {Schema} = mongoose;
+const schema = new Schema({
+  name: {
+    type: {
+      type: String
+    },
+    required: true
+  }
+});
 ```
 
 ## Exemplu cu toate tipurile de date
@@ -138,7 +167,7 @@ const holdingSchema = new Schema({
 });
 ```
 
-## Opțiuni în precizarea tipului
+## Verificarea valorilor primite și opțiuni
 
 Poți declara tipul unui path al schemei precizând direct tipul valorii, sau poți folosi un obiect de configurare, care precizează proprietatea `type`.
 
@@ -164,9 +193,9 @@ const schema2 = new Schema({
 });
 ```
 
-### Opțiunile de configurare
+### Posibilele proprietăți ale obiectul de configurare
 
-Acestea sunt opțiunile pe care le poți preciza în obiectul de configurare a unui path. Prin prisma precizărilor de mai jos, să examinăm exemplul următor:
+Acestea sunt opțiunile pe care le poți preciza în obiectul de configurare a unui path. Să examinăm exemplul următor:
 
 ```javascript
 const numberSchema = new Schema({
@@ -207,11 +236,11 @@ Aceasta este o funcție care face validarea pentru proprietatea în cauză.
 
 #### get
 
-Este o funcție care definește un getter parametrizat pentru proprietatea în cauză. Folosește `Object.defineProperty()`.
+Este o funcție care definește un *getter* parametrizat pentru proprietatea în cauză. Folosește `Object.defineProperty()`.
 
 #### set
 
-Este o funcție care definește un setter parametrizat pentru proprietatea în cauză. Folosește `Object.defineProperty()`.
+Este o funcție care definește un *setter* parametrizat pentru proprietatea în cauză. Folosește `Object.defineProperty()`.
 
 #### alias
 
@@ -238,13 +267,13 @@ const schema2 = new Schema({
   test: {
     type: String,
     index: true,
-    unique: true // Unique index. If you specify `unique: true`
-    // specifying `index: true` is optional if you do `unique: true`
+    unique: true // Index unic. În cazul în care specifici `unique: true`
+    // menționarea lui `index: true` este opțională
   }
 });
 ```
 
-## Tipurile
+## Tipurile posibile pentru un path
 
 ### `String`
 
@@ -257,17 +286,19 @@ const schema2 = new Schema({ nume: 'String' }); // Varianta echivalentă
 const Persoană = mongoose.model('Persoană', schema2);
 ```
 
-Dacă documentului îi este pasată o valoare care are metoda `toString()`, Mongoose o va apela. Excepția o constituie un array. Ori dacă funcția `toString()` este strict egală cu `Object.prototype.toString()`.
+Reține faptul că în cazul în care modelul va primi o valoare pentru care schema prevede a fi de tip `String`, Mongoose va face o transformare a acelei valori la corespondentul `String`.
 
 ```javascript
-new Person({ nume: 42 }).nume; // "42" ca string
-new Person({ nume: { toString: () => 42 } }).nume; // "42" ca string
-
-// "undefined" -> va apărea o eroare de cast dacă vei face `save()` acestui document
-new Person({ nume: { foo: 42 } }).nume;
+new SchemaDeExemplu({nume: 33}).nume; // valoarea va fi transformată în `String` -> "33"
+new SchemaDeExemplu({nume: {toString: () => 33}}); // tot `String` -> "33"
+new SchemaDeExemplu({nume: {altceva: true}}); // va rezulta o eroare "undefined" la salvare 
 ```
 
-Parametrizarea câmpului de tip `String` se poate face cu următoarele proprietăți adăugate obiectului de parametrizare.
+Dacă documentului îi este pasată o valoare care are metoda `toString()`, Mongoose o va apela. Excepția o constituie un array ori dacă funcția `toString()` este strict egală cu `Object.prototype.toString()`.
+
+#### Proprietățile pentru obiectul ce declară un String
+
+Parametrizarea câmpului de tip `String` se poate face cu următoarele proprietăți adăugate obiectului.
 
 - `lowercase` o valoare `Boolean` care indică apelarea `.toLowerCase()` pe valoare;
 - `uppercase` o valoare `Boolean` care indică apelarea `.toUpperCase()` pe valoare;
@@ -278,13 +309,13 @@ Parametrizarea câmpului de tip `String` se poate face cu următoarele propriet�
 - `maxLength` este un Number care creează un validator ce verifică ca valoarea să nu fie mai mare decât cea din oficiu;
 - `populate` este un Object care [parametrizează](https://mongoosejs.com/docs/populate.html#query-conditions) modul în care va fi făcut populate-ul.
 
-```javacript
+```javascript
 Story.
   find().
   populate({
     path: 'fans',
     match: { age: { $gte: 21 } },
-    // Explicitly exclude `_id`, see http://bit.ly/2aEfTdB
+    // Menționează dorința de a exclude câmpul `_id`. Vezi http://bit.ly/2aEfTdB
     select: 'name -_id'
   }).
   exec();
@@ -326,7 +357,7 @@ Parametrizarea câmpului de tip `Date` se poate face cu următoarele proprietă�
 - `min` valoarea datei calendaristice ca limită inferioară pe scala timpului (`Date`);
 - `max` valoarea datei calendaristice ca limită inferioară pe scala timpului (`Date`).
 
-Metodele `Date` nu sunt luate în considerare de mecanismul de tracking al Mongoose, ceea ce înseamnă că în cazul în care ai o valoare `Date` în documentul gata de a fi salvat și îl modifici cu o metodă `setMonth()`, aceasta nu se va reflecta în documentul salvat. Totuși, pentru a modifica o astfel de valoare și pentru a o salva, va trebui să-i comunici lui Mongoose modificare prin `doc.markModified('pathToYourDate')`.
+Metodele `Date` nu sunt luate în considerare de mecanismul de tracking al Mongoose, ceea ce înseamnă că în cazul în care ai o valoare `Date` în documentul gata de a fi salvat și îl modifici cu o metodă `setMonth()`, aceasta nu se va reflecta în documentul salvat. Totuși, pentru a modifica o astfel de valoare și pentru a o salva, va trebui să-i comunici lui Mongoose modificarea prin `doc.markModified('pathToYourDate')`.
 
 ```javascript
 const Assignment = mongoose.model('Assignment', { dueDate: Date });
@@ -341,7 +372,7 @@ Assignment.findOne(function (err, doc) {
 
 ### `Buffer`
 
-Pentru a declara o cale ca `Buffer`, poți folosi obiectul global `Buffer` sau șirul de caractere `"Buffer"`.
+Pentru a declara o cale drept `Buffer`, poți folosi obiectul global `Buffer` sau șirul de caractere `"Buffer"`.
 
 ```javascript
 const schema1 = new Schema({ binData: Buffer });   // binData va suferi un cast la Buffer
@@ -391,7 +422,7 @@ console.log(new M({ b: 'nay' }).b); // false
 
 ### `Mixed`
 
-Acest tip de valoare permite introducerea în document pentru respectiva cale a unei structuri de date care nu este reglementată strict și pentru care Mongoose nu va face casting. Definirea unui `Schema.Types.Mixed` se poate face prin pasarea drept valoare pentru cale a unui obiect literal gol.
+Acest tip de valoare permite introducerea în document a unei structuri de date care nu este reglementată strict și pentru care Mongoose nu va face casting al valorilor. Definirea unui `Schema.Types.Mixed` se poate face prin pasarea drept valoare a unui obiect literal gol.
 
 ```javascript
 const Any = new Schema({ orice: {} });
@@ -508,28 +539,31 @@ const Empty4 = new Schema({ orice: [{}] });
 
 #### Array-uri de documente
 
-În plus față de array-urile de primitive, Mongoose oferă suport și pentru array-uri de subdocumente.
+Suplimentar, Mongoose oferă suport și pentru array-uri de subdocumente.
 
 ```javascript
-const oSchemăCuGrup = Schema({
+const oSchemaCuGrup = new Schema({
   nume: String,
-  componente: [{ nume: String, prenume: String }]
-}, { versionKey: false });
-const Grup = mongoose.model('Grup', oSchemăCuGrup);
+  membri: [{ nume: String, prenume: String }]
+}, { versionKey: false }); // creează schema
+
+const Grup = mongoose.model('Grup', oSchemaCuGrup); // constituie modelul
+
 const grupNou = new Grup({
   nume: "Cântăreții din Bremen",
-  componente: [{nume: "Măgarul", prenume: "Bariton"}]
+  membri: [{nume: "Măgarul", prenume: "Bariton"}]
 });
-Array.isArray(grupNou.componente);
-grupNou.componente.isMongooseArray; // true
-grupNou.componente.isMongooseDocumentArray; // true
+
+Array.isArray(grupNou.membri);
+grupNou.membri.isMongooseArray; // true
+grupNou.membri.isMongooseDocumentArray; // true
 ```
 
 Dacă dorești, poți actualiza valori înainte de a le salva.
 
 ```javascript
 mongoose.set('debug', true);
-grupNou.componente[0].nume = "Cocoșul";
+grupNou.membri[0].nume = "Cocoșul";
 
 await grupNou.save();
 ```
@@ -540,8 +574,10 @@ Atenție, pentru valori primare nu poți aplica aceeași adresare pe indecși. V
 const BlogPost = new Schema({
   titlu: String,
   taguri: [String]
-}, { versionKey: false });
-const Blog = mongoose.model('Blog', BlogPost);
+}, { versionKey: false }); // creează schema
+
+const Blog = mongoose.model('Blog', BlogPost); // creează modelul
+
 const Post = new Blog({
   titlu: "Un început interesant",
   taguri: ['mongoose']
@@ -554,7 +590,7 @@ await Post.save();
 
 ### `Map`
 
-Acest `SchemaType` a fost instrodus odată cu versiunea 5.1, fiind o subclasă a `Map`-ului din JavaScript. În documentația Mongoose, map și `MongooseMap` sunt folosite interșanjabil, descriind același tip de valoare.
+Acest `SchemaType` a fost introdus odată cu versiunea 5.1, fiind o subclasă a `Map`-ului din JavaScript. În documentația Mongoose, map și `MongooseMap` sunt folosite interșanjabil, descriind același tip de valoare.
 
 Într-un `MongooseMap`, cheile trebuie să fie string-uri pentru a stoca o valoare.
 
@@ -569,6 +605,7 @@ const userSchema = new Schema({
 });
 
 const User = mongoose.model('User', userSchema);
+
 // Map { 'github' => 'kosson', 'twitter' => '@kosson' }
 console.log(new User({
   socialMediaHandles: {
@@ -604,7 +641,7 @@ user.socialMediaHandles.github;
 user.save();
 ```
 
-Trebuie menționat faptul că type-urile map sunt stocate ca obiecte BSON în MongoDB. Întrun BSON, cheile sunt ordonate, ceea ce înseamnă că ordinea de intrare a proprietăților în Map este păstrată.
+Trebuie menționat faptul că type-urile map sunt stocate ca obiecte BSON în MongoDB. Într-un BSON, cheile sunt ordonate, ceea ce înseamnă că ordinea de intrare a proprietăților în Map este păstrată.
 
 Mongoose face uz de o sintaxă specială (`$*`) pentru a face *populate* pe toate elementele dintr-un Map. Să presupunem că avem un `ref`.
 
@@ -726,7 +763,7 @@ console.log(sampleSchema.path('name'));
 Următoarele două exemple sunt echivalente. În primul exemplu, configurezi direct căile.
 
 ```javascript
-const schema = Schema({
+const schema = new Schema({
   age: {
     type: Number,
     default: 25,
@@ -738,7 +775,7 @@ const schema = Schema({
 În cel de-al doilea faci o înlănțuire de metode specifice.
 
 ```javascript
-const schema = Schema({ age: Number });
+const schema = new Schema({ age: Number });
 
 schema.path('age').default(25);
 schema.path('age').validate(v => v >= 21);

@@ -496,23 +496,72 @@ Mecanismul de mai sus implică faptul că un autor va salva numele său ca strin
 
 Regula rapidă este `store what you query for` - înmagazinează informația după care vei face căutări direct în înregistrare.
 
-## Popularea în adâncime
+## Popularea în adâncime a aceleiași căi pentru valorile care au populat deja documentul
+
+În cazul în care ai o schemă care definește drept proprietate o referință către modelul de date.
+
+```javascript
+const userSchema = new Schema({
+  name: String,
+  friends: [{ type: ObjectId, ref: 'User' }]
+});
+```
+
+În cazul în care dorești să populezi mai departe calea `friends` pentru fiecare prieten care a fost adus ca urmare a primului populate, poți instrui `populate` să facă acest lucru prin menționarea căii cu același nume.
 
 ```javascript
 User.
   findOne({ name: 'Val' }).
   populate({
     path: 'friends',
-    // Get friends of friends - populate the 'friends' array for every friend
+    // Obții prietenii prietenilor
     populate: { path: 'friends' }
   });
 ```
 
+## Popularea cu date din altă bază de date
+
+Documentația originală expune ipoteza în care pentru o schemă care reprezintă un eveniment ai o schemă care reprezintă posibile conversații pe marginea acestuia.
+
+```javascript
+const db1 = mongoose.createConnection('mongodb://localhost:27000/db1');
+const db2 = mongoose.createConnection('mongodb://localhost:27001/db2');
+
+const conversationSchema = new Schema({ numMessages: Number });
+const Conversation = db2.model('Conversation', conversationSchema);
+
+const eventSchema = new Schema({
+  name: String,
+  conversation: {
+    type: ObjectId,
+    ref: Conversation // `ref` este un **Model class**, nu un string
+  }
+});
+const Event = db1.model('Event', eventSchema);
+```
+
+Șirurile de caractere pentru `ref` funcționează doar în cazul în care folosești aceeași conexiune. În cazul în care folosești două baze de date diferite pentru lucruri diferite, la `ref` vei referi o clasă de model de date. În aceste condiții este posibilă operațiunea de `populate` cu datele unei alte baze și chiar între instanțe de MongoDB diferite.
+
+```javascript
+const events = await Event.
+  find().
+  populate('conversation');
+```
+
+În cazul în care nu ai acces la instanța modelului la momentul definirii schemei, poți pasa instanța la momentul în care se face `populate`.
+
+```javascript
+const events = await Event.
+  find().
+  // Opțiunea precizată pentru proprietatea `model` specifică modelul necesar pentru populate
+  populate({ path: 'conversation', model: Conversation });
+```
+
 ## Referințe dinamice cu `refPath`
 
-În baza valorii unei proprietăți a documentului, Mongoose poate popula cu date din mai multe colecții odată. Exemplul oferit în documentație este cel al unui user care poate comenta fie la un blogpost sau la un produs.
+În baza valorii unei proprietăți a documentului, Mongoose poate popula cu date din mai multe colecții odată. Exemplul oferit în documentație este cel al scheme pentru comentarii ce prevede cazurile în care un anumit comentariu este fie la un blogpost, fie la un produs.
 
-Pentru a aduce informație din mai multe colecții, în câmpul în care în mod obișnuit avem referința, în loc de a hardcoda numele colecției, vom face o redirectare către un câmp suplimentar, în care vor fi menționate colecțiile din care vor putea fi aduse informațiile în funcție de necesități.
+Pentru a aduce informație din mai multe colecții, în câmpul în care în mod obișnuit avem referința, în loc de a hardcoda numele colecției, vom face o redirectare către un câmp suplimentar, în care vor fi menționate tipurile de documente pentru care s-ar potrivi un anumit comentariu.
 
 ```javascript
 const commentSchema = new Schema({
@@ -594,6 +643,43 @@ comments[1].blogPost.title; // "Top 10 French Novels"
 În cazul în care sunt definite separat proprietățile `blogPost` și `product`, acest mecanism este acceptabil pentru cazurile simple. În cazul în care lucrurile devin ceva mai complicate, adică schema unui comentariu să fie folosită pentru a crea documente atașate mai multor altor documente ale mai multor colecții (comentarii făcute la alte comentarii), vei avea nevoie de câte un `populate()` pentru fiecare dintre documentele colecțiilor referite. Folosirea lui `refPath` este mai eficientă pentru că ai nevoie de doar două căi și un singur `populate()` indiferent de câte modele atinge `commentSchema`.
 
 ## Popularea virtualelor
+
+Atunci când ai o entitate, să spunem că este un autor și acesta creează foarte multe articole, schema pe care ar trebui să o proiectezi pentru autor nu ar trebui să facă o referință către fiecare articol.
+
+```javascript
+const AuthorSchema = new Schema({
+  name: String,
+  posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'BlogPost' }]
+});
+
+const BlogPostSchema = new Schema({
+  title: String,
+  comments: [{
+    author: { type: mongoose.Schema.Types.ObjectId, ref: 'Author' },
+    content: String
+  }]
+});
+
+const Author = mongoose.model('Author', AuthorSchema, 'Author');
+const BlogPost = mongoose.model('BlogPost', BlogPostSchema, 'BlogPost');
+```
+
+O astfel de abordare nu este bună având repercusiuni privind taxarea resurselor. Conform principiului cardinalității cât mai reduse, autorul unui articol ar trebui să fie menționat în articol, nu autorul să colecteze prin referință articolele pe care le-a scris - autorul menționat în zona *many*. O soluție ar fi rescrierea celor două scheme.
+
+```javascript
+const AuthorSchema = new Schema({
+  name: String
+});
+
+const BlogPostSchema = new Schema({
+  title: String,
+  author: { type: mongoose.Schema.Types.ObjectId, ref: 'Author' },
+  comments: [{
+    author: { type: mongoose.Schema.Types.ObjectId, ref: 'Author' },
+    content: String
+  }]
+});
+```
 
 Popularea bazată pe câmpul `_id` este o soluție, dar pentru a realiza relații mai sofisticate între documente, se vor folosi *virtuals*.
 

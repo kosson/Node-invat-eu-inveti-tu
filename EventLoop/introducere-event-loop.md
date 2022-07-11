@@ -12,7 +12,11 @@ Pentru simplitate vom numi *event loop* **bucla evenimentelor** și atunci când
 
 > Bucla I/O (sau a evenimentelor) este partea centrală a libuv. Stabilește conținutul pentru toate operațiunile I/O și este gândită să fie legată de un singur fir.
 
-Pentru a ține evidența fiecărei sarcini plasate *kernel*-ului sistemului de operare se va aplela la mecanismul de *polling* al fiecărui sistem de operare. Pentru a face o analogie, poți să-ți imaginezi *polling*-ul precum un **dispecerat**. Polling-ul este un mecanism de interfațare și tratare a evenimentelor legate de intrările și ieșirile de date (*I/O*) ale unui sistem de operare. De exemplu, pentru Linux, `libuv` folosește [epoll](https://en.wikipedia.org/wiki/Epoll), care este gestionarul apelurilor de sistem specializate pe I/O. În cazul BSD (MacOS), `kqueue` și IOCP (Input Output Completion Port) în cazul Windows.
+Pentru a ține evidența fiecărei sarcini plasate *kernel*-ului sistemului de operare se va aplela la mecanismul de *polling* al fiecărui sistem de operare. Pentru a face o analogie, poți să-ți imaginezi *polling*-ul precum un **dispecerat** care folosește patru fire de execuție pentru a rula sarcinile asincrone. La nevoie, numărul acestora poate fi modificat prin variabila de mediu `UV_THREADPOOL_SIZE`. Sistemele de operare moderne pun la dispoziție interfețe pentru sarcinile *I/O*. Când sunt disponibile aceste interfețe, `libuv` va evita să folosească *thread pool*-ul.
+
+Polling-ul este un mecanism de interfațare și tratare a evenimentelor legate de intrările și ieșirile de date (*I/O*) ale unui sistem de operare. 
+
+De exemplu, pentru Linux, `libuv` folosește [epoll](https://en.wikipedia.org/wiki/Epoll), care este gestionarul apelurilor de sistem specializate pe I/O. În cazul BSD (MacOS), `kqueue` și IOCP (Input Output Completion Port) în cazul Windows.
 
 Pentru executarea unor funcții care au nevoie de putere de calcul așa cum sunt cele criptografice (`crypto` și `zlib`) sau care nu au o implementare directă la nivelul sistemului de operare prin epoll/kqueue/event ports sau IOCP ori această implementare rulează sincron și ar bloca firul principal de execuție, Node.js a implementat un mecanism ce utilizează mai multe fire de execuție (într-un *thread pool*). Acest *thread pool* beneficiază de patru fire de execuție (*workeri*). În *thread pool* nu se execută doar operațiuni I/O sau DNS (de ex., `dns.lookup`), ci și mai sus amintitele operațiuni care solicită CPU-ul, cum ar fi metode ale modulului `crypto` sau `zlib`. Reține faptul că Node.js evită blocarea firului principal de execuție folosind *thread pool*-ul oferit de *libuv* pentru a rezolva sarcini solicitante pentru CPU sau pentru cele care derivă din varietatea sistemelor de operare pe care rulează Node.js. Astfel, este asigurat caracterul asincron.
 
@@ -28,7 +32,7 @@ Bert mai spune faptul că fiecare cutie galbenă are un mecanism similar unei bu
 
 ![](images/BertBelderJSboxes.png)
 
-Astfel, pentru fiecare callback al codului, se va crea un astfel de mecanism care va fi folosit pentru codul care rulează în callback.
+Astfel, pentru fiecare callback se va crea un astfel de mecanism care va fi folosit pentru codul care rulează în callback.
 
 Macrotask-urile sunt:
 - Faza 1: gestionarea callback-urilor unor timeri care au expirat (`setTimeout`, `setInterval`);
@@ -55,7 +59,7 @@ Bert mai spune că Node.js atunci când este folosit pentru a crea un server, fo
 Bucla va procesa întreaga stivă a apelurilor și va trimite treburile legate de I/O sistemului de operare folosind `libuv`. Acest mecanism este responsabil cu aducerea datelor de la distanță, dintr-o bază de date sau de pe hard disk. Ia apel după apel din stiva apelurilor, dacă acestea sunt către API-uri I/O și dă în lucru sarcinile I/O sistemului de operare, punând callback-urile atribuite respectivei sarcini într-o *listă de așteptare*. Aceste callback-uri mai sunt numite și evenimente pentru că au rol de receptoare ce sunt acționate la încheierea unui eveniment care s-a desfășurat asincron.
 
 Acum, că a făcut acest lucru, va trece la următorul apel către un API, care este provenit din *stiva apelurilor* și tot așa până când stiva apelurilor este goală. Concret, în momentul în care o sarcină a fost îndeplinită de sistemul de operare (*kernel*), va trimite rezultatul callback-ului corespondent, care aștepta cuminte în *lista de așteptare* (*job queue* sau *event queue*) și apoi, va plasa callback-ul în stiva de apeluri, dacă aceasta este goală pentru a-l executa.
-The concept is very simple.
+
 Comportamentul descris mai sus, gestionat de un singur fir de execuție are avantajul conservării resurselor sistemului de operare pentru că fiecărui fir pentru un anumit proces i se alocă resurse separate. Numim astfel de comportament/model *rulare asincronă* și de cele mai multe ori este observat la apelarea unei funcții aparținând unui API, care după rezolvare, se va concluziona prin apelarea unui callback. În Node.js, callback-urile trebuie să fie pasate ca ultim argument în metodele API-urilor. Dacă s-ar aplica un astfel de model pentru câteva sute de conexiuni HTTP, să zicem, taxarea resurselor de server ar fi pe măsură într-un model de execuție sincronă. Este observabilă interdependența dintre mecanismul *buclei* (*event loop*) și cel al *stivei apelurilor* (*callstack*).
 
 ### Prioritizarea trimiterii callback-urilor în callstack
@@ -121,19 +125,19 @@ process.nextTick(() => {
 
 ## Fazele buclei
 
-Conform documentației Node.js, bucla parcurge așa-numite *faze*, unde va efectua operațiunile specifice acelei faze și apoi vor executa toate callback-urile din lista de așteptare a fazei până când acestea vor fi epuizate sau a fost atins numărul maxim de callback-uri. Imediat după, bucla avansează la următoarea fază. Merită reamintit faptul că *bucla* este implementată de `libuv`.
-
 Orice `process.nextTick()` am avea la momentul bootstrapping-ului, va fi executat după ce întregul cod JavaScript va fi evaluat. Ca importanță, urmează prelucrarea codului din *microtask queue*-ul callback-urilor promisiunilor (*resolve*, *reject* și *finally*) și a funcțiilor asincrone. Atenție mare aici, dacă pui un `resolve()` și rezolvi instant, atunci callback-urile `then`-urilor vor avea precedență. În Node.js există două microtask-uri. Prima gestionează callback-urile programate cu `process.nextTick()`, iar cea de-a doua procesează promisiunile. Callback-urile din microtask-uri au precedență în fața callback-urilor API-urilor Node.js. Callback-urile programate cu `process.nextTick()` au precedență față de cele din microtask-ul promisiunilor.
 
 Consultarea și programarea spre executare a callback-urilor acesteia se petrece la începerea operațiunilor buclei. Consultarea microtask-urilor constituie faza de polling. Apoi urmează faza în care bucla evenimentelor trimite în stivă spre executare callback-urile API-urilor. După executarea acestora, bucla repornește din nou în faza de polling.
 
-În cazul exemplului nostru, după executarea întregului cod din faza de polling, bucla intră în faza de verificare pentru cod care reflectă operațiuni I/O (`readFile` de exemplu), care imediat ce se încheie, programează callback-ul pentru executare.
+După executarea întregului cod din faza în care se folosește *polling*-ul, bucla intră în faza de verificare pentru cod care reflectă operațiuni I/O (`readFile` de exemplu). Imediat ce se încheie, programează callback-ul pentru executare în taskqueue-ul specific operațiunii (poate fi o promisiune sau rezolvarea unui apel către un API).
 
 Modulele ES6 sunt încărcate abia după ce event loop-ul a pornit. Modulele (`.mjs`) sunt de fapt promisiuni, care sunt executate dintr-o promisiune. Adu-ți mereu aminte faptul că primul fragment de cod care este introdus în *callstack* este o funcție `main()` în care rulează întreaga aplicație. Apoi, rând pe rând vor intra în evaluare expresiile, iar funcțiile vor fi introduse în *callstack* pe măsură ce codul se execută.
 
 Dacă este întâlnit apelul la un *timer* sau al unui API, Node.js va face ceea ce putem numi o adevărată *programare* a codului. În funcție de tipul apelului, callback-urile sunt introduse în *cozi de așteptare* specifice respectivului API de la care așteaptă un răspuns. Imediat ce apare răspunsul, funcția cu rol de callback așteaptă să intre în callstack, dacă acesta este gol pentru a fi executată. În acest scenariu, rolul buclei este acela de a trimite în *callstack* funcțiile cu rol de callback.
 
 ## Anatomia unui tur de buclă
+
+Conform documentației Node.js, bucla parcurge așa-numite *faze*, unde va efectua operațiunile specifice acelei faze și apoi vor executa toate callback-urile din lista de așteptare a fazei până când acestea vor fi epuizate sau a fost atins numărul maxim de callback-uri. Imediat după, bucla avansează la următoarea fază. Merită reamintit faptul că *bucla* este implementată de biblioteca de cod `libuv`.
 
 Pentru înțelegerea modului corect de funcționare a unui singur ciclu al buclei, vom consulta două surse de o egală importanță:
 
@@ -147,14 +151,14 @@ Ambele oferă o imagine clară a parcursului etapelor prin care trece tratarea u
 1. Este actualizată o marcă de timp pentru ciclul curent pentru a evita problemele care ar putea apărea chiar în cazul apelurilor legate de gestionarea timpului.
 2. O buclă nu rulează la infinit. Biblioteca de cod `libuv` verifică dacă bucla este activă (sunt gestionate apeluri, cereri care sunt active sau apeluri care sunt pe punctul de a fi încheiate). Existența unor callback-uri în **lista de așteptare** (*callback function queue*) ține bucla vie. Dacă bula este *vie*, se va mai parcurge o iterație.
 
-Succesiunea fazelor de funcționare a buclei:
+### Succesiunea fazelor de funcționare a buclei
 
 1. executarea callback-urilor din timerele `setTimeout()` și `setInterval()` a căror interval de timp a expirat;
-2. executarea callback-urilor I/O în așteptare (*pending callbacks*), care au fost amânate dintr-un ciclu anterior. Un exemplu ar fi tratarea erorilor de conexiune (`ERRCONNREFUSED`);
+2. executarea callback-urilor programate de operațiuni I/O aflate în așteptare (*pending callbacks*), care au fost amânate dintr-un ciclu anterior. Un exemplu ar fi tratarea erorilor de conexiune (`ERRCONNREFUSED`). Adu-ți mereu aminte că întregul cod ce aparține programatorului se află în callback-uri care trebuie executate. Un exemplu asupra căruia trebuie reflectat este un apel http, care declanșează un set de multiple alte callback-uri în procesul de tratare a acestuia;
 3. o fază de pregătire necesară la nivel intern (*idle/prepare*) în care sunt rulate callback-uri ce țin de mecanismul buclei;
-4. [*faza poll*](https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#poll) care implică procesarea evenimentelor I/O în relație cu sistemul de operare cum ar fi citirea de fișiere, scriere, citire/scriere stream-uri (orice ar fi în thread pool). Sunt executate callback-urile care au primit rezultate din operațiunile I/O;
-5. *faza check* - executarea callback-urilor setate folosind `setImmediate()`;
-6. executarea callback-urilor pentru evenimentele `close` ale vreunei instanțe de `EventEmitter` sau `socket.destroy()` în cazul lucrului cu stream-uri.
+4. [*faza poll*](https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#poll) care implică procesarea evenimentelor I/O în relație cu sistemul de operare cum ar fi citirea de fișiere, scriere, citire/scriere stream-uri (orice ar fi în thread pool). Sunt programate evenimentele care au apărut pentru a le fi trimise spre execuție callback-urile care au primit rezultate din operațiunile I/O, dar acest lucru se va petrece la următoarea rulare. Vezi mai sus punctul doi;
+5. *faza check* - executarea callback-urilor setate prin `setImmediate()`;
+6. executarea callback-urilor pentru evenimentele `close` ale unor posibile instanțe de `EventEmitter` sau `socket.destroy()` în cazul lucrului cu stream-uri.
 
 ```text
    ┌───────────────────────────┐

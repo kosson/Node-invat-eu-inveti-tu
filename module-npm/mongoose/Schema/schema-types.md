@@ -606,16 +606,16 @@ const userSchema = new Schema({
 
 const User = mongoose.model('User', userSchema);
 
-// Map { 'github' => 'kosson', 'twitter' => '@kosson' }
 console.log(new User({
   socialMediaHandles: {
     github: 'kosson',
     twitter: '@kosson'
   }
 }).socialMediaHandles);
+// Map { 'github' => 'kosson', 'twitter' => '@kosson' }
 ```
 
-Schema nu declară explicit cheile map-ului. Acestea sunt introduse în map pentru că acceptă valori arbitrare.
+După cum se observă din exemplu, schema nu declară explicit cheile `github` și `twitter` ale map-ului. Acestea sunt introduse în map pentru că această structură de date acceptă valori arbitrare.
 Pentru că folosești un `Map` de fapt, va trebui să setezi și să obții valorile folosind metodele caracteristice: `set()` și `get()`.
 
 ```javascript
@@ -643,7 +643,7 @@ user.save();
 
 Trebuie menționat faptul că type-urile map sunt stocate ca obiecte BSON în MongoDB. Într-un BSON, cheile sunt ordonate, ceea ce înseamnă că ordinea de intrare a proprietăților în Map este păstrată.
 
-Mongoose face uz de o sintaxă specială (`$*`) pentru a face *populate* pe toate elementele dintr-un Map. Să presupunem că avem un `ref`.
+Mongoose face uz de o sintaxă specială (`$*`) pentru a face *populate* pe toate elementele dintr-un Map. Să presupunem că avem drept valori ale unui map o schemă care precizează detaliile de autentificare într-un obiect. Schema are la rândul său un `ref`.
 
 ```javascript
 const userSchema = new Schema({

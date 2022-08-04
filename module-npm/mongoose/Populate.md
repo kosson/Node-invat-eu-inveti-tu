@@ -681,7 +681,54 @@ const BlogPostSchema = new Schema({
 });
 ```
 
-Popularea bazată pe câmpul `_id` este o soluție, dar pentru a realiza relații mai sofisticate între documente, se vor folosi *virtuals*.
+Popularea bazată pe câmpul `_id` este o soluție, dar pentru a realiza relații mai sofisticate între documente, se vor folosi *virtuals*, de fapt se va face un *virtual populate*. Acest lucru înseamnă să apelezi `populate()` pe o proprietate virtuală care are o opțiune `ref`. Documentația oferă următorul exemplu.
+
+```javascript
+// Virtualul este specificat prin proprietatea `ref` care declanșează popularea
+AuthorSchema.virtual('posts', {
+  ref:          'BlogPost',
+  localField:   '_id',
+  foreignField: 'author'
+});
+
+const Author = mongoose.model('Author', AuthorSchema, 'Author');
+const BlogPost = mongoose.model('BlogPost', BlogPostSchema, 'BlogPost');
+```
+
+Popularea articolelor unui autor se va face prin apelarea lui `populate()`.
+
+```javascript
+const author = await Author.findOne().populate('posts');
+
+author.posts[0].title; // Title of the first blog post
+```
+
+Virtualele nu sunt incluse în rezultatul metodelor `toJSON()` și `toObject()` din oficiu. În cazul în care dorești să faci populare cu scopul de a trimite rezultatul prin `res.json()` sau pentru a verifica rezultatul prin `console.log()`, setează opțiunea `virtuals: true` în obiectul opțiunilor pentru `toJSON()` și `toObject()`.
+
+```javascript
+const authorSchema = new Schema({ name: String }, {
+  toJSON: { virtuals: true }, // Pentru ca `res.json()` și funcții precum `JSON.stringify()` să includă rezultatul din virtuals
+  toObject: { virtuals: true } // pentru ca funcții precum `console.log()` și altele care folosesc `toObject()` să includă ceea ce aduce virtuals
+});
+```
+
+În cazul în care folosești proiecții cu `populate()` trebuie să te asiguri că în proiecție introduci și câmpul care are rol de `foreignField`.
+
+```javascript
+let authors = await Author.
+  find({}).
+  // Nu va funcționa pentru deoarece câmpul foreign `author` nu este selectat
+  populate({ path: 'posts', select: 'title' }).
+  exec();
+
+authors = await Author.
+  find({}).
+  // Funcționează pentru că este selectat câmpul `author`
+  populate({ path: 'posts', select: 'title author' }).
+  exec();
+```
+
+Un alt exemplu este posibila legătură dintre o formație și membrii săi.
 
 ```javascript
 const PersonSchema = new Schema({
@@ -692,10 +739,11 @@ const PersonSchema = new Schema({
 const BandSchema = new Schema({
   name: String
 });
+
 BandSchema.virtual('members', {
-  ref: 'Person',        // Modelul care va fi folosit așa cum este el exportat. Fii foarte atent și verifică cum este exportat.
-  localField: 'name',   // Este câmpul în care se vor injecta datele venite din documente.
-  foreignField: 'band', // câmpul din documentele colecției cu care se leagă `foreignField`
+  ref:          'Person', // Modelul folosit.
+  localField:   'name',   // valoarea câmpului name
+  foreignField: 'band',   // este egală cu cea a câmpului cu rol de `foreignField`
   // Dacă `justOne` este true, 'members' va fi un singur document, altfel, un array
   // `justOne` este false din oficiu.
   justOne: false,
@@ -706,14 +754,73 @@ const Person = mongoose.model('Person', PersonSchema);
 const Band = mongoose.model('Band', BandSchema);
 
 /**
- * Suppose you have 2 bands: "Guns N' Roses" and "Motley Crue"
- * And 4 people: "Axl Rose" and "Slash" with "Guns N' Roses", and
- * "Vince Neil" and "Nikki Sixx" with "Motley Crue"
+ * Presupunând că ai două formații: "Guns N' Roses" și "Motley Crue"
+ * și patru persoane: "Axl Rose" și "Slash" în "Guns N' Roses", precum și
+ * "Vince Neil" și "Nikki Sixx" în "Motley Crue"
  */
 Band.find({}).populate('members').exec(function(error, bands) {
   /* `bands.members` is now an array of instances of `Person` */
 });
 ```
+
+### Opțiunea de numărare la popularea virtualelor folosind count
+Când se face popularea virtualelor se poate obține și numărul documentelor corespondente lui `foreignField`. Tot ce trebuie făcut este să setezi opțiunea `count` pe virtuale.
+
+```javascript
+const PersonSchema = new Schema({
+  name: String,
+  band: String
+});
+
+const BandSchema = new Schema({
+  name: String
+});
+BandSchema.virtual('numMembers', {
+  ref: 'Person', // Modelul folosit
+  localField: 'name', // Caută persoane cu valoarea de la `name` drept `localField`
+  foreignField: 'band', // cu aceeași valoare a câmpului `band` drept `foreignField`
+  count: true // Obții doar numărul documentelor
+});
+
+// La momentul populării
+const doc = await Band.findOne({ name: 'Motley Crue' }).populate('numMembers');
+doc.numMembers; // 2
+```
+
+### Opțiunea de populare a virtualelor folosind opțiunea match
+Opțiunea adaugă o condiție suplimentară pentru filtrare în funcție de o valoare.
+
+```javascript
+AuthorSchema.virtual('posts', {
+  ref: 'BlogPost',
+  localField: '_id',
+  foreignField: 'author',
+  match: { archived: false } // opțiune de căutare cu un simplu selector de interogare
+});
+
+const Author = mongoose.model('Author', AuthorSchema, 'Author');
+const BlogPost = mongoose.model('BlogPost', BlogPostSchema, 'BlogPost');
+
+// După ce faci popularea
+const author = await Author.findOne().populate('posts');
+
+author.posts // Array-ul cu articolele care nu au true la `archived`
+```
+
+Selectorul se poate seta la o valoare care să fie o funcție. Asta permite configurarea lui `match` pe baza documentului care este populat. De exemplu, să presupunem că se dorește completarea cu articole de blog ale cărui câmp `tags` conține o valoare egală cu una care se găsește în subcâmpul `favoriteTags` a lui `author`.
+
+```javascript
+AuthorSchema.virtual('posts', {
+  ref: 'BlogPost',
+  localField: '_id',
+  foreignField: 'author',
+  match: author => ({ tags: author.favoriteTags })
+});
+```
+
+## Popularea unor Maps
+
+[Maps](https://mongoosejs.com/docs/schematypes.html#maps) reprezintă un type `MongooseMap` care este o subclasă a `Map`-ului de JavaScript. În Mongoose folosești maps pentru a crea un document nested care are chei stabilite în mod arbitrar. În Mongoose, pentru maps cheile trebuie să fie șiruri de caractere.
 
 ## Resurse:
 

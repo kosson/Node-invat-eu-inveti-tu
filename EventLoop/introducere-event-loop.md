@@ -12,7 +12,7 @@ Pentru simplitate vom numi *event loop* **bucla evenimentelor** și atunci când
 
 > Bucla I/O (sau a evenimentelor) este partea centrală a libuv. Stabilește conținutul pentru toate operațiunile I/O și este gândită să fie legată de un singur fir.
 
-Pentru a ține evidența fiecărei sarcini plasate *kernel*-ului sistemului de operare se va aplela la mecanismul de *polling* al fiecărui sistem de operare. Pentru a face o analogie, poți să-ți imaginezi *polling*-ul precum un **dispecerat** care folosește patru fire de execuție pentru a rula sarcinile asincrone. La nevoie, numărul acestora poate fi modificat prin variabila de mediu `UV_THREADPOOL_SIZE`. Sistemele de operare moderne pun la dispoziție interfețe pentru sarcinile *I/O*. Când sunt disponibile aceste interfețe, `libuv` va evita să folosească *thread pool*-ul.
+Pentru a ține evidența fiecărei sarcini plasate *kernel*-ului sistemului de operare se va apela la mecanismul de *polling* al fiecărui sistem de operare. Pentru a face o analogie, poți să-ți imaginezi *polling*-ul precum un **dispecerat** care folosește patru fire de execuție pentru a rula sarcinile asincrone. La nevoie, numărul acestora poate fi modificat prin variabila de mediu `UV_THREADPOOL_SIZE`. Sistemele de operare moderne pun la dispoziție interfețe pentru sarcinile *I/O*. Când sunt disponibile aceste interfețe, `libuv` va evita să folosească *thread pool*-ul.
 
 Polling-ul este un mecanism de interfațare și tratare a evenimentelor legate de intrările și ieșirile de date (*I/O*) ale unui sistem de operare. 
 

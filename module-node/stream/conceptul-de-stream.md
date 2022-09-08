@@ -107,9 +107,9 @@ Opțiunile posibile pe care le poți invoca au valori de start, care trebuie men
 - *start* (un număr întreg).
 
 ```javascript
-var fs = require('fs');
-var streamDeCitire = fs.createReadStream('ceva.txt', 'utf8');
-var datele = '';
+let fs = require('fs');
+let streamDeCitire = fs.createReadStream('ceva.txt', 'utf8');
+let datele = '';
 
 streamDeCitire.on('data', function (fragment) {
   datele += fragment;
@@ -124,10 +124,10 @@ streamDeCitire.on('end', funzip. You can think of a transform stream as a functi
 Folosind metoda `read()` pe stream-ul readable avem posibilitatea de a citi în calupuri datele stream-ului, dacă acest lucru este necesar.
 
 ```javascript
-var fs = require('fs');
-var streamDeCitire = fs.createReadStream('ceva.txt', 'utf8');
-var datele = '';
-var calup;
+let fs = require('fs');
+let streamDeCitire = fs.createReadStream('ceva.txt', 'utf8');
+let datele = '';
+let calup;
 
 streamDeCitire.on('readable', function () {
   while ((calup = streamDeCitire.read()) != null) {
@@ -145,20 +145,20 @@ Metoda `read()` preia datele dintr-un buffer și le returnează. Datele pe care 
 ## Transformarea stream-urilor
 
 ```javascript
-var fs     = require('fs');
-var path   = require('path');
-var stream = require('stream');
+let fs     = require('fs');
+let path   = require('path');
+let stream = require('stream');
 
-var inFile = path.join(__dirname, 'dateprimare.txt'),
+let inFile = path.join(__dirname, 'dateprimare.txt'),
     outFile = path.join(__dirname, 'dateprelucrate.txt');
 
-var transformare = new stream.Transform({
+let transformare = new stream.Transform({
   transform: function (fragment) {
     this.push(fragment.toString().toUpperCase());
   }
 });
 
-var inStream = fs.createReadStream(inFile),
+let inStream = fs.createReadStream(inFile),
     outStream = fs.createWriteStream(outFile);
 // inStream -> transformare -> outStream
 inStream.pipe(transformare);
@@ -170,9 +170,9 @@ transformare.pipe(outStream);
 Piping-ul este un mecanism prin care citești date dintr-o sursă și le scriem în altă parte.
 
 ```javascript
-var fs = require('fs');
-var streamDeCitire = fs.createReadStream('ceva.txt');
-var streamDeScriere = fs.createWriteStream('altceva.txt');
+let fs = require('fs');
+let streamDeCitire = fs.createReadStream('ceva.txt');
+let streamDeScriere = fs.createWriteStream('altceva.txt');
 streamDeCitire.pipe(streamDeScriere);
 ```
 

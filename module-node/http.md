@@ -11,6 +11,26 @@ const server = http.createServer((request, response) => {
 });
 ```
 
+Un exemplu similar folosind paradigma modulelor:
+
+```javascript
+// server.mjs
+import {createServer} from 'http';
+const PORT = 3000;
+
+createServer((request, response) => {
+  response.writeHead(200);
+  response.end('Salut, prietene!');
+}).listen(PORT, () => {console.log('Server ascultă pe ', PORT)});
+
+// managementul erorilor
+["uncaughtException", "unhandledRejection"].forEach(event => {
+  process.on(event, (error) => {
+    console.error('Ceva nu este în regulă', event, `message: ${error.stack || error}`);
+  });
+});
+```
+
 Funcția pasată drept callback este invocată pentru fiecare cerere HTTP făcută pe acel server. Obiectul generat de `createServer` este un `EventEmitter`, fapt care ne permite să atașăm funcții receptor,
 
 ```javascript

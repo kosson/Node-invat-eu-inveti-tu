@@ -2,7 +2,7 @@
 
 Semnătura: `readable.pipe(destination[, options])`.
 
-Metoda returnează o referință la `stream.Writable`-ul, permite chaining-ul dacă este un `Duplex` sau un `Transform`.
+Metoda returnează o referință la `stream.Writable` și permite chaining-ul dacă este un `Duplex` sau un `Transform`.
 
 Argumente:
 - `destination` este o instanță de `stream.Writable` în care sunt scrise datele,
@@ -35,6 +35,18 @@ Poți face pipe la conținutul pe care îl scrii sau îl citești folosind termi
 ```javascript
 const destinatie = fs.createWriteStream('./ceva.txt');
 process.stdin.pipe(destinatie);
+```
+
+Un alt exemplu ar fi citirea unui fișier și consumarea lui într-un răspuns al unui server.
+
+```javascript
+import http from 'http';
+import { readFileSync, createReadStream } from 'fs';
+
+http.createServer((req, res) => {
+  createReadStream('DATA/JCDL2015.csv').pipe(res);
+}).listen(3000).on('listening', () => console.log(`rulez pe 3000`));
+// pentru a-l consuma, apel curl localhost:3000
 ```
 
 Pentru că metoda returnează o referință a stream-ului writable, se poate continua un lanț de `pipe`-uri.

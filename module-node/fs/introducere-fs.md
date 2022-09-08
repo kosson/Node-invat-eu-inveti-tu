@@ -11,7 +11,7 @@ import * as fs from 'fs'; // ESM
 const fs = require('fs'); // CJS
 ```
 
-Node.js oferă mai multe variante de lucru pentru majoritatea operațiunilor cu sistemul de operare. Una este sincronă dar poți folosi metodele în modelul asincron și mai nou folosind promisiunile. Pentru a nu bloca *event loop*, este recomandată folosirea variantei asincrone întotdeauna. În cazul utilizării asincrone, va trebui introdus un callback, care să acompanieze acțiunea. Ca exemplu, avem o acțiune de ștergere a unui director.
+Node.js oferă mai multe variante de lucru pentru majoritatea operațiunilor cu sistemul de operare. Una este sincronă dar poți folosi metodele în modelul asincron și mai nou folosind promisiunile. Pentru a nu bloca *event loop*, este recomandată folosirea variantei asincrone întotdeauna. În cazul utilizării asincrone, va trebui introdus un callback, care să acompanieze acțiunea. Drept exemplu, avem o acțiune de ștergere a unui director.
 
 ```javascript
 const fs = require('fs');
@@ -168,7 +168,7 @@ Funcția creată este un ambalaj pentru fișierul care se va încărca asincron 
 
 ## Obținerea datelor despre un fișier folosind un descriptor
 
-Pentru a proiecta o succesiune de oprațiuni cu un anumit fișier, mai întâi trebuie să culegem îndeajuns de multe informații despre acesta.
+Pentru a proiecta o succesiune de operațiuni cu un anumit fișier, mai întâi trebuie să culegem îndeajuns de multe informații despre acesta.
 
 ### Crearea unui descriptor folosind `fs.open(cale[,options],cb)`
 
@@ -189,7 +189,7 @@ fs.open('/director/subdirector/fisier.txt', 'r', (err, fisierDescr) => {
 });
 ```
 
-Documentația Node.js spune că este absolut necesară închiderea fișierului pentru că orice sistem de operare permite un anumit număr să fie deschis și se pot întâmpla chiar scurgeri de memorie.
+Documentația Node.js spune că este absolut necesară închiderea fișierului pentru că orice sistem de operare permite un anumit număr de descriptori să fie deschiși pentru că se pot întâmpla chiar scurgeri de memorie.
 
 ### Închiderea unui descriptor `fs.close(fd, callback)`
 
@@ -259,7 +259,7 @@ Atunci când deja ai un fișier la care dorești să adaugi date, vei folosi met
 
 - calea către resursă care poate fi un șir de caractere, un buffer, un obiect URL sau un număr,
 - datele care pot fi șir sau `Buffer`,
-- un obiect cu opțiuni: `encoding (Default: 'utf8'), mode (Default: 0o666), flag (Default: 'a'`, însemnând deschide fișierul pentru adăugare de date, iar dacă nu există, creează-l),
+- un obiect cu opțiuni: `encoding (Default: 'utf8'), mode (Default: 0o666), flag (Default: 'a'`, însemnând deschide fișierul pentru adăugare de date, iar dacă nu există, creează-l,
 - un callback, care trebuie să-i fie pasat drept prim argument `err`.
 
 ```javascript

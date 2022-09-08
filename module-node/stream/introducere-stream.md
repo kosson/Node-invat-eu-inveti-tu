@@ -9,9 +9,30 @@ Dacă am asemui *stream*-urile cu apa, am putea spune că locul de unde vine apa
 -   un apel HTTP,
 -   o proprietate `process.stdout`.
 
+Un experiment amuzant și util pentru înțelegere, ar fi să citim date de la consolă folosind `process.stdin`.
+
+```javascript
+process.stdin.on('data', date => console.log(`Datele primite sunt `, date));
+```
+
+Observă faptul că ceea ce este afișat este câte un caracter reprezentat ca un Buffer.
+
+```text
+cDatele primite sunt  <Buffer 63>
+eDatele primite sunt  <Buffer 65>
+```
+
 Stream-urile pot fi folosite pentru a citi (*Readable streams*), pentru a scrie (*Writable streams*) sau ambele operațiuni în același timp (*Duplex streams* și *Transform streams*). Cel mai adesea vei întâlni modulul `fs` care folosește stream-urile. Fii foarte atent(ă) la memorie, pentru că gestionând streamuri folosindu-te de modulul `fs`, nu vei putea manipula fișiere de mari dimensiuni.
 
 Toate stream-urile în Node.js lucrează exclusiv cu șiruri de caractere și obiecte `Buffer` constituite cu ajutorul array-ului specializat `Uint8Array`.
+
+Să dezvoltăm exemplul de mai sus privind preluarea datelor din Terminal și să facem o transformare a acestora folosindu-ne de `pipe`.
+
+```javascript
+let stdin = process.stdin;
+let stdout = process.stdout.on('data', data => process.stdout.write(data.toString().toUpperCase()));
+stdin.pipe(stdout);
+```
 
 ## Cum verifici dacă ai un stream
 
@@ -99,8 +120,8 @@ Mai mult, acest modul include câteva funcții cu rol de utilitare: `pipeline`, 
 Stream-urile binare nu pot prelucra altceva decât string-uri și buffere. Stream-urile pot fi create în `objectMode` cu scopul de a transforma *chunk*-ul într-un obiect.
 
 ```javascript
-var through2 = require('through2');
-var unStream = through2({objectMode: true}, function (chunk, enc, callback) {
+let through2 = require('through2');
+let unStream = through2({objectMode: true}, function (chunk, enc, callback) {
   console.log(chunk);
   console.log(typeof chunk); // va fi mereu object în loc de stream sau buffer
   this.push(chunk);

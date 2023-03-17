@@ -1,8 +1,8 @@
 # Buffer
 
-NodeJS oferă posibilitatea de a lucra cu datele prin intermediul stream-urilor. Dar pentru a putea face acest lucru, a fost introdus un nou API specific. JavaScript a dobândit mecanisme specifice lucrului cu streamurile și datele binare abia odată cu noile versiuni ale standardului, care au introdus `TypedArray` și `ArrayBuffer`.
+Node.js oferă posibilitatea de a lucra cu datele prin intermediul stream-urilor. Dar pentru a putea face acest lucru, a fost introdus un nou API specific. JavaScript a dobândit mecanisme specifice lucrului cu streamurile și datele binare abia odată cu noile versiuni ale standardului, care au introdus obiectele `TypedArray` și `ArrayBuffer`.
 
-Clasa `Buffer` a fost introdus de NodeJS pentru a se asigura un nivel de interacțiune cu stream-urile de octeți din stream-urile TCP, operațiunile cu sistemul de fișiere al sistemului, etc. Această clasă implementează cu particularități de optimizare API-ul `Uint8Array` din JavaScript.
+Clasa `Buffer` a fost introdusă de Node.js pentru a se asigura un nivel de interacțiune cu stream-urile de octeți din stream-urile TCP, operațiunile cu sistemul de fișiere al sistemului, etc. Această clasă implementează  API-ul `Uint8Array` din JavaScript cu anumite optimizări.
 
 Clasa este disponibilă la nivel global fără a mai fi nevoie să o ceri explicit. Instanțele clasei `Buffer` sunt similare array-urilor de numere întregi de la `0` la `255`. Aceste alocări fixe de memorie stau în afara heap-ului V8. Dimensiunea unui `Buffer` este stabilită de la bun început și nu poate fi schimbată ulterior.
 
@@ -14,6 +14,7 @@ const buf2 = Buffer.alloc(10, 1);
 ```
 
 Un `Buffer` se poate crea prin pasarea în constructor:
+
 - a unui array de octeți,
 - a unui alt buffer,
 - a unui string.
@@ -155,7 +156,23 @@ console.log(buf2.toString()); // șir de test
 
 ### `Buffer.alloc()`
 
-Metoda alocă un 
+Metoda alocă un container pentru date de o anumită dimensiune în bytes pe care o specifici direct.
+
+```javascript
+const {Buffer} = require('buffer');
+const buff = Buffer.alloc(8); // container de 8 bytes
+buff.write("a", "utf-8"); // <Buffer 61 00 00 00 00 00 00 00>
+```
+
+O privire asupra Buffer-ului creat va aduce 8 numere hexazecimale. Din moment ce l-ai creat, poți scrie date în el.
+Dacă dorești, poți reprezenta Buffer-ul ca JSON.
+
+```javascript
+console.log(buff.toJSON()); // returnează o reprezentare, dar valorile sunt zecimale
+console.log(buff.length); // obții dimensiunea, care în cazul nostru va fi 8
+// poți obține valoarea unei anumite poziții din Buffer
+console.log(buff[2]);
+``` 
 
 ### `Buffer.isBuffer(obj)`
 
@@ -198,3 +215,7 @@ const buffer = Buffer.from(arrayBuffer);
 
 console.log(buffer.buffer === arrayBuffer); // true
 ```
+
+## Resurse
+
+ - [Understanding Buffers | Understanding Node.js Core Concepts](https://www.youtube.com/watch?v=QZIeZM-yXXU)

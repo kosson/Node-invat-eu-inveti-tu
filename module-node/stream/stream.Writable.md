@@ -1,11 +1,74 @@
 # Clasa `stream.Writable`
 
-Sunt o abstractizare a ceea ce putem înțelege a fi o *destinație*. Sunt stream-urile cu care se pot scrie date, de exemplu. Aceste stream-uri preiau datele de la aplicație și le scriu într-o anumită destinație. Pentru a preveni pierderea datelor în cazul în care destinația nu are capacitatea de procesare care să țină pasul cu volumul datelor, acestea vor fi scrise într-un `Buffer` intern (16384 bytes).
+Sunt o abstractizare a ceea ce putem înțelege a fi o *destinație*. Sunt stream-urile cu care se pot scrie date, de exemplu. Aceste stream-uri preiau datele de la aplicație și le scriu într-o anumită destinație. Pentru a preveni pierderea datelor în cazul în care destinația nu are capacitatea de procesare care să țină pasul cu volumul datelor, acestea vor fi scrise într-un `Buffer` intern. Aceasta este o zonă de memorie de 16384 bytes care este valoarea lui `highWatermark`. Bufferul este alocat automat. Datele vor fi scrise în Buffer ((*stream.write(data)*)) până când acesta va fi plin. Când Bufferul intern este plin, se va proceda la scrierea respectivelor date. Valoarea datelor care sunt scrise în Buffer-ul intern este ținută în evidență de proprietatea `nume_stream.writableLength`. Când `writableLength` are aceeași valoare cu limita expusă prin valoarea lui `writableHighWaterMark`, atunci se formează un `chunk`, care printr-un callback este prelucrat. Semnalul că `chunk`-ul este pregătit de prelucrare este dat prin apariția evenimentului `data`. Când Node.js emite evenimentul `data`, putem face ceva util cu acel fragment.
+
 
 ```mermaid
 graph LR;
 Aplicație --Writable stream--> Buffer([Buffer]) --> File;
 ```
+
+Un exemplu simplu. Nu vom scrie codul responsabil cu citirea unui fișier.
+
+```javascript
+// PREGĂTEȘTE SCRIEREA FIȘIERULUI
+const fileName = 'result.ris';
+const fileHandle = await fs.open(fileName, "w");
+const streamOutF = fileHandle.createWriteStream();
+// record apare ca execuție a listener-ului atașat pe evenimentul `data` la citirea fișierului -> chunk.toString()
+
+// Creezi un Buffer și introduci datele din record
+function writeInBuffer () {
+    let buff = Buffer.from(record, "utf-8");
+    // dacă `write` nu returnează false, ceea ce indică un Buffer full
+    if (!streamOutF.write(buff)) {        
+        streamOutF.write(buff); // scrie datele în Buffer-ul lui `streamOutF`.
+    }
+};
+// pentru a modera backpressure-ul, se va pune un listener pe `drain` 
+streamOutF.on('drain', () => {
+    writeInBuffer(); // când Buffer-ul e golit începe să scrii mai multe date
+});
+
+streamOut.on('finish', () => {
+    fileHandle.close(); // Când se încheie handlerul de fișier, se va încheia automat și stream-ul
+});
+```
+
+Evenimentul `drain` apare atunci când Buffer-ul intern a fost golit de date. Aceste lucru înseamnă că se pot scrie (*write*) alte date în Buffer. Când stream.write returnează `false` înseamnă că nu Buffer-ul este plin și nu mai poți scrie în el.
+
+Alt exemplu.
+
+```javascript
+// read CSV file with a stream
+const readStreamCSV = fs.createReadStream(path.resolve(__dirname, 'assets', 'a.csv'));
+
+let sum = 0, unprocessed = '';
+readStreamCSV.on('data', (chunk) => {
+    let cunkString = unprocessed + chunk.toString(); // convertește Buffer-ul la string
+    // TODO: scrie logica pentru prelucrarea liniilor CSV.
+})
+
+// write big file on disk with a stream
+(async function () {
+    const writeStream = fs.createWriteStream(fileName);
+    let piece;
+    for (piece of arr) {
+        // scrie date în buffer până la limita highmark
+        const overWatermark = await writeStream.write(piece);
+        // dacă ai atins limita oprește execuția până când este golot bufferul, moment când evenimentul drain este emis
+        if(!overWatermark) {
+            // creează o promisiune care se rezolvă de îndată ce datele au fost scrise pe disk și scoase din buffer. 
+            await new Promise((resolve) => {
+                writeStream.once('drain', resolve); // când bufferul este gol, este emis evenimentul drain
+            });
+        }
+    }
+    writeStream.end();
+})();
+```
+
+## Cazul cererilor HTTP
 
 Cel mai simplu exemplu de stream `Writable` este un obiect `response`, precum în exemplul de mai jos:
 
@@ -68,7 +131,7 @@ Dacă un stream va fi creat având setată opțiunea `emitClose`, acesta va emit
 
 ### Evenimentul `drain`
 
-Acest eveniment este semnalul că stream-ul writable poate primi date nou din stream. De exemplu, dacă apelul la `stream.write(chunk)` returnează `false`, evenimentul `drain` va fi emis pentru o posibilă preluare de date noi din stream.
+Acest eveniment este semnalul că stream-ul writable poate primi date nou din stream. Buffer-ul a fost golot. De exemplu, dacă apelul la `stream.write(chunk)` returnează `false`, evenimentul `drain` va fi emis pentru o posibilă preluare de date noi din stream.
 
 ### Evenimentul `error`
 

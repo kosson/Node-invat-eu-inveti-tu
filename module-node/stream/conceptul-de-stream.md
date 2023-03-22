@@ -1,8 +1,10 @@
 # Un concept central: stream-uri
 
-Un *stream* este un flux de date dispuse secvențial, care sunt emise de o sursă fragment după fragment (caractere sau bytes) și se îndreaptă către o destinație. În sfera computerelor și în special în Node.js, streamurile sunt date care *curg* ca urmare a unui eveniment `EventEmitter` între diferitele părți funcționale ale unui program. Sursele unui stream pot fi multiple: un fișier, memoria computerului, dispozitive de input cum ar fi mouse-ul, de exemplu sau tastatura. Din momentul în care este deschis un stream, datele vor curge în fragmente către destinația care le și *consumă*. Streamurile care citesc datele de la o sursă se numesc `readable`. La destinație, fragmentele de date sunt prelucrate cu ceea ce se numește *writable* stream, iar datele ajung într-un fișier, în memorie sau chiar în linia de comandă. Există și o problemă legată de modul cum sunt *consumate* datele dintr-un stream. În cazul Node.js, presiunea (*backpressure*) datelor din upstream este regltă în funcție de capacitatea de prelucrare a downstream-ului.
+Un *stream* este un flux de date dispuse secvențial, care sunt emise de o sursă fragment după fragment (caractere sau bytes) și se îndreaptă către o destinație. În sfera computerelor și în special în Node.js, streamurile sunt date care *curg* ca urmare a unui eveniment `EventEmitter` între diferitele părți funcționale ale unui program. Sursele unui stream pot fi multiple: un fișier, memoria computerului, dispozitive de input cum ar fi mouse-ul, de exemplu sau tastatura. Din momentul în care este deschis un stream, datele vor curge în fragmente către destinația care le și *consumă*. 
 
-Ca exemplu, putem lua o pagină web să o trimitem în terminal.
+Streamurile care citesc datele de la o sursă se numesc *readable*. La destinație, fragmentele de date sunt prelucrate cu ceea ce se numește *writable* stream, iar datele ajung într-un fișier, în memorie sau chiar în linia de comandă. Există și o problemă legată de modul cum sunt *consumate* datele dintr-un stream. În cazul Node.js, presiunea (*backpressure*) datelor din upstream este reglată în funcție de capacitatea de prelucrare a downstream-ului. Pentru a menține o balanță între capacitatea de prelucrare a datelor și viteza cu care acestea sunt furnizate spre prelucrare, ambele obiecte stream (*readable* și *writable*) folosesc un Buffer intern de date de 16384 bytes (16Kb) chiar în memorie. Stream-urile *writable* folosesc metoda `stream.write(data)` pentru a scrie în Bufferul intern, iar cele *readable* folosesc metoda `stream.push(data)`. Când Buffer-ul intern este saturat cu date, Node.js emite un eveniment `data` precum în `stream.on('data', (chunk) => {})`. Datele care se află în `chunk` sunt cele care au fost în Buffer-ul intern.
+
+Pentru a exemplifica, putem lua o pagină web să o trimitem în terminal.
 
 ```javascript
 const request = require('request');
@@ -41,11 +43,11 @@ Stream-urile lucrează cu fragmente, care în limba engleză se numesc **chunks*
 
 > un singur fragment de date care este scris sau care este citit dintr-un stream. Poate fi de orice tip; stream-urile pot conține chunks de tipuri diferite. Un chunk va fi cel mai adesea cea mai mică unitate de date pentru un anumit stream; de exemplu, un byte stream poate conține chunks ca `Uint8Array`-uri de 16KiB în loc de bytes unici.
 
-Acestea sunt trimise între două puncte de comunicare. Stream-urile emit evenimente ceea ce înseamnă că se pot atașa funcții de callback pe acestea.
+Acestea sunt trimise între două puncte de comunicare. Stream-urile emit evenimente ceea ce înseamnă că se pot atașa funcții de callback pe acestea. În cazul Node.js, datele unui *chunk* sunt cele care au fost scrise în Buffer-ul instern al stream-ului.
 
 ## Tipuri de stream-uri în Node.js
 
-În cazul lucrului cu fișierele de mari dimensiuni, trebuie să privim întregul ca un set de fragmente, care pot fi prelucrate. Uneori, în lucrările de specialitate veți găsri aceste fragmente numite ferestre (*windows*). În Node.js, acestea sunt numite *fragmente* (*chunks* în lb. engleză).
+În cazul lucrului cu fișierele de mari dimensiuni, trebuie să privim întregul ca un set de fragmente, care pot fi prelucrate. Uneori, în lucrările de specialitate veți găsi aceste fragmente numite ferestre (*windows*). În Node.js, acestea sunt numite *fragmente* (*chunks* în lb. engleză). Pentru a fi cât mai aproape de textul specificațiilor tehnice, vom folosi în continuare termenul de *chunks*.
 
 Node.js oferă patru tipuri de stream-uri care pot fi folosite pentru a lucra cu datele:
 
@@ -63,6 +65,10 @@ const destinație = fs.createWriteStream(outFile);
 const sursă = fs.createReadStream('fișier.csv');
 source.pipe(destinație);
 ```
+
+Ceea ce se petrece în acest caz este crearea unui stream *readable* cu care să citim datele din fișier. Odată stream-ul creat, datele vor fi citite din fișier și *încetul cu încetul* vor fi scrise în memoria internă a stream-ului *readable* care este un Buffer de 16384 de bytes. Când Buffer-ul intern este plin, Node.js emite un eveniment `data` care semnalizează faptul că aceste date din Buffer sunt disponibile prin identificatul `chunk` în cazul în care atașăm un listener precum `stream.on('data', (chunk) => {})`.
+
+În cazul stream-urilor *transform*, acestea au două Buffere interne. Unul pentru a citi și altul pentru a scrie datele.
 
 Un exemplu concret de utilizare a stream-urilor este cazul serverelor HTTP, care în cazul gestionării rutelor pe care vin cererile, vor folosi o funcție callback. Aceasta are drept argumente un stream *readable*, numit `request` și unul *writable* numit `response`.
 
@@ -97,7 +103,7 @@ Pentru a exemplifica, cel mai bine ar fi să creăm un stream folosind metoda de
 - o **cale** care specifică resursa. Această cale poate fi un șir, un buffer sau un obiect url;
 - o opțiune din mai multe posibile sau un obiect în cazul în care dorești mai multe opțiuni să influențeze crearea acestui stream.
 
-Opțiunile posibile pe care le poți invoca au valori de start, care trebuie menționate pentru a înțelege configurarea stream-ului așa cum este el oferit de Node:
+Opțiunile posibile pe care le poți invoca au valori de start, care trebuie menționate pentru a înțelege configurarea stream-ului așa cum este el oferit de Node.js:
 
 - *flags* (un șir de caractere), valoarea default: `w`;
 - *encoding* - codarea caracterelor (un șir de caractere); valoarea din oficiu fiind `utf8`;
@@ -115,12 +121,14 @@ streamDeCitire.on('data', function (fragment) {
   datele += fragment;
 });
 
-streamDeCitire.on('end', funzip. You can think of a transform stream as a function where the inputction () {
+streamDeCitire.on('end', () => {
   console.log(datele);
 });
 ```
 
-Întrebarea de bun început este următoarea: când încep datele să *curgă*? De îndată ce se atașează un eveniment `data` apar și datele în stream. După acest moment inițial,fragmente de date sunt pasate rând pe rând cu o frecvență decisă de API-ul care implementează stream-ul (de exemplu, poate fi HTTP-ul). Atunci când nu mai sunt fragmente de date, stream-ul emite un eveniment `end`.
+Întrebarea de bun început este următoarea: când încep datele să *curgă*? De îndată ce se atașează un eveniment `data` datele sunt citite din sursă, Bufferul intern al obiectului stream este completat până la limita indicată de valoarea lui `nume_stream.writableHighWaterMark`. Valoarea datelor care sunt scrise în Buffer-ul intern este ținută în evidență de proprietatea `nume_stream.writableLength`. Când `writableLength` are aceeași valoare cu limita expusă prin valoarea lui `writableHighWaterMark`, atunci se formează un `chunk`, care printr-un callback este prelucrat. Semnalul că `chunk`-ul este pregătit de prelucrare este dat prin apariția evenimentului `data`. Când Node.js emite evenimentul `data`, putem face ceva util cu acel fragment.
+
+După acest moment inițial,fragmente de date sunt pasate rând pe rând cu o frecvență decisă de API-ul care implementează stream-ul (de exemplu, poate fi HTTP-ul). Atunci când nu mai sunt fragmente de date, stream-ul emite un eveniment `end`.
 Folosind metoda `read()` pe stream-ul readable avem posibilitatea de a citi în calupuri datele stream-ului, dacă acest lucru este necesar.
 
 ```javascript
@@ -140,7 +148,7 @@ streamDeCitire.on('end', function () {
 });
 ```
 
-Metoda `read()` preia datele dintr-un buffer și le returnează. Datele pe care le citește un stream sunt cele dintr-un obiect `Buffer`. Atunci când nu mai este nimic în buffer, va returna `null`. Acesta este și motivul pentru care bucla din exemplu va testa după `null`. Mai trebuie adăugat că evenimentul `readable` va fi emis atunci când un fragment de date este citit din stream. În cazul în care datele sunt text, pentru a le putea folosi la fel, trebuie specificat standardul de codare.
+Metoda `read()` preia datele dintr-un buffer și le returnează. Datele pe care le citește un stream sunt cele din obiectul `Buffer`. Atunci când nu mai este nimic în Buffer, va returna `null`. Acesta este și motivul pentru care bucla din exemplu va testa după `null`. Mai trebuie adăugat că evenimentul `readable` va fi emis atunci când un fragment de date este citit din stream. În cazul în care datele sunt text, pentru a le putea folosi la fel, trebuie specificat standardul de codare.
 
 ## Transformarea stream-urilor
 

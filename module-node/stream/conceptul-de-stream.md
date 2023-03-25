@@ -1,6 +1,6 @@
 # Un concept central: stream-uri
 
-Un *stream* este un flux de date dispuse secvențial, care sunt emise de o sursă fragment după fragment (caractere sau bytes) și se îndreaptă către o destinație. În sfera computerelor și în special în Node.js, streamurile sunt date care *curg* ca urmare a unui eveniment `EventEmitter` între diferitele părți funcționale ale unui program. Sursele unui stream pot fi multiple: un fișier, memoria computerului, dispozitive de input cum ar fi mouse-ul, de exemplu sau tastatura. Din momentul în care este deschis un stream, datele vor curge în fragmente către destinația care le și *consumă*. 
+Un *stream* este un flux de date dispuse secvențial, care sunt emise de o sursă fragment după fragment (caractere sau bytes) și se îndreaptă către o destinație. În sfera computerelor și în special în Node.js, streamurile sunt date care *curg* ca urmare a unui eveniment `EventEmitter` între diferitele părți funcționale ale unui program. Sursele unui stream pot fi multiple: un fișier, memoria computerului, dispozitive de input cum ar fi mouse-ul, de exemplu sau tastatura. Din momentul în care este deschis un stream, datele vor curge în fragmente către destinația care le și *consumă*.
 
 Streamurile care citesc datele de la o sursă se numesc *readable*. La destinație, fragmentele de date sunt prelucrate cu ceea ce se numește *writable* stream, iar datele ajung într-un fișier, în memorie sau chiar în linia de comandă. Există și o problemă legată de modul cum sunt *consumate* datele dintr-un stream. În cazul Node.js, presiunea (*backpressure*) datelor din upstream este reglată în funcție de capacitatea de prelucrare a downstream-ului. Pentru a menține o balanță între capacitatea de prelucrare a datelor și viteza cu care acestea sunt furnizate spre prelucrare, ambele obiecte stream (*readable* și *writable*) folosesc un Buffer intern de date de 16384 bytes (16Kb) chiar în memorie. Stream-urile *writable* folosesc metoda `stream.write(data)` pentru a scrie în Bufferul intern, iar cele *readable* folosesc metoda `stream.push(data)`. Când Buffer-ul intern este saturat cu date, Node.js emite un eveniment `data` precum în `stream.on('data', (chunk) => {})`. Datele care se află în `chunk` sunt cele care au fost în Buffer-ul intern.
 
@@ -255,6 +255,124 @@ server.listen(3000);
 
 Ceea ce trebuie să înțelegi este faptul că `req` și `res` sunt niște obiecte, care au ca principiu de funcționare intern stream-urile. În cazul nostru, am creat un stream care citește (*Read*) stream-ul și apoi, l-am *racordat* folosind metoda `pipe()` la obiectul răspuns. Metoda `.pipe()` va avea grijă de evenimentele `date` și `end` care apar în momentul în care folosești `fs.createReadStream(__dirname + '/fisier.json');`.
 
+O altă aplicație care oferă și o soluție funcțională, ne este propusă de Erick Wendel în *How to read 30GB+ data in the browser without blocking the screen - Webstreams 101*. Am ales acest exemplu pentru informația la zi și pentru eleganță.
+
+```javascript
+import {createServer} from 'node:http';
+import {createReadStream} from 'node:fs';
+import {stat} from 'node:fs/promises';
+import bytesize from 'byte-size';
+import csv2json from 'csv2json';
+import { Readable, Transform, Writable } from 'node:stream';
+
+createServer(async (request, response) => {
+    // response.end('OK');
+    const filename = './data/SWIB-conference-data.csv';
+    const {size} = await stat(filename);
+
+    console.log('Processing ', `${bytesize(size)}`);
+
+    // const fileStream = createReadStream(filename).pipe(response);
+
+    // #1 transformă stream-ul după ce ai preluat fișierul în stream cu `createReadStream` într-unul web
+    // #2 Fă-i `pipeThrough` către un stream de transformare, care preia stream-ul de CSV, îl parsează și îl transformă în JSON
+    // #3 Finalizează prin trimiterea cu `pipeTo` către un stream pentru web
+    await Readable
+            .toWeb(createReadStream(filename))
+            .pipeThrough(
+                Transform.toWeb(csv2json())
+            )
+            .pipeTo(
+                Writable.toWeb(response)
+            );
+
+    // Din Terminal, fă o cerere la server pentru a verifica rezultatul folosind comanda: curl -N localhost:3000
+
+}).listen('3000').on('listening', () => {
+    console.log('serverul e pe 3000');
+});
+```
+
+Și o versiune ceva mai elaborată pentru a explora posibilitatea de a modifica stream-ul datelor în format CSV. Scriptul este o adaptare a celui pe care l-a oferit drept exemplu Erick Wendel mai sus. Fișierul CSV are o structură din care voi pune o mostră mai jos.
+
+```csv
+"TI","CT","DT","CY","AU","DE"
+"Design of a linked data-based library portal","SWIB","paper",2009,"Hagenbruch,André","linked data,linked-data,web-of-data,web of data,bochum,project,infrastructure,university-alliance-metropolis-ruhr,portal,design,architecture,swib 2009"
+"Free Data - The Road to Linked Data","SWIB","paper",2009,"Danowski,Patrick","cern,bibliographic data,MARCXML,libris,swib 2009"
+"Integration of linked data into existing library applications","SWIB","paper",2009,"Neubert,Joachim;Borst,Timo","sparql,thesaurus,indexing,zbw,swib 2009,REST,indexing,retrieval,demo"
+"Introduction to the Semantic Web","SWIB","paper",2009,"Voss,Jakob","introduction,swib 2009,semantic web,linked data,limitations"
+"Linked applications using repository software as an example","SWIB","paper",2009,"Ostrowski,Felix","linked data,linked-data,dbpedia,repository,ontologies,oa-network,dfg,swib 2009"
+"Linked data in the context of digital library systems","SWIB","paper",2009,"Haslhofer,Bernhard","dbpedia,swib 2009,digital-library,digital library,sweden,LOD,wikipedia,linked data,developments,trends"
+"Metadata and the CIDOC Conceptual Reference Model (CRM) - An introduction with application examples","SWIB","paper",2009,"Teichmann,Katrin","cidoc-crm,conceptual-model,conceptual model,cultural heritage,entity,meta-ontology,meta ontology,cidoc,swib 2009"
+"Ontologies from the perspective of information specialists. From theory to practice","SWIB","paper",2009,"Semanova,Elena","Ontology,conceptual-system,conceptual system,swib 2009,transporting content,information science,Protégé"
+"Practical experiences from the linked data publication of the STW","SWIB","paper",2009,"Neubert,Joachim","zbw,skos,rdfa,rdfxml,rdf xml,sparql,swib 2009"
+```
+
+Codul JavaScript este după cum urmează. Scopul este de a folosi metoda `pipeThrough` pentru a crea posibilitatea modificării datelor folosind un obiect `TransformStream`.
+
+```javascript
+import {createServer} from 'node:http';
+import {createReadStream} from 'node:fs';
+import {stat} from 'node:fs/promises';
+import bytesize from 'byte-size';
+import csv2json from 'csv2json';
+import { Readable, Transform, Writable } from 'node:stream';
+import {TransformStream} from 'node:stream/web';
+
+createServer(async (request, response) => {
+    // response.end('OK');
+    const filename = './data/SWIB-conference-data.csv';
+    const {size} = await stat(filename);
+
+    console.log('Processing ', `${bytesize(size)}`);
+
+    // #1 transformă stream-ul după ce ai preluat fișierul în stream cu `createReadStream` într-unul web
+    // #2 Fă-i `pipeThrough` către un stream de transformare, care preia stream-ul de CSV, îl parsează și îl transformă în JSON
+    // #3 Finalizează prin trimiterea cu `pipeTo` către un stream pentru web
+    await Readable
+            .toWeb(createReadStream(filename))
+            .pipeThrough(
+                Transform.toWeb(csv2json({
+                    delimiter: ','
+                }, {
+                    objectMode: true
+                }))
+            )
+            .pipeThrough(
+                new TransformStream({
+                    async transform(chunk, controller) {
+                        // chunk va fi sub formă de bytes. Pentru a-l afișa, de exemplu, ar trebui să creăm un obiect Buffer din `jsonLine` care este un chunk
+                        const data = Buffer.from(chunk).toString('utf-8');
+                        // console.info(`Datele sunt chiar: ${data}`);
+                        let arry = data.split('\n');
+                        if (arry.includes('[') || arry.includes(']') || arry.includes(',')) {
+                            controller.enqueue(data);
+                        } else {
+                            let dataParsed = JSON.parse(data);    
+                            const mappedData = JSON.stringify({
+                                title: dataParsed?.TI,
+                                acronym: dataParsed?.CT,
+                                authors: dataParsed?.AU,
+                                keywords: dataParsed?.DE
+                            });
+                            // trimite fragmentul de date înapoi în stream după ce l-ai prelucrat                            
+                            // este nevoie de separator pentru a menține ordinea în care sunt trimise fragmentele clientului pe care acestea le va consuma când poate. 
+                            controller.enqueue(mappedData.concat('\n')); // vezi și http://ndjson.org/
+                        }
+                    }
+                })
+            )
+            .pipeTo(
+                Writable.toWeb(response)
+            );
+
+    // curl -N localhost:3000
+
+}).listen('3000').on('listening', () => {
+    console.log('serverul e pe 3000');
+});
+```
+
 ## Resurse
 
 - [Easier Node.js streams via async iteration | Dr. Axel Rauschmayer](https://2ality.com/2019/11/Node.js-streams-async-iteration.html)
@@ -266,3 +384,5 @@ Ceea ce trebuie să înțelegi este faptul că `req` și `res` sunt niște obiec
 - [Understanding node's possible eventemitter leak error message](http://web.archive.org/web/20180315203155/http://www.jongleberry.com/understanding-possible-eventemitter-leaks.html)
 - [Node.js Streams - NearForm bootcamp series | YouTube](https://youtu.be/mlNUxIUS-0Q)
 - [Stream Into the Future (Node.js Streams) | YouTube](https://www.youtube.com/watch?v=aTEDCotcn20)
+- [How to read 30GB+ data in the browser without blocking the screen - Webstreams 101 | Erick Wendel](https://www.youtube.com/watch?v=EexM7EL9Blk)
+- [Node.js Streams - Part 2 (Beginner/Intermediate) - Pipe - Transform - Pipeline and Error management | Code Academia](https://www.youtube.com/watch?v=5w_nZnev3kk)
